@@ -28,6 +28,13 @@ jobs:
           fi
       - name: Test packaging, checksums and privacy checks
         run: python -m unittest discover -s scripts -p 'test_*.py' -v
+      - name: Check Chinese gettext catalog
+        run: |
+          if ! command -v msgfmt >/dev/null; then
+            sudo apt-get update
+            sudo apt-get install -y gettext
+          fi
+          msgfmt --check --check-format -o /tmp/chinese.mo addons/resource.language.zh_cn/resources/strings.po
       - name: Build repository site
         run: python scripts/build_repository.py
       - name: Upload downloadable packages

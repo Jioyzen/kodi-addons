@@ -2,6 +2,7 @@
 
 本仓库保存从用户原有 CEBOX 安装迁移并经修改的插件，以及新编写的仓库发布基础设施。保留已有的 `provider-name`、版权声明及许可证文件。
 
+- Chinese（Jioyzen）：基于原安装的官方简体中文语言包 11.0.103，保留 `strings.po` 的 Kodi / Weblate 翻译团队署名，并加入本分支已验证的 CoreELEC 和 Kodi 22 翻译补全；沿用 `resource.language.zh_cn` 以保持语言目录兼容。
 - 海报墙：现有代码包含 forbxy 项目来源说明及 GPL v2 许可证文件，保留在插件目录。
 - TMDB CN Optimization：来自 Kodi TMDb Python 刮削器及 forbxy/晓的优化版本，保留其 `GPL-2.0-or-later` 元数据和许可证文件。
 - AI 海报刮削：原安装标记作者 `cebox`，暂未确认可核验的原作者公开源码仓库或许可证。不为其擅自声明新的统一开源许可证。

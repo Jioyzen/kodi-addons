@@ -27,6 +27,11 @@ def source_files(folder):
             yield path
 
 
+def artwork(manifest):
+    return (manifest.findall("extension[@point='xbmc.addon.metadata']/assets/*")
+            + manifest.findall("extension[@point='kodi.addon.metadata']/assets/*"))
+
+
 def validate(folder):
     manifest = ET.parse(folder / 'addon.xml').getroot()
     if manifest.tag != 'addon' or manifest.get('id') != folder.name:
@@ -62,7 +67,7 @@ def validate(folder):
         library = ext.get('library')
         if library and not (folder / library).exists():
             raise ValueError(f'Missing entry point: {folder.name}/{library}')
-    for asset in manifest.findall("extension[@point='xbmc.addon.metadata']/assets/*"):
+    for asset in artwork(manifest):
         if asset.text and not (folder / asset.text).is_file():
             raise ValueError(f'Missing artwork: {folder.name}/{asset.text}')
     return manifest
@@ -95,7 +100,7 @@ def build(source, output):
                 package.writestr(info, path.read_bytes())
         digest = hashlib.sha256(archive.read_bytes()).hexdigest()
         archive.with_suffix('.zip.sha256').write_text(digest + '\n', encoding='ascii')
-        for asset in manifest.findall("extension[@point='xbmc.addon.metadata']/assets/*"):
+        for asset in artwork(manifest):
             if asset.text:
                 destination = target / asset.text
                 destination.parent.mkdir(parents=True, exist_ok=True)
