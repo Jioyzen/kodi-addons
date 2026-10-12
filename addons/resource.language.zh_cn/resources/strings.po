@@ -11238,7 +11238,7 @@ msgstr "要重置校准置为默认分辨率“{0:s}”吗？"
 #. Window screen calibration: the current calibration value
 msgctxt "#20327"
 msgid "Current value: {}"
-msgstr "当前值：{0:s}"
+msgstr "当前值：{}"
 
 msgctxt "#20328"
 msgid "Browse for destination"
@@ -21731,7 +21731,7 @@ msgstr "版本管理器：{0:s}"
 #. Choose/Manage video extra dialog title
 msgctxt "#40025"
 msgid "Extras Manager: {0:s}"
-msgstr "额外管理器：{0:s｝"
+msgstr "额外内容管理：{0:s}"
 
 #. Add extra dialog text.
 msgctxt "#40026"

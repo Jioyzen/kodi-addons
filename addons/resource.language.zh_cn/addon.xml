@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<addon id="resource.language.zh_cn" version="11.0.103.1" name="Chinese（Jioyzen）" provider-name="Team Kodi / Jioyzen">
+<addon id="resource.language.zh_cn" version="11.0.103.2" name="Chinese（Jioyzen）" provider-name="Team Kodi / Jioyzen">
   <requires>
     <import addon="kodi.resource" version="1.0.0" />
   </requires>
@@ -14,5 +14,5 @@
     <assets>
       <icon>icon.png</icon>
     </assets>
-  <summary lang="zh_CN">适配 CoreELEC / Kodi 22 的简体中文补全维护版</summary><summary lang="en_GB">Simplified Chinese maintained by Jioyzen for CoreELEC / Kodi 22</summary><description lang="zh_CN">基于官方简体中文包，包含本分支已完成的系统设置、显示、音频和 CoreELEC 扩展设置翻译补全。保留标准语言 ID 与 zh_CN 区域，兼容皮肤和第三方插件既有的简体中文翻译。</description><description lang="en_GB">Based on the official Simplified Chinese pack with maintained CoreELEC and Kodi 22 setting translations. Keeps resource.language.zh_cn and zh_CN for compatibility with existing add-on translations.</description><news>Jioyzen 首次维护版：迁入盒子已验证的中文翻译补全，沿用官方插件 ID，保留皮肤及插件中文加载兼容性。</news><source>https://github.com/Jioyzen/kodi-addons</source></extension>
+  <summary lang="zh_CN">适配 CoreELEC / Kodi 22 的简体中文补全维护版</summary><summary lang="en_GB">Simplified Chinese maintained by Jioyzen for CoreELEC / Kodi 22</summary><description lang="zh_CN">基于官方简体中文包，包含本分支已完成的系统设置、显示、音频和 CoreELEC 扩展设置翻译补全。保留标准语言 ID 与 zh_CN 区域，兼容皮肤和第三方插件既有的简体中文翻译。</description><description lang="en_GB">Based on the official Simplified Chinese pack with maintained CoreELEC and Kodi 22 setting translations. Keeps resource.language.zh_cn and zh_CN for compatibility with existing add-on translations.</description><news>修复额外内容窗口标题中的全角占位符括号，避免 fmt 格式化异常导致 Kodi 崩溃；校正当前值提示占位符并加入发布前格式检查。</news><source>https://github.com/Jioyzen/kodi-addons</source></extension>
 </addon>
