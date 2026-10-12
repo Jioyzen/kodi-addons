@@ -18,7 +18,7 @@ class RepositoryTests(unittest.TestCase):
             data = (first / 'addons.xml').read_bytes()
             self.assertEqual(hashlib.sha256(data).hexdigest(), (first / 'addons.xml.sha256').read_text().strip())
             self.assertEqual(hashlib.md5(data).hexdigest(), (first / 'addons.xml.md5').read_text().strip())
-            self.assertEqual(len(ET.fromstring(data)), 6)
+            self.assertEqual(len(ET.fromstring(data)), len(list((ROOT / 'addons').glob('*/addon.xml'))))
             for row in rows:
                 with zipfile.ZipFile(first / row['path']) as package:
                     self.assertIsNone(package.testzip())

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon id="script.openlist" name="OpenList 管理" version="1.0.0" provider-name="Jioyzen">
+  <requires><import addon="xbmc.python" version="3.0.0" /></requires>
+  <extension point="xbmc.python.script" library="default.py" />
+  <extension point="xbmc.addon.metadata">
+    <platform>linux</platform>
+    <summary lang="zh_CN">OpenList 主程序安装、更新与服务管理</summary>
+    <summary lang="en_GB">OpenList runtime installation, updates and service management</summary>
+    <description lang="zh_CN">适用于 CoreELEC aarch64 的独立 OpenList 管理插件。提供官方主程序手动安装和更新、版本查询、启动停止、开机自启、日志、后台二维码和管理员密码重置。默认端口 5245，与 Alist 使用独立程序和数据目录。</description>
+    <description lang="en_GB">Standalone CoreELEC aarch64 manager using official OpenList releases. Includes manual runtime installation and updates, service control, logs, QR access and admin password reset. Separate data and port 5245 allow coexistence with Alist.</description>
+    <source>https://github.com/Jioyzen/kodi-addons</source>
+    <news>首次发布：基于本仓库独立 Alist 管理代码适配 OpenList，主程序和配置完全独立。</news>
+    <assets><icon>icon.png</icon></assets>
+  </extension>
+</addon>

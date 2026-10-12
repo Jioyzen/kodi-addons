@@ -17,7 +17,7 @@ notes = args.directory / 'release-notes.md'
 notes.write_text('适配 Kodi 22 / CoreELEC Amlogic-no 的维护版插件。\n\n'
                  + '\n'.join(f'- {r["name"]}：{r["version"]}' for r in rows)
                  + '\n\n首次使用请安装 repository.jioyzen 的 ZIP，再通过“从仓库安装”安装或更新插件。'
-                 + '\n\nAlist / CloudDrive2 管理插件现支持官方主程序的手动安装与更新；不包含个人配置和 API 密钥。\n', encoding='utf-8')
+                 + '\n\nAlist / OpenList / CloudDrive2 管理插件支持官方主程序的手动安装与更新；不包含个人配置和 API 密钥。\n', encoding='utf-8')
 command = ['gh', 'release', 'view', tag, '--repo', repository]
 if subprocess.run(command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0:
     print('Release already exists; leaving published assets unchanged:', tag)

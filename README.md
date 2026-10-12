@@ -14,9 +14,10 @@
 | `plugin.video.filteredmovies` | 海报墙 | 首页异步加载、空分类处理、图片与合集兜底、焦点和返回状态、导航边界、背景图、圆角布局、缓存与稳定性优化 |
 | `metadata.tmdb.cn.optimization` | TMDB CN Optimization | Kodi 22 数据库定位与缓存兼容修复；保留原作者刮削流程 |
 | `script.alist` | Alist 管理 | 主程序安装与更新、版本显示、独立服务控制、启动就绪核验、自启状态核验、UTF-8 输出、日志与二维码窗口修复 |
+| `script.openlist` | OpenList 管理 | 官方主程序安装与更新、独立数据及端口、版本显示、服务控制、自启、日志、后台二维码与密码重置 |
 | `script.clouddrive2` | CloudDrive2 管理 | 主程序安装与更新、版本显示、独立服务控制、启动就绪核验、自启状态核验、UTF-8 输出、日志与二维码窗口修复 |
 
-五个插件均已解除 `script.module.cebox` 依赖。媒体插件在自身内部定位有效的 Kodi 数据库；服务管理插件在自身内部包含管理代码和二维码库。
+媒体插件及管理插件均无需 `script.module.cebox`。媒体插件在自身内部定位有效的 Kodi 数据库；服务管理插件在自身内部包含管理代码和二维码库。
 
 AI 海报刮削仍通过自己的“添加目录”入口扫描、匹配与入库，**不是 Kodi 视频源“设置内容”菜单中的刮削器**。TMDB CN Optimization 则可在该菜单中选择，两者是不同的入库流程。
 
@@ -35,18 +36,20 @@ AI 海报刮削仍通过自己的“添加目录”入口扫描、匹配与入�
 
 这是**插件更新**，不会升级 CoreELEC 内核、DTB 或系统固件。
 
-### Alist / CloudDrive2 安装条件
+### Alist / OpenList / CloudDrive2 安装条件
 
 当前发布包是 **CoreELEC aarch64 服务管理插件**。安装包不捆绑主程序，但可从插件菜单手动下载安装官方主程序。已有主程序会被识别，继续使用现有配置。
 
 | 工具 | 程序路径 | 数据路径 | 默认端口 |
 | --- | --- | --- | --- |
 | Alist | `/storage/.kodi/addons/service.alist/alist` | `/storage/.kodi/userdata/addon_data/service.alist` | 5244 |
+| OpenList | `/storage/.kodi/addons/service.openlist/openlist` | `/storage/.kodi/userdata/addon_data/service.openlist` | 5245 |
 | CloudDrive2 | `/storage/.kodi/addons/service.clouddrive/clouddrive` | `/storage/.kodi/userdata/addon_data/service.clouddrive` | 19798 |
 
 未安装时，打开管理插件会显示“安装主程序”。已安装时，菜单显示当前版本并提供“检查主程序更新”；查询官方稳定版后，由用户确认下载安装。仅安装管理插件或打开菜单，不会自动下载或更新主程序。
 
 - Alist 发布源：<https://github.com/AlistGo/alist/releases>，使用 `alist-linux-arm64.tar.gz`。
+- OpenList 发布源：<https://github.com/OpenListTeam/OpenList/releases>，使用完整的 `openlist-linux-arm64.tar.gz`。首次安装在配置文件中设置 HTTP 端口 5245；已有配置不覆盖，不读取或导入 Alist 的账号、挂载与云盘配置。
 - CloudDrive2 发布源：<https://github.com/cloud-fs/cloud-fs.github.io/releases>，使用 `clouddrive-2-linux-aarch64-<版本>.tgz`，包含对应的 `wwwroot`。
 - 下载使用 HTTPS，并核验 GitHub 发布资产的 SHA-256、包大小、文件结构及 ARM64 ELF 格式。缺少官方 SHA-256 的发布不自动安装。
 - 下载和解包完成后才停止旧服务；备份旧程序及配置，替换后检查进程和管理端口。失败时恢复旧程序、配置及原来的运行状态；自动恢复受阻时保留恢复文件并提示路径。
@@ -83,4 +86,4 @@ Pull Request 只执行检查与打包，不发布。可通过 Actions 的 `workf
 
 ## 来源与许可
 
-保留插件原有作者信息和许可证，不将所有插件统一改称 Jioyzen 原创。详见 [NOTICE.md](NOTICE.md)。本仓库提供维护分支，不是 Kodi、CoreELEC、TMDb、Alist 或 CloudDrive2 的官方发布。
+保留插件原有作者信息和许可证，不将所有插件统一改称 Jioyzen 原创。详见 [NOTICE.md](NOTICE.md)。本仓库提供维护分支，不是 Kodi、CoreELEC、TMDb、Alist 、OpenList 或 CloudDrive2 的官方发布。

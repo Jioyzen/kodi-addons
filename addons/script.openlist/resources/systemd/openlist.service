@@ -1,0 +1,12 @@
+[Unit]
+Description=OpenList service
+After=network-online.target
+Wants=network-online.target
+[Service]
+WorkingDirectory=/storage/.kodi/userdata/addon_data/service.openlist
+ExecStart=/storage/.kodi/addons/service.openlist/openlist server --data /storage/.kodi/userdata/addon_data/service.openlist
+Restart=on-failure
+RestartSec=5
+UMask=0077
+[Install]
+WantedBy=multi-user.target
