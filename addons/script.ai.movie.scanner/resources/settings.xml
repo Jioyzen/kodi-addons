@@ -1,0 +1,112 @@
+<?xml version="1.0" ?>
+<settings version="1">
+  <section id="script.ai.movie.scanner">
+    <category id="tmdb" label="32004">
+      <group id="1">
+        <setting id="tmdb_language" type="string" label="32006" help="">
+          <level>0</level>
+          <default>zh-CN</default>
+          <constraints>
+            <options>
+              <option>zh-CN</option>
+              <option>zh-TW</option>
+              <option>en-US</option>
+              <option>ja-JP</option>
+              <option>ko-KR</option>
+            </options>
+          </constraints>
+          <control type="list" format="string">
+            <heading>$ADDON[script.ai.movie.scanner 32006]</heading>
+          </control>
+        </setting>
+        <setting id="tmdb_api_key" type="string" label="32005" help="">
+          <level>0</level>
+          <default>f090bb54758cabf231fb605d3e3e0468</default>
+          <control type="edit" format="string">
+            <heading>$ADDON[script.ai.movie.scanner 32005]</heading>
+          </control>
+        </setting>
+        <setting id="ai_enabled" type="boolean" label="32171" help="">
+          <level>0</level>
+          <default>true</default>
+          <control type="toggle"/>
+        </setting>
+        <setting id="ai_api_base" type="string" label="32002" help="">
+          <level>0</level>
+          <default>https://api.deepseek.com/v1</default>
+          <control type="edit" format="string">
+            <heading>$ADDON[script.ai.movie.scanner 32002]</heading>
+          </control>
+        </setting>
+        <setting id="ai_api_key" type="string" label="32003" help="">
+          <level>0</level>
+		  <default></default>
+          <control type="edit" format="string">
+            <heading>$ADDON[script.ai.movie.scanner 32003]</heading>
+          </control>
+        </setting>
+        <setting id="ai_model" type="string" label="32170" help="">
+          <level>0</level>
+          <default>deepseek-v4-flash</default>
+          <control type="edit" format="string">
+            <heading>$ADDON[script.ai.movie.scanner 32170]</heading>
+          </control>
+        </setting>
+      </group>
+    </category>
+    <category id="scan" label="32007">
+      <group id="1">
+        <setting id="scan_delay" type="number" label="32008" help="">
+          <level>0</level>
+          <default>1</default>
+          <constraints>
+            <minimum>0</minimum>
+            <maximum>10</maximum>
+            <step>1</step>
+          </constraints>
+          <control type="slider" format="integer">
+            <popup>true</popup>
+          </control>
+        </setting>
+        <setting id="skip_existing" type="boolean" label="32009" help="">
+          <level>0</level>
+          <default>false</default>
+          <control type="toggle"/>
+        </setting>
+        <setting id="num_workers" type="number" label="32185" help="">
+          <level>0</level>
+          <default>12</default>
+          <constraints>
+            <minimum>1</minimum>
+            <maximum>24</maximum>
+            <step>1</step>
+          </constraints>
+          <control type="slider" format="integer">
+            <popup>true</popup>
+          </control>
+        </setting>
+      </group>
+    </category>
+    <category id="auto" label="32150">
+      <group id="1">
+        <setting id="auto_scan_enabled" type="boolean" label="32151" help="">
+          <level>0</level>
+          <default>false</default>
+          <control type="toggle"/>
+        </setting>
+        <setting id="auto_scan_interval" type="number" label="32152" help="">
+          <level>0</level>
+          <default>6</default>
+          <constraints>
+            <minimum>1</minimum>
+            <maximum>24</maximum>
+            <step>1</step>
+          </constraints>
+          <control type="slider" format="integer">
+            <popup>true</popup>
+          </control>
+        </setting>
+      </group>
+    </category>
+  </section>
+</settings>

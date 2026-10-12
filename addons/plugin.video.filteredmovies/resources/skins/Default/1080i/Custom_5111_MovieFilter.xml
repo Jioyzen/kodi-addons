@@ -1,0 +1,2531 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<window id="5111">
+    <defaultcontrol>1003</defaultcontrol>
+    <allowoverlay>yes</allowoverlay>
+    <controls>
+        <control type="image">
+            <left>0</left>
+            <top>0</top>
+            <width>100%</width>
+            <height>100%</height>
+            <texture colordiffuse="FF202020">colors/fm_white.png</texture>
+        </control>
+        <include>DefaultBackground</include>
+        <control type="group" id="800">
+            <left>0</left>
+            <top>10</top>
+            <width>1920</width>
+            <height>56</height>
+            <control type="group">
+                <left>50</left>
+                <top>0</top>
+                <width>184</width>
+                <height>56</height>
+                <control type="button" id="1001">
+                    <left>0</left>
+                    <top>0</top>
+                    <width>184</width>
+                    <height>56</height>
+                    <font>font13</font>
+                    <label/>
+                    <textoffsetx>0</textoffsetx>
+                    <align>left</align>
+                    <aligny>center</aligny>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <focusedcolor>FFFFFFFF</focusedcolor>
+                    <shadowcolor>FF000000</shadowcolor>
+                    <texturefocus colordiffuse="button_focus">rounded/mask-184x56-r14.png</texturefocus>
+                    <texturenofocus/>
+                    <onleft>1001</onleft>
+                    <onright>1010</onright>
+                    <onup>1001</onup>
+                    <ondown condition="String.IsEqual(Window.Property(MFG.Panel.1002.State),ready)">1002</ondown>
+                    <ondown condition="!String.IsEqual(Window.Property(MFG.Panel.1002.State),ready)">1003</ondown>
+                </control>
+                <control type="image">
+                    <left>14</left>
+                    <top>8</top>
+                    <width>40</width>
+                    <height>40</height>
+                    <aspectratio>keep</aspectratio>
+                    <texture colordiffuse="FFFFFFFF">DefaultMusicSearch.png</texture>
+                </control>
+                <control type="label">
+                    <left>72</left>
+                    <top>0</top>
+                    <width>98</width>
+                    <height>56</height>
+                    <label>$ADDON[plugin.video.filteredmovies 32147]</label>
+                    <font>font13</font>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <shadowcolor>FF000000</shadowcolor>
+                    <align>left</align>
+                    <aligny>center</aligny>
+                    <scroll>false</scroll>
+                </control>
+            </control>
+            <control type="group">
+                <left>254</left>
+                <top>0</top>
+                <width>244</width>
+                <height>56</height>
+                <control type="button" id="1010">
+                    <left>0</left>
+                    <top>0</top>
+                    <width>244</width>
+                    <height>56</height>
+                    <font>font13</font>
+                    <label/>
+                    <textoffsetx>0</textoffsetx>
+                    <align>left</align>
+                    <aligny>center</aligny>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <focusedcolor>FFFFFFFF</focusedcolor>
+                    <shadowcolor>FF000000</shadowcolor>
+                    <texturefocus colordiffuse="button_focus">rounded/mask-244x56-r14.png</texturefocus>
+                    <texturenofocus/>
+                    <onleft>1001</onleft>
+                    <onright>1011</onright>
+                    <onup>1010</onup>
+                    <ondown condition="String.IsEqual(Window.Property(MFG.Panel.1002.State),ready)">1002</ondown>
+                    <ondown condition="!String.IsEqual(Window.Property(MFG.Panel.1002.State),ready)">1003</ondown>
+                    <onclick>RunAddon(script.ai.movie.scanner)</onclick>
+                </control>
+                <control type="image">
+                    <left>14</left>
+                    <top>8</top>
+                    <width>40</width>
+                    <height>40</height>
+                    <aspectratio>keep</aspectratio>
+                    <texture colordiffuse="FFFFFFFF">DefaultPlaylist.png</texture>
+                </control>
+                <control type="label">
+                    <left>72</left>
+                    <top>0</top>
+                    <width>158</width>
+                    <height>56</height>
+                    <label>$ADDON[plugin.video.filteredmovies 32149]</label>
+                    <font>font13</font>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <shadowcolor>FF000000</shadowcolor>
+                    <align>left</align>
+                    <aligny>center</aligny>
+                    <scroll>false</scroll>
+                </control>
+            </control>
+            <control type="group">
+                <left>1686</left>
+                <top>0</top>
+                <width>184</width>
+                <height>56</height>
+                <control type="button" id="1011">
+                    <left>0</left>
+                    <top>0</top>
+                    <width>184</width>
+                    <height>56</height>
+                    <font>font13</font>
+                    <label/>
+                    <textoffsetx>0</textoffsetx>
+                    <align>left</align>
+                    <aligny>center</aligny>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <focusedcolor>FFFFFFFF</focusedcolor>
+                    <shadowcolor>FF000000</shadowcolor>
+                    <texturefocus colordiffuse="button_focus">rounded/mask-184x56-r14.png</texturefocus>
+                    <texturenofocus/>
+                    <onleft>1010</onleft>
+                    <onright>1011</onright>
+                    <onup>1011</onup>
+                    <ondown condition="String.IsEqual(Window.Property(MFG.Panel.1002.State),ready)">1002</ondown>
+                    <ondown condition="!String.IsEqual(Window.Property(MFG.Panel.1002.State),ready)">1003</ondown>
+                    <onclick>Addon.OpenSettings(plugin.video.filteredmovies)</onclick>
+                </control>
+                <control type="image">
+                    <left>10</left>
+                    <top>4</top>
+                    <width>48</width>
+                    <height>48</height>
+                    <aspectratio>keep</aspectratio>
+                    <texture colordiffuse="FFFFFFFF">DefaultAddonService.png</texture>
+                </control>
+                <control type="label">
+                    <left>72</left>
+                    <top>0</top>
+                    <width>98</width>
+                    <height>56</height>
+                    <label>$ADDON[plugin.video.filteredmovies 32150]</label>
+                    <font>font13</font>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <shadowcolor>FF000000</shadowcolor>
+                    <align>left</align>
+                    <aligny>center</aligny>
+                    <scroll>false</scroll>
+                </control>
+            </control>
+            <control type="label">
+                <left>540</left>
+                <top>0</top>
+                <width>840</width>
+                <height>56</height>
+                <font>font12</font>
+                <textcolor>FFCCCCCC</textcolor>
+                <label>正在加载推荐…</label>
+                <visible>!String.IsEqual(Window.Property(MFG.Loaded),true)</visible>
+                <align>center</align>
+                <aligny>center</aligny>
+            </control>
+            <control type="label">
+                <left>540</left>
+                <top>0</top>
+                <width>840</width>
+                <height>56</height>
+                <font>font12</font>
+                <textcolor>FFCCCCCC</textcolor>
+                <label>部分推荐加载失败，请重新打开海报墙重试。</label>
+                <visible>String.IsEqual(Window.Property(MFG.Loaded),true) + [String.IsEqual(Window.Property(MFG.Panel.1002.State),error) | String.IsEqual(Window.Property(MFG.Panel.1004.State),error) | String.IsEqual(Window.Property(MFG.Panel.1005.State),error) | String.IsEqual(Window.Property(MFG.Panel.1006.State),error) | String.IsEqual(Window.Property(MFG.Panel.1007.State),error) | String.IsEqual(Window.Property(MFG.Panel.1008.State),error)]</visible>
+                <align>center</align>
+                <aligny>center</aligny>
+            </control>
+            <control type="label">
+                <left>540</left>
+                <top>0</top>
+                <width>840</width>
+                <height>56</height>
+                <font>font12</font>
+                <textcolor>FFCCCCCC</textcolor>
+                <label>暂无推荐影片。添加影片到 Kodi 媒体库后将自动显示。</label>
+                <visible>String.IsEqual(Window.Property(MFG.Loaded),true) + String.IsEqual(Window.Property(MFG.Panel.1002.State),empty) + String.IsEqual(Window.Property(MFG.Panel.1004.State),empty) + String.IsEqual(Window.Property(MFG.Panel.1005.State),empty) + String.IsEqual(Window.Property(MFG.Panel.1006.State),empty) + String.IsEqual(Window.Property(MFG.Panel.1007.State),empty) + String.IsEqual(Window.Property(MFG.Panel.1008.State),empty)</visible>
+                <align>center</align>
+                <aligny>center</aligny>
+            </control>
+        </control>
+        <control type="grouplist" id="700">
+            <animation type="Conditional" condition="Window.IsVisible(movieinformation)" reversible="true">
+                <effect type="fade" start="100" end="0" time="200"/>
+            </animation>
+            <control type="group" id="801">
+                <control type="label">
+                    <left>50</left>
+                    <top>0</top>
+                    <width>900</width>
+                    <height>40</height>
+                    <font>font14</font>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <label>$ADDON[plugin.video.filteredmovies 32151]</label>
+                </control>
+                <control type="list" id="1002">
+                    <wraparound>false</wraparound>
+                    <onleft>Noop</onleft>
+                    <onright>Noop</onright>
+                    <enable>Integer.IsGreater(Container(1002).NumItems,0)</enable>
+                    <orientation>horizontal</orientation>
+                    <left>30</left>
+                    <top>70</top>
+                    <width>1800</width>
+                    <height>310</height>
+                    <scrolltime>200</scrolltime>
+                    <onup>1001</onup>
+                    <ondown>1003</ondown>
+                    <itemlayout width="428" height="310">
+                        <control type="group">
+                            <width>428</width>
+                            <height>310</height>
+                            <control type="image">
+                                <left>10</left>
+                                <top>0</top>
+                                <width>400</width>
+                                <height>225</height>
+                                <aspectratio scalediffuse="false">scale</aspectratio>
+                                <texture fallback="DefaultVideo.png" diffuse="rounded/mask-400x225-r16.png" background="true">$INFO[ListItem.Art(landscape)]</texture>
+                            </control>
+                            <control type="progress">
+                                <left>22</left>
+                                <top>217</top>
+                                <width>376</width>
+                                <height>4</height>
+                                <info>ListItem.Property(SkinPercentPlayed)</info>
+                                <visible>Integer.IsGreater(ListItem.Property(SkinPercentPlayed),0)</visible>
+                                <texturebg colordiffuse="60000000">colors/fm_white.png</texturebg>
+                                <lefttexture/>
+                                <righttexture/>
+                                <midtexture colordiffuse="$INFO[Window(Home).Property(MFG.ProgressBarColor)]">colors/fm_white.png</midtexture>
+                            </control>
+                            <control type="image">
+                                <left>22</left>
+                                <top>184</top>
+                                <width>28</width>
+                                <height>28</height>
+                                <texture>common/film.png</texture>
+                                <visible>String.IsEqual(ListItem.DBType,movie) | String.IsEqual(ListItem.DBType,set)</visible>
+                            </control>
+                            <control type="image">
+                                <left>22</left>
+                                <top>184</top>
+                                <width>28</width>
+                                <height>28</height>
+                                <texture>common/tv.png</texture>
+                                <visible>String.IsEqual(ListItem.DBType,tvshow)</visible>
+                            </control>
+                            <control type="label">
+                                <left>60</left>
+                                <top>183</top>
+                                <width>330</width>
+                                <height>32</height>
+                                <align>right</align>
+                                <font>font12</font>
+                                <label>$INFO[ListItem.Rating]</label>
+                                <textcolor>FFFFFFFF</textcolor>
+                                <shadowcolor>FF000000</shadowcolor>
+                                <visible>!String.IsEmpty(ListItem.Rating)</visible>
+                            </control>
+                            <control type="label">
+                                <left>10</left>
+                                <top>235</top>
+                                <width>400</width>
+                                <height>38</height>
+                                <align>center</align>
+                                <font>font14</font>
+                                <label>$INFO[ListItem.Label]</label>
+                                <textcolor>FFFFFFFF</textcolor>
+                                <scroll>false</scroll>
+                            </control>
+                            <control type="label">
+                                <left>10</left>
+                                <top>276</top>
+                                <width>400</width>
+                                <height>27</height>
+                                <align>center</align>
+                                <font>font12</font>
+                                <label>$INFO[ListItem.Year]</label>
+                                <textcolor>FFCCCCCC</textcolor>
+                                <visible>!String.IsEmpty(ListItem.Year)</visible>
+                            </control>
+                        </control>
+                    </itemlayout>
+                    <focusedlayout width="428" height="310">
+                        <control type="group">
+                            <width>428</width>
+                            <height>310</height>
+                            <visible>!Control.HasFocus(1002)</visible>
+                            <control type="image">
+                                <left>10</left>
+                                <top>0</top>
+                                <width>400</width>
+                                <height>225</height>
+                                <aspectratio scalediffuse="false">scale</aspectratio>
+                                <texture fallback="DefaultVideo.png" diffuse="rounded/mask-400x225-r16.png" background="true">$INFO[ListItem.Art(landscape)]</texture>
+                            </control>
+                            <control type="progress">
+                                <left>22</left>
+                                <top>217</top>
+                                <width>376</width>
+                                <height>4</height>
+                                <info>ListItem.Property(SkinPercentPlayed)</info>
+                                <visible>Integer.IsGreater(ListItem.Property(SkinPercentPlayed),0)</visible>
+                                <texturebg colordiffuse="60000000">colors/fm_white.png</texturebg>
+                                <lefttexture/>
+                                <righttexture/>
+                                <midtexture colordiffuse="$INFO[Window(Home).Property(MFG.ProgressBarColor)]">colors/fm_white.png</midtexture>
+                            </control>
+                            <control type="image">
+                                <left>22</left>
+                                <top>184</top>
+                                <width>28</width>
+                                <height>28</height>
+                                <texture>common/film.png</texture>
+                                <visible>String.IsEqual(ListItem.DBType,movie) | String.IsEqual(ListItem.DBType,set)</visible>
+                            </control>
+                            <control type="image">
+                                <left>22</left>
+                                <top>184</top>
+                                <width>28</width>
+                                <height>28</height>
+                                <texture>common/tv.png</texture>
+                                <visible>String.IsEqual(ListItem.DBType,tvshow)</visible>
+                            </control>
+                            <control type="label">
+                                <left>60</left>
+                                <top>183</top>
+                                <width>330</width>
+                                <height>32</height>
+                                <align>right</align>
+                                <font>font12</font>
+                                <label>$INFO[ListItem.Rating]</label>
+                                <textcolor>FFFFFFFF</textcolor>
+                                <shadowcolor>FF000000</shadowcolor>
+                                <visible>!String.IsEmpty(ListItem.Rating)</visible>
+                            </control>
+                            <control type="label">
+                                <left>10</left>
+                                <top>235</top>
+                                <width>400</width>
+                                <height>38</height>
+                                <align>center</align>
+                                <font>font14</font>
+                                <label>$INFO[ListItem.Label]</label>
+                                <textcolor>FFFFFFFF</textcolor>
+                                <scroll>false</scroll>
+                            </control>
+                            <control type="label">
+                                <left>10</left>
+                                <top>276</top>
+                                <width>400</width>
+                                <height>27</height>
+                                <align>center</align>
+                                <font>font12</font>
+                                <label>$INFO[ListItem.Year]</label>
+                                <textcolor>FFCCCCCC</textcolor>
+                                <visible>!String.IsEmpty(ListItem.Year)</visible>
+                            </control>
+                        </control>
+                        <control type="group">
+                            <width>428</width>
+                            <height>310</height>
+                            <visible>Control.HasFocus(1002)</visible>
+                            <control type="image">
+                                <left>10</left>
+                                <top>0</top>
+                                <width>400</width>
+                                <height>225</height>
+                                <aspectratio scalediffuse="false">scale</aspectratio>
+                                <texture fallback="DefaultVideo.png" diffuse="rounded/mask-400x225-r16.png" background="true">$INFO[ListItem.Art(landscape)]</texture>
+                            </control>
+                            <control type="image">
+                                <left>10</left>
+                                <top>0</top>
+                                <width>400</width>
+                                <height>225</height>
+                                <texture colordiffuse="button_focus">rounded/outline-400x225-r16.png</texture>
+                            </control>
+                            <control type="progress">
+                                <left>22</left>
+                                <top>217</top>
+                                <width>376</width>
+                                <height>4</height>
+                                <info>ListItem.Property(SkinPercentPlayed)</info>
+                                <visible>Integer.IsGreater(ListItem.Property(SkinPercentPlayed),0)</visible>
+                                <texturebg colordiffuse="60000000">colors/fm_white.png</texturebg>
+                                <lefttexture/>
+                                <righttexture/>
+                                <midtexture colordiffuse="$INFO[Window(Home).Property(MFG.ProgressBarColor)]">colors/fm_white.png</midtexture>
+                            </control>
+                            <control type="image">
+                                <left>22</left>
+                                <top>184</top>
+                                <width>28</width>
+                                <height>28</height>
+                                <texture>common/film.png</texture>
+                                <visible>String.IsEqual(ListItem.DBType,movie) | String.IsEqual(ListItem.DBType,set)</visible>
+                            </control>
+                            <control type="image">
+                                <left>22</left>
+                                <top>184</top>
+                                <width>28</width>
+                                <height>28</height>
+                                <texture>common/tv.png</texture>
+                                <visible>String.IsEqual(ListItem.DBType,tvshow)</visible>
+                            </control>
+                            <control type="label">
+                                <left>60</left>
+                                <top>183</top>
+                                <width>330</width>
+                                <height>32</height>
+                                <align>right</align>
+                                <font>font12</font>
+                                <label>$INFO[ListItem.Rating]</label>
+                                <textcolor>FFFFFFFF</textcolor>
+                                <shadowcolor>FF000000</shadowcolor>
+                                <visible>!String.IsEmpty(ListItem.Rating)</visible>
+                            </control>
+                            <control type="label">
+                                <left>10</left>
+                                <top>235</top>
+                                <width>400</width>
+                                <height>38</height>
+                                <align>center</align>
+                                <font>font14</font>
+                                <label>$INFO[ListItem.Label]</label>
+                                <textcolor>FFFFFFFF</textcolor>
+                                <scroll>true</scroll>
+                            </control>
+                            <control type="label">
+                                <left>10</left>
+                                <top>276</top>
+                                <width>400</width>
+                                <height>27</height>
+                                <align>center</align>
+                                <font>font12</font>
+                                <label>$INFO[ListItem.Year]</label>
+                                <textcolor>FFCCCCCC</textcolor>
+                                <visible>!String.IsEmpty(ListItem.Year)</visible>
+                            </control>
+                        </control>
+                    </focusedlayout>
+                    <preloaditems>1</preloaditems>
+                </control>
+                <left>0</left>
+                <top>0</top>
+                <width>1920</width>
+                <height>380</height>
+                <visible>String.IsEqual(Window.Property(MFG.Panel.1002.State),ready)</visible>
+            </control>
+            <control type="group" id="802">
+                <left>0</left>
+                <top>0</top>
+                <width>1920</width>
+                <height>180</height>
+                <control type="panel" id="1003">
+                    <left>30</left>
+                    <top>-20</top>
+                    <width>1860</width>
+                    <height>200</height>
+                    <orientation>horizontal</orientation>
+                    <scrolltime tween="cubic" easing="out">500</scrolltime>
+                    <preloaditems>2</preloaditems>
+                    <itemlayout width="310" height="200">
+                        <control type="group">
+                            <left>0</left>
+                            <control type="image">
+                                <width>276</width>
+                                <height>160</height>
+                                <texture colordiffuse="D9161616">rounded/mask-276x160-r16.png</texture>
+                                <left>20</left>
+                                <top>20</top>
+                            </control>
+                            <control type="image">
+                                <centertop>74</centertop>
+                                <left>58</left>
+                                <width>200</width>
+                                <height>120</height>
+                                <texture fallback="DefaultFolder.png">$INFO[ListItem.Icon]</texture>
+                                <aspectratio>keep</aspectratio>
+                            </control>
+                            <control type="textbox">
+                                <left>38</left>
+                                <top>106</top>
+                                <width>240</width>
+                                <height>70</height>
+                                <label>$INFO[ListItem.Label]</label>
+                                <font>font25_narrow</font>
+                                <textcolor>FFFFFFFF</textcolor>
+                                <shadowcolor>text_shadow</shadowcolor>
+                                <align>center</align>
+                                <aligny>center</aligny>
+                            </control>
+                        </control>
+                    </itemlayout>
+                    <focusedlayout width="310" height="200">
+                        <control type="group">
+                            <visible>!Control.HasFocus(1003)</visible>
+                            <left>0</left>
+                            <control type="image">
+                                <width>276</width>
+                                <height>160</height>
+                                <texture colordiffuse="D9161616">rounded/mask-276x160-r16.png</texture>
+                                <left>20</left>
+                                <top>20</top>
+                            </control>
+                            <control type="image">
+                                <centertop>74</centertop>
+                                <left>58</left>
+                                <width>200</width>
+                                <height>120</height>
+                                <texture fallback="DefaultFolder.png">$INFO[ListItem.Icon]</texture>
+                                <aspectratio>keep</aspectratio>
+                            </control>
+                            <control type="textbox">
+                                <left>38</left>
+                                <top>106</top>
+                                <width>240</width>
+                                <height>70</height>
+                                <label>$INFO[ListItem.Label]</label>
+                                <font>font25_narrow</font>
+                                <textcolor>FFFFFFFF</textcolor>
+                                <shadowcolor>text_shadow</shadowcolor>
+                                <align>center</align>
+                                <aligny>center</aligny>
+                            </control>
+                        </control>
+                        <control type="group">
+                            <visible>Control.HasFocus(1003)</visible>
+                            <depth>DepthContentPopout</depth>
+                            <left>0</left>
+                            <animation type="Focus">
+                                <effect type="zoom" start="100" end="108" time="200" tween="sine" easing="inout" center="155,100"/>
+                            </animation>
+                            <animation type="Unfocus">
+                                <effect type="zoom" start="108" end="100" time="200" tween="sine" easing="inout" center="155,100"/>
+                            </animation>
+                            <control type="image">
+                                <width>276</width>
+                                <height>160</height>
+                                <texture colordiffuse="33FFFFFF">rounded/mask-276x160-r16.png</texture>
+                                <left>20</left>
+                                <top>20</top>
+                            </control>
+                            <control type="image">
+                                <width>276</width>
+                                <height>160</height>
+                                <texture colordiffuse="button_focus">rounded/mask-276x160-r16.png</texture>
+                                <animation effect="fade" start="0" end="100" time="200">Focus</animation>
+                                <animation effect="fade" start="100" end="0" time="200">Unfocus</animation>
+                                <left>20</left>
+                                <top>20</top>
+                            </control>
+                            <control type="image">
+                                <centertop>74</centertop>
+                                <left>58</left>
+                                <width>200</width>
+                                <height>120</height>
+                                <texture fallback="DefaultFolder.png">$INFO[ListItem.Icon]</texture>
+                                <aspectratio>keep</aspectratio>
+                            </control>
+                            <control type="textbox">
+                                <left>38</left>
+                                <top>106</top>
+                                <width>240</width>
+                                <height>70</height>
+                                <label>$INFO[ListItem.Label]</label>
+                                <font>font25_narrow</font>
+                                <textcolor>FFFFFFFF</textcolor>
+                                <shadowcolor>text_shadow</shadowcolor>
+                                <align>center</align>
+                                <aligny>center</aligny>
+                            </control>
+                        </control>
+                    </focusedlayout>
+                    <content>
+                        <item id="6001">
+                            <label>$ADDON[plugin.video.filteredmovies 32152]</label>
+                            <icon>DefaultFolder.png</icon>
+                            <onclick>SendClick(7101)</onclick>
+                        </item>
+                        <item id="6002">
+                            <label>$ADDON[plugin.video.filteredmovies 32153]</label>
+                            <onclick>SendClick(7102)</onclick>
+                            <icon>DefaultAddonVideo.png</icon>
+                        </item>
+                        <item id="6003">
+                            <label>$ADDON[plugin.video.filteredmovies 32154]</label>
+                            <onclick>SendClick(7103)</onclick>
+                            <icon>DefaultSets.png</icon>
+                        </item>
+                        <item id="6004">
+                            <label>$ADDON[plugin.video.filteredmovies 32155]</label>
+                            <onclick>SendClick(7104)</onclick>
+                            <icon>DefaultAddonPVRClient.png</icon>
+                        </item>
+                        <item id="6005">
+                            <label>$ADDON[plugin.video.filteredmovies 32156]</label>
+                            <onclick>SendClick(7105)</onclick>
+                            <icon>DefaultPartyMode.png</icon>
+                        </item>
+                        <item id="6006">
+                            <label>$ADDON[plugin.video.filteredmovies 32157]</label>
+                            <onclick>SendClick(7106)</onclick>
+                            <icon>DefaultAddonAudioDecoder.png</icon>
+                        </item>
+                    </content>
+                    <onup condition="String.IsEqual(Window.Property(MFG.Panel.1002.State),ready)">1002</onup>
+                    <onup condition="!String.IsEqual(Window.Property(MFG.Panel.1002.State),ready)">1001</onup>
+                    <ondown condition="String.IsEqual(Window.Property(MFG.Panel.1004.State),ready)">1004</ondown>
+                    <ondown condition="!String.IsEqual(Window.Property(MFG.Panel.1004.State),ready) + String.IsEqual(Window.Property(MFG.Panel.1005.State),ready)">1005</ondown>
+                    <ondown condition="!String.IsEqual(Window.Property(MFG.Panel.1004.State),ready) + !String.IsEqual(Window.Property(MFG.Panel.1005.State),ready) + String.IsEqual(Window.Property(MFG.Panel.1006.State),ready)">1006</ondown>
+                    <ondown condition="!String.IsEqual(Window.Property(MFG.Panel.1004.State),ready) + !String.IsEqual(Window.Property(MFG.Panel.1005.State),ready) + !String.IsEqual(Window.Property(MFG.Panel.1006.State),ready) + String.IsEqual(Window.Property(MFG.Panel.1007.State),ready)">1007</ondown>
+                    <ondown condition="!String.IsEqual(Window.Property(MFG.Panel.1004.State),ready) + !String.IsEqual(Window.Property(MFG.Panel.1005.State),ready) + !String.IsEqual(Window.Property(MFG.Panel.1006.State),ready) + !String.IsEqual(Window.Property(MFG.Panel.1007.State),ready) + String.IsEqual(Window.Property(MFG.Panel.1008.State),ready)">1008</ondown>
+                    <ondown condition="!String.IsEqual(Window.Property(MFG.Panel.1004.State),ready) + !String.IsEqual(Window.Property(MFG.Panel.1005.State),ready) + !String.IsEqual(Window.Property(MFG.Panel.1006.State),ready) + !String.IsEqual(Window.Property(MFG.Panel.1007.State),ready) + !String.IsEqual(Window.Property(MFG.Panel.1008.State),ready)">1003</ondown>
+                </control>
+            </control>
+            <control type="group" id="803">
+                <control type="label">
+                    <left>50</left>
+                    <top>0</top>
+                    <width>900</width>
+                    <height>40</height>
+                    <font>font14</font>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <label>$ADDON[plugin.video.filteredmovies 32158]</label>
+                </control>
+                <control type="list" id="1004">
+    <enable>Integer.IsGreater(Container(1004).NumItems,0)</enable>
+    <onright>Noop</onright>
+    <onleft>Noop</onleft>
+    <wraparound>false</wraparound>
+    <orientation>horizontal</orientation>
+    <left>30</left>
+    <top>70</top>
+    <width>1860</width>
+    <height>489</height>
+    <itemlayout width="310" height="489">
+        <control type="group">
+            <visible>String.IsEmpty(ListItem.Property(MFG.ViewAll))</visible>
+            <width>310</width>
+            <height>489</height>
+            <control type="image">
+                <left>30</left>
+                <top>24</top>
+                <width>250</width>
+                <height>375</height>
+                <texture fallback="DefaultVideoCover.png" diffuse="rounded/mask-250x375-r16.png" background="true">$INFO[ListItem.Art(poster)]</texture>
+                <aspectratio scalediffuse="false">scale</aspectratio>
+            </control>
+            <control type="progress">
+                <visible>Integer.IsGreater(ListItem.Property(SkinPercentPlayed),0)</visible>
+                <left>42</left>
+                <top>388</top>
+                <width>226</width>
+                <height>4</height>
+                <info>ListItem.Property(SkinPercentPlayed)</info>
+                <texturebg colordiffuse="20FFFFFF">colors/fm_white.png</texturebg>
+                <lefttexture />
+                <midtexture colordiffuse="$INFO[Window(Home).Property(MFG.ProgressBarColor)]">colors/fm_white.png</midtexture>
+                <righttexture />
+            </control>
+            <control type="label">
+                <left>78</left>
+                <top>350</top>
+                <width>190</width>
+                <height>34</height>
+                <align>right</align>
+                <aligny>center</aligny>
+                <font>font12</font>
+                <label>$INFO[ListItem.Rating]</label>
+                <textcolor>FFFFFFFF</textcolor>
+                <visible>!String.IsEmpty(ListItem.Rating)</visible>
+                <shadowcolor>FF000000</shadowcolor>
+            </control>
+            <control type="image">
+                <left>42</left>
+                <top>350</top>
+                <width>32</width>
+                <height>32</height>
+                <texture>common/film.png</texture>
+                <visible>String.IsEqual(ListItem.DBType,movie) | String.IsEqual(ListItem.DBType,set)</visible>
+            </control>
+            <control type="image">
+                <left>42</left>
+                <top>350</top>
+                <width>32</width>
+                <height>32</height>
+                <texture>common/tv.png</texture>
+                <visible>String.IsEqual(ListItem.DBType,tvshow)</visible>
+            </control>
+            <control type="label">
+                <left>13</left>
+                <top>423</top>
+                <width>284</width>
+                <height>38</height>
+                <align>center</align>
+                <aligny>top</aligny>
+                <font>font14</font>
+                <label>$INFO[ListItem.Label]</label>
+                <textcolor>FFFFFFFF</textcolor>
+                <scroll>false</scroll>
+                <wrapmultiline>false</wrapmultiline>
+            </control>
+            <control type="label">
+                <left>13</left>
+                <top>463</top>
+                <width>284</width>
+                <height>26</height>
+                <align>center</align>
+                <aligny>top</aligny>
+                <font>font12</font>
+                <textcolor>FFCCCCCC</textcolor>
+                <label>$INFO[ListItem.Year]</label>
+                <visible>!String.IsEmpty(ListItem.Year)</visible>
+            </control>
+        </control>
+        <control type="group">
+            <visible>!String.IsEmpty(ListItem.Property(MFG.ViewAll))</visible>
+            <control type="group">
+                <width>310</width>
+                <height>424</height>
+                <control type="image">
+                    <left>30</left>
+                    <top>24</top>
+                    <width>250</width>
+                    <height>375</height>
+                    <texture colordiffuse="FF303030">rounded/mask-250x375-r16.png</texture>
+                </control>
+                <control type="label">
+                    <left>45</left>
+                    <top>24</top>
+                    <width>220</width>
+                    <height>375</height>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <font>font14</font>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <label>查看全部</label>
+                    <scroll>false</scroll>
+                </control>
+            </control>
+        </control>
+    </itemlayout>
+    <focusedlayout width="310" height="489">
+        <control type="group">
+            <visible>[!Control.HasFocus(1004)] + String.IsEmpty(ListItem.Property(MFG.ViewAll))</visible>
+            <width>310</width>
+            <height>489</height>
+            <control type="image">
+                <left>30</left>
+                <top>24</top>
+                <width>250</width>
+                <height>375</height>
+                <texture fallback="DefaultVideoCover.png" diffuse="rounded/mask-250x375-r16.png" background="true">$INFO[ListItem.Art(poster)]</texture>
+                <aspectratio scalediffuse="false">scale</aspectratio>
+            </control>
+            <control type="progress">
+                <visible>Integer.IsGreater(ListItem.Property(SkinPercentPlayed),0)</visible>
+                <left>42</left>
+                <top>388</top>
+                <width>226</width>
+                <height>4</height>
+                <info>ListItem.Property(SkinPercentPlayed)</info>
+                <texturebg colordiffuse="20FFFFFF">colors/fm_white.png</texturebg>
+                <lefttexture />
+                <midtexture colordiffuse="$INFO[Window(Home).Property(MFG.ProgressBarColor)]">colors/fm_white.png</midtexture>
+                <righttexture />
+            </control>
+            <control type="label">
+                <left>78</left>
+                <top>350</top>
+                <width>190</width>
+                <height>34</height>
+                <align>right</align>
+                <aligny>center</aligny>
+                <font>font12</font>
+                <label>$INFO[ListItem.Rating]</label>
+                <textcolor>FFFFFFFF</textcolor>
+                <visible>!String.IsEmpty(ListItem.Rating)</visible>
+                <shadowcolor>FF000000</shadowcolor>
+            </control>
+            <control type="image">
+                <left>42</left>
+                <top>350</top>
+                <width>32</width>
+                <height>32</height>
+                <texture>common/film.png</texture>
+                <visible>String.IsEqual(ListItem.DBType,movie) | String.IsEqual(ListItem.DBType,set)</visible>
+            </control>
+            <control type="image">
+                <left>42</left>
+                <top>350</top>
+                <width>32</width>
+                <height>32</height>
+                <texture>common/tv.png</texture>
+                <visible>String.IsEqual(ListItem.DBType,tvshow)</visible>
+            </control>
+            <control type="label">
+                <left>13</left>
+                <top>423</top>
+                <width>284</width>
+                <height>38</height>
+                <align>center</align>
+                <aligny>top</aligny>
+                <font>font14</font>
+                <label>$INFO[ListItem.Label]</label>
+                <textcolor>FFFFFFFF</textcolor>
+                <scroll>false</scroll>
+                <wrapmultiline>false</wrapmultiline>
+            </control>
+            <control type="label">
+                <left>13</left>
+                <top>463</top>
+                <width>284</width>
+                <height>26</height>
+                <align>center</align>
+                <aligny>top</aligny>
+                <font>font12</font>
+                <textcolor>FFCCCCCC</textcolor>
+                <label>$INFO[ListItem.Year]</label>
+                <visible>!String.IsEmpty(ListItem.Year)</visible>
+            </control>
+        </control>
+        <control type="group">
+            <control type="group">
+                <width>310</width>
+                <height>424</height>
+                <animation type="Focus">
+                    <effect type="zoom" start="100" end="108" time="200" tween="sine" easing="inout" center="155,211.5" />
+                </animation>
+                <animation type="Unfocus">
+                    <effect type="zoom" start="108" end="100" time="200" tween="sine" easing="inout" center="155,211.5" />
+                </animation>
+                <control type="group">
+                    <control type="group">
+                        <control type="image">
+                            <animation type="Unfocus">
+                                <effect type="fade" start="100" end="0" time="0" />
+                            </animation>
+                            <left>26</left>
+                            <top>20</top>
+                            <width>258</width>
+                            <height>383</height>
+                            <texture colordiffuse="button_focus">rounded/mask-258x383-r20.png</texture>
+                        </control>
+                        <control type="image">
+                            <left>30</left>
+                            <top>24</top>
+                            <width>250</width>
+                            <height>375</height>
+                            <texture fallback="DefaultVideoCover.png" diffuse="rounded/mask-250x375-r16.png" background="true">$INFO[ListItem.Art(poster)]</texture>
+                            <aspectratio scalediffuse="false">scale</aspectratio>
+                        </control>
+                    </control>
+                </control>
+                <control type="progress">
+                    <visible>Integer.IsGreater(ListItem.Property(SkinPercentPlayed),0)</visible>
+                    <left>42</left>
+                    <top>388</top>
+                    <width>226</width>
+                    <height>4</height>
+                    <info>ListItem.Property(SkinPercentPlayed)</info>
+                    <texturebg colordiffuse="20FFFFFF">colors/fm_white.png</texturebg>
+                    <lefttexture />
+                    <midtexture colordiffuse="$INFO[Window(Home).Property(MFG.ProgressBarColor)]">colors/fm_white.png</midtexture>
+                    <righttexture />
+                </control>
+                <control type="label">
+                    <left>78</left>
+                    <top>350</top>
+                    <width>190</width>
+                    <height>34</height>
+                    <align>right</align>
+                    <aligny>center</aligny>
+                    <font>font12</font>
+                    <label>$INFO[ListItem.Rating]</label>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <visible>!String.IsEmpty(ListItem.Rating)</visible>
+                    <shadowcolor>FF000000</shadowcolor>
+                </control>
+                <control type="image">
+                    <left>42</left>
+                    <top>350</top>
+                    <width>32</width>
+                    <height>32</height>
+                    <texture>common/film.png</texture>
+                    <visible>String.IsEqual(ListItem.DBType,movie) | String.IsEqual(ListItem.DBType,set)</visible>
+                </control>
+                <control type="image">
+                    <left>42</left>
+                    <top>350</top>
+                    <width>32</width>
+                    <height>32</height>
+                    <texture>common/tv.png</texture>
+                    <visible>String.IsEqual(ListItem.DBType,tvshow)</visible>
+                </control>
+            </control>
+            <visible>[Control.HasFocus(1004)] + String.IsEmpty(ListItem.Property(MFG.ViewAll))</visible>
+            <depth>DepthContentPopout</depth>
+            <width>310</width>
+            <height>489</height>
+            <control type="label">
+                <left>13</left>
+                <top>423</top>
+                <width>284</width>
+                <height>38</height>
+                <align>center</align>
+                <aligny>top</aligny>
+                <font>font14</font>
+                <label>$INFO[ListItem.Label]</label>
+                <textcolor>FFFFFFFF</textcolor>
+                <scroll>true</scroll>
+                <wrapmultiline>false</wrapmultiline>
+            </control>
+            <control type="label">
+                <left>13</left>
+                <top>463</top>
+                <width>284</width>
+                <height>26</height>
+                <align>center</align>
+                <aligny>top</aligny>
+                <font>font12</font>
+                <textcolor>FFCCCCCC</textcolor>
+                <label>$INFO[ListItem.Year]</label>
+                <visible>!String.IsEmpty(ListItem.Year)</visible>
+            </control>
+        </control>
+        <control type="group">
+            <visible>!String.IsEmpty(ListItem.Property(MFG.ViewAll))</visible>
+            <control type="group">
+                <width>310</width>
+                <height>424</height>
+                <animation type="Conditional" condition="Control.HasFocus(1004)" reversible="true">
+                    <effect type="zoom" start="100" end="108" time="200" tween="sine" easing="inout" center="155,211.5" />
+                </animation>
+                <control type="image">
+                    <left>26</left>
+                    <top>20</top>
+                    <width>258</width>
+                    <height>383</height>
+                    <texture colordiffuse="button_focus">rounded/mask-258x383-r20.png</texture>
+                    <visible>Control.HasFocus(1004)</visible>
+                </control>
+                <control type="image">
+                    <left>30</left>
+                    <top>24</top>
+                    <width>250</width>
+                    <height>375</height>
+                    <texture colordiffuse="FF303030">rounded/mask-250x375-r16.png</texture>
+                </control>
+                <control type="label">
+                    <left>45</left>
+                    <top>24</top>
+                    <width>220</width>
+                    <height>375</height>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <font>font14</font>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <label>查看全部</label>
+                    <scroll>false</scroll>
+                </control>
+            </control>
+        </control>
+    </focusedlayout>
+    <scrolltime>200</scrolltime>
+    <onup>1003</onup>
+    <ondown condition="String.IsEqual(Window.Property(MFG.Panel.1005.State),ready)">1005</ondown>
+    <ondown condition="!String.IsEqual(Window.Property(MFG.Panel.1005.State),ready) + String.IsEqual(Window.Property(MFG.Panel.1006.State),ready)">1006</ondown>
+    <ondown condition="!String.IsEqual(Window.Property(MFG.Panel.1005.State),ready) + !String.IsEqual(Window.Property(MFG.Panel.1006.State),ready) + String.IsEqual(Window.Property(MFG.Panel.1007.State),ready)">1007</ondown>
+    <ondown condition="!String.IsEqual(Window.Property(MFG.Panel.1005.State),ready) + !String.IsEqual(Window.Property(MFG.Panel.1006.State),ready) + !String.IsEqual(Window.Property(MFG.Panel.1007.State),ready) + String.IsEqual(Window.Property(MFG.Panel.1008.State),ready)">1008</ondown>
+    <ondown condition="!String.IsEqual(Window.Property(MFG.Panel.1005.State),ready) + !String.IsEqual(Window.Property(MFG.Panel.1006.State),ready) + !String.IsEqual(Window.Property(MFG.Panel.1007.State),ready) + !String.IsEqual(Window.Property(MFG.Panel.1008.State),ready)">1004</ondown>
+    <preloaditems>1</preloaditems>
+</control>
+                <left>0</left>
+                <top>0</top>
+                <width>1920</width>
+                <height>559</height>
+                <visible>String.IsEqual(Window.Property(MFG.Panel.1004.State),ready)</visible>
+            </control>
+            <control type="group" id="804">
+                <control type="label">
+                    <left>50</left>
+                    <top>0</top>
+                    <width>900</width>
+                    <height>40</height>
+                    <font>font14</font>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <label>$ADDON[plugin.video.filteredmovies 32159]</label>
+                </control>
+                <control type="list" id="1005">
+    <enable>Integer.IsGreater(Container(1005).NumItems,0)</enable>
+    <onright>Noop</onright>
+    <onleft>Noop</onleft>
+    <wraparound>false</wraparound>
+    <orientation>horizontal</orientation>
+    <left>30</left>
+    <top>70</top>
+    <width>1860</width>
+    <height>489</height>
+    <itemlayout width="310" height="489">
+        <control type="group">
+            <visible>String.IsEmpty(ListItem.Property(MFG.ViewAll))</visible>
+            <width>310</width>
+            <height>489</height>
+            <control type="image">
+                <left>30</left>
+                <top>24</top>
+                <width>250</width>
+                <height>375</height>
+                <texture fallback="DefaultVideoCover.png" diffuse="rounded/mask-250x375-r16.png" background="true">$INFO[ListItem.Art(poster)]</texture>
+                <aspectratio scalediffuse="false">scale</aspectratio>
+            </control>
+            <control type="progress">
+                <visible>Integer.IsGreater(ListItem.Property(SkinPercentPlayed),0)</visible>
+                <left>42</left>
+                <top>388</top>
+                <width>226</width>
+                <height>4</height>
+                <info>ListItem.Property(SkinPercentPlayed)</info>
+                <texturebg colordiffuse="20FFFFFF">colors/fm_white.png</texturebg>
+                <lefttexture />
+                <midtexture colordiffuse="$INFO[Window(Home).Property(MFG.ProgressBarColor)]">colors/fm_white.png</midtexture>
+                <righttexture />
+            </control>
+            <control type="label">
+                <left>78</left>
+                <top>350</top>
+                <width>190</width>
+                <height>34</height>
+                <align>right</align>
+                <aligny>center</aligny>
+                <font>font12</font>
+                <label>$INFO[ListItem.Rating]</label>
+                <textcolor>FFFFFFFF</textcolor>
+                <visible>!String.IsEmpty(ListItem.Rating)</visible>
+                <shadowcolor>FF000000</shadowcolor>
+            </control>
+            <control type="image">
+                <left>42</left>
+                <top>350</top>
+                <width>32</width>
+                <height>32</height>
+                <texture>common/film.png</texture>
+                <visible>String.IsEqual(ListItem.DBType,movie) | String.IsEqual(ListItem.DBType,set)</visible>
+            </control>
+            <control type="image">
+                <left>42</left>
+                <top>350</top>
+                <width>32</width>
+                <height>32</height>
+                <texture>common/tv.png</texture>
+                <visible>String.IsEqual(ListItem.DBType,tvshow)</visible>
+            </control>
+            <control type="label">
+                <left>13</left>
+                <top>423</top>
+                <width>284</width>
+                <height>38</height>
+                <align>center</align>
+                <aligny>top</aligny>
+                <font>font14</font>
+                <label>$INFO[ListItem.Label]</label>
+                <textcolor>FFFFFFFF</textcolor>
+                <scroll>false</scroll>
+                <wrapmultiline>false</wrapmultiline>
+            </control>
+            <control type="label">
+                <left>13</left>
+                <top>463</top>
+                <width>284</width>
+                <height>26</height>
+                <align>center</align>
+                <aligny>top</aligny>
+                <font>font12</font>
+                <textcolor>FFCCCCCC</textcolor>
+                <label>$INFO[ListItem.Year]</label>
+                <visible>!String.IsEmpty(ListItem.Year)</visible>
+            </control>
+        </control>
+        <control type="group">
+            <visible>!String.IsEmpty(ListItem.Property(MFG.ViewAll))</visible>
+            <control type="group">
+                <width>310</width>
+                <height>424</height>
+                <control type="image">
+                    <left>30</left>
+                    <top>24</top>
+                    <width>250</width>
+                    <height>375</height>
+                    <texture colordiffuse="FF303030">rounded/mask-250x375-r16.png</texture>
+                </control>
+                <control type="label">
+                    <left>45</left>
+                    <top>24</top>
+                    <width>220</width>
+                    <height>375</height>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <font>font14</font>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <label>查看全部</label>
+                    <scroll>false</scroll>
+                </control>
+            </control>
+        </control>
+    </itemlayout>
+    <focusedlayout width="310" height="489">
+        <control type="group">
+            <visible>[!Control.HasFocus(1005)] + String.IsEmpty(ListItem.Property(MFG.ViewAll))</visible>
+            <width>310</width>
+            <height>489</height>
+            <control type="image">
+                <left>30</left>
+                <top>24</top>
+                <width>250</width>
+                <height>375</height>
+                <texture fallback="DefaultVideoCover.png" diffuse="rounded/mask-250x375-r16.png" background="true">$INFO[ListItem.Art(poster)]</texture>
+                <aspectratio scalediffuse="false">scale</aspectratio>
+            </control>
+            <control type="progress">
+                <visible>Integer.IsGreater(ListItem.Property(SkinPercentPlayed),0)</visible>
+                <left>42</left>
+                <top>388</top>
+                <width>226</width>
+                <height>4</height>
+                <info>ListItem.Property(SkinPercentPlayed)</info>
+                <texturebg colordiffuse="20FFFFFF">colors/fm_white.png</texturebg>
+                <lefttexture />
+                <midtexture colordiffuse="$INFO[Window(Home).Property(MFG.ProgressBarColor)]">colors/fm_white.png</midtexture>
+                <righttexture />
+            </control>
+            <control type="label">
+                <left>78</left>
+                <top>350</top>
+                <width>190</width>
+                <height>34</height>
+                <align>right</align>
+                <aligny>center</aligny>
+                <font>font12</font>
+                <label>$INFO[ListItem.Rating]</label>
+                <textcolor>FFFFFFFF</textcolor>
+                <visible>!String.IsEmpty(ListItem.Rating)</visible>
+                <shadowcolor>FF000000</shadowcolor>
+            </control>
+            <control type="image">
+                <left>42</left>
+                <top>350</top>
+                <width>32</width>
+                <height>32</height>
+                <texture>common/film.png</texture>
+                <visible>String.IsEqual(ListItem.DBType,movie) | String.IsEqual(ListItem.DBType,set)</visible>
+            </control>
+            <control type="image">
+                <left>42</left>
+                <top>350</top>
+                <width>32</width>
+                <height>32</height>
+                <texture>common/tv.png</texture>
+                <visible>String.IsEqual(ListItem.DBType,tvshow)</visible>
+            </control>
+            <control type="label">
+                <left>13</left>
+                <top>423</top>
+                <width>284</width>
+                <height>38</height>
+                <align>center</align>
+                <aligny>top</aligny>
+                <font>font14</font>
+                <label>$INFO[ListItem.Label]</label>
+                <textcolor>FFFFFFFF</textcolor>
+                <scroll>false</scroll>
+                <wrapmultiline>false</wrapmultiline>
+            </control>
+            <control type="label">
+                <left>13</left>
+                <top>463</top>
+                <width>284</width>
+                <height>26</height>
+                <align>center</align>
+                <aligny>top</aligny>
+                <font>font12</font>
+                <textcolor>FFCCCCCC</textcolor>
+                <label>$INFO[ListItem.Year]</label>
+                <visible>!String.IsEmpty(ListItem.Year)</visible>
+            </control>
+        </control>
+        <control type="group">
+            <control type="group">
+                <width>310</width>
+                <height>424</height>
+                <animation type="Focus">
+                    <effect type="zoom" start="100" end="108" time="200" tween="sine" easing="inout" center="155,211.5" />
+                </animation>
+                <animation type="Unfocus">
+                    <effect type="zoom" start="108" end="100" time="200" tween="sine" easing="inout" center="155,211.5" />
+                </animation>
+                <control type="group">
+                    <control type="group">
+                        <control type="image">
+                            <animation type="Unfocus">
+                                <effect type="fade" start="100" end="0" time="0" />
+                            </animation>
+                            <left>26</left>
+                            <top>20</top>
+                            <width>258</width>
+                            <height>383</height>
+                            <texture colordiffuse="button_focus">rounded/mask-258x383-r20.png</texture>
+                        </control>
+                        <control type="image">
+                            <left>30</left>
+                            <top>24</top>
+                            <width>250</width>
+                            <height>375</height>
+                            <texture fallback="DefaultVideoCover.png" diffuse="rounded/mask-250x375-r16.png" background="true">$INFO[ListItem.Art(poster)]</texture>
+                            <aspectratio scalediffuse="false">scale</aspectratio>
+                        </control>
+                    </control>
+                </control>
+                <control type="progress">
+                    <visible>Integer.IsGreater(ListItem.Property(SkinPercentPlayed),0)</visible>
+                    <left>42</left>
+                    <top>388</top>
+                    <width>226</width>
+                    <height>4</height>
+                    <info>ListItem.Property(SkinPercentPlayed)</info>
+                    <texturebg colordiffuse="20FFFFFF">colors/fm_white.png</texturebg>
+                    <lefttexture />
+                    <midtexture colordiffuse="$INFO[Window(Home).Property(MFG.ProgressBarColor)]">colors/fm_white.png</midtexture>
+                    <righttexture />
+                </control>
+                <control type="label">
+                    <left>78</left>
+                    <top>350</top>
+                    <width>190</width>
+                    <height>34</height>
+                    <align>right</align>
+                    <aligny>center</aligny>
+                    <font>font12</font>
+                    <label>$INFO[ListItem.Rating]</label>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <visible>!String.IsEmpty(ListItem.Rating)</visible>
+                    <shadowcolor>FF000000</shadowcolor>
+                </control>
+                <control type="image">
+                    <left>42</left>
+                    <top>350</top>
+                    <width>32</width>
+                    <height>32</height>
+                    <texture>common/film.png</texture>
+                    <visible>String.IsEqual(ListItem.DBType,movie) | String.IsEqual(ListItem.DBType,set)</visible>
+                </control>
+                <control type="image">
+                    <left>42</left>
+                    <top>350</top>
+                    <width>32</width>
+                    <height>32</height>
+                    <texture>common/tv.png</texture>
+                    <visible>String.IsEqual(ListItem.DBType,tvshow)</visible>
+                </control>
+            </control>
+            <visible>[Control.HasFocus(1005)] + String.IsEmpty(ListItem.Property(MFG.ViewAll))</visible>
+            <depth>DepthContentPopout</depth>
+            <width>310</width>
+            <height>489</height>
+            <control type="label">
+                <left>13</left>
+                <top>423</top>
+                <width>284</width>
+                <height>38</height>
+                <align>center</align>
+                <aligny>top</aligny>
+                <font>font14</font>
+                <label>$INFO[ListItem.Label]</label>
+                <textcolor>FFFFFFFF</textcolor>
+                <scroll>true</scroll>
+                <wrapmultiline>false</wrapmultiline>
+            </control>
+            <control type="label">
+                <left>13</left>
+                <top>463</top>
+                <width>284</width>
+                <height>26</height>
+                <align>center</align>
+                <aligny>top</aligny>
+                <font>font12</font>
+                <textcolor>FFCCCCCC</textcolor>
+                <label>$INFO[ListItem.Year]</label>
+                <visible>!String.IsEmpty(ListItem.Year)</visible>
+            </control>
+        </control>
+        <control type="group">
+            <visible>!String.IsEmpty(ListItem.Property(MFG.ViewAll))</visible>
+            <control type="group">
+                <width>310</width>
+                <height>424</height>
+                <animation type="Conditional" condition="Control.HasFocus(1005)" reversible="true">
+                    <effect type="zoom" start="100" end="108" time="200" tween="sine" easing="inout" center="155,211.5" />
+                </animation>
+                <control type="image">
+                    <left>26</left>
+                    <top>20</top>
+                    <width>258</width>
+                    <height>383</height>
+                    <texture colordiffuse="button_focus">rounded/mask-258x383-r20.png</texture>
+                    <visible>Control.HasFocus(1005)</visible>
+                </control>
+                <control type="image">
+                    <left>30</left>
+                    <top>24</top>
+                    <width>250</width>
+                    <height>375</height>
+                    <texture colordiffuse="FF303030">rounded/mask-250x375-r16.png</texture>
+                </control>
+                <control type="label">
+                    <left>45</left>
+                    <top>24</top>
+                    <width>220</width>
+                    <height>375</height>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <font>font14</font>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <label>查看全部</label>
+                    <scroll>false</scroll>
+                </control>
+            </control>
+        </control>
+    </focusedlayout>
+    <scrolltime>200</scrolltime>
+    <onup condition="String.IsEqual(Window.Property(MFG.Panel.1004.State),ready)">1004</onup>
+    <onup condition="!String.IsEqual(Window.Property(MFG.Panel.1004.State),ready)">1003</onup>
+    <ondown condition="String.IsEqual(Window.Property(MFG.Panel.1006.State),ready)">1006</ondown>
+    <ondown condition="!String.IsEqual(Window.Property(MFG.Panel.1006.State),ready) + String.IsEqual(Window.Property(MFG.Panel.1007.State),ready)">1007</ondown>
+    <ondown condition="!String.IsEqual(Window.Property(MFG.Panel.1006.State),ready) + !String.IsEqual(Window.Property(MFG.Panel.1007.State),ready) + String.IsEqual(Window.Property(MFG.Panel.1008.State),ready)">1008</ondown>
+    <ondown condition="!String.IsEqual(Window.Property(MFG.Panel.1006.State),ready) + !String.IsEqual(Window.Property(MFG.Panel.1007.State),ready) + !String.IsEqual(Window.Property(MFG.Panel.1008.State),ready)">1005</ondown>
+    <preloaditems>1</preloaditems>
+</control>
+                <left>0</left>
+                <top>0</top>
+                <width>1920</width>
+                <height>559</height>
+                <visible>String.IsEqual(Window.Property(MFG.Panel.1005.State),ready)</visible>
+            </control>
+            <control type="group" id="805">
+                <control type="label">
+                    <left>50</left>
+                    <top>0</top>
+                    <width>900</width>
+                    <height>40</height>
+                    <font>font14</font>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <label>$ADDON[plugin.video.filteredmovies 32160]</label>
+                </control>
+                <control type="list" id="1006">
+    <enable>Integer.IsGreater(Container(1006).NumItems,0)</enable>
+    <onright>Noop</onright>
+    <onleft>Noop</onleft>
+    <wraparound>false</wraparound>
+    <orientation>horizontal</orientation>
+    <left>30</left>
+    <top>70</top>
+    <width>1860</width>
+    <height>489</height>
+    <itemlayout width="310" height="489">
+        <control type="group">
+            <visible>String.IsEmpty(ListItem.Property(MFG.ViewAll))</visible>
+            <width>310</width>
+            <height>489</height>
+            <control type="image">
+                <left>30</left>
+                <top>24</top>
+                <width>250</width>
+                <height>375</height>
+                <texture fallback="DefaultVideoCover.png" diffuse="rounded/mask-250x375-r16.png" background="true">$INFO[ListItem.Art(poster)]</texture>
+                <aspectratio scalediffuse="false">scale</aspectratio>
+            </control>
+            <control type="progress">
+                <visible>Integer.IsGreater(ListItem.Property(SkinPercentPlayed),0)</visible>
+                <left>42</left>
+                <top>388</top>
+                <width>226</width>
+                <height>4</height>
+                <info>ListItem.Property(SkinPercentPlayed)</info>
+                <texturebg colordiffuse="20FFFFFF">colors/fm_white.png</texturebg>
+                <lefttexture />
+                <midtexture colordiffuse="$INFO[Window(Home).Property(MFG.ProgressBarColor)]">colors/fm_white.png</midtexture>
+                <righttexture />
+            </control>
+            <control type="label">
+                <left>78</left>
+                <top>350</top>
+                <width>190</width>
+                <height>34</height>
+                <align>right</align>
+                <aligny>center</aligny>
+                <font>font12</font>
+                <label>$INFO[ListItem.Rating]</label>
+                <textcolor>FFFFFFFF</textcolor>
+                <visible>!String.IsEmpty(ListItem.Rating)</visible>
+                <shadowcolor>FF000000</shadowcolor>
+            </control>
+            <control type="image">
+                <left>42</left>
+                <top>350</top>
+                <width>32</width>
+                <height>32</height>
+                <texture>common/film.png</texture>
+                <visible>String.IsEqual(ListItem.DBType,movie) | String.IsEqual(ListItem.DBType,set)</visible>
+            </control>
+            <control type="image">
+                <left>42</left>
+                <top>350</top>
+                <width>32</width>
+                <height>32</height>
+                <texture>common/tv.png</texture>
+                <visible>String.IsEqual(ListItem.DBType,tvshow)</visible>
+            </control>
+            <control type="label">
+                <left>13</left>
+                <top>423</top>
+                <width>284</width>
+                <height>38</height>
+                <align>center</align>
+                <aligny>top</aligny>
+                <font>font14</font>
+                <label>$INFO[ListItem.Label]</label>
+                <textcolor>FFFFFFFF</textcolor>
+                <scroll>false</scroll>
+                <wrapmultiline>false</wrapmultiline>
+            </control>
+            <control type="label">
+                <left>13</left>
+                <top>463</top>
+                <width>284</width>
+                <height>26</height>
+                <align>center</align>
+                <aligny>top</aligny>
+                <font>font12</font>
+                <textcolor>FFCCCCCC</textcolor>
+                <label>$INFO[ListItem.Year]</label>
+                <visible>!String.IsEmpty(ListItem.Year)</visible>
+            </control>
+        </control>
+        <control type="group">
+            <visible>!String.IsEmpty(ListItem.Property(MFG.ViewAll))</visible>
+            <control type="group">
+                <width>310</width>
+                <height>424</height>
+                <control type="image">
+                    <left>30</left>
+                    <top>24</top>
+                    <width>250</width>
+                    <height>375</height>
+                    <texture colordiffuse="FF303030">rounded/mask-250x375-r16.png</texture>
+                </control>
+                <control type="label">
+                    <left>45</left>
+                    <top>24</top>
+                    <width>220</width>
+                    <height>375</height>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <font>font14</font>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <label>查看全部</label>
+                    <scroll>false</scroll>
+                </control>
+            </control>
+        </control>
+    </itemlayout>
+    <focusedlayout width="310" height="489">
+        <control type="group">
+            <visible>[!Control.HasFocus(1006)] + String.IsEmpty(ListItem.Property(MFG.ViewAll))</visible>
+            <width>310</width>
+            <height>489</height>
+            <control type="image">
+                <left>30</left>
+                <top>24</top>
+                <width>250</width>
+                <height>375</height>
+                <texture fallback="DefaultVideoCover.png" diffuse="rounded/mask-250x375-r16.png" background="true">$INFO[ListItem.Art(poster)]</texture>
+                <aspectratio scalediffuse="false">scale</aspectratio>
+            </control>
+            <control type="progress">
+                <visible>Integer.IsGreater(ListItem.Property(SkinPercentPlayed),0)</visible>
+                <left>42</left>
+                <top>388</top>
+                <width>226</width>
+                <height>4</height>
+                <info>ListItem.Property(SkinPercentPlayed)</info>
+                <texturebg colordiffuse="20FFFFFF">colors/fm_white.png</texturebg>
+                <lefttexture />
+                <midtexture colordiffuse="$INFO[Window(Home).Property(MFG.ProgressBarColor)]">colors/fm_white.png</midtexture>
+                <righttexture />
+            </control>
+            <control type="label">
+                <left>78</left>
+                <top>350</top>
+                <width>190</width>
+                <height>34</height>
+                <align>right</align>
+                <aligny>center</aligny>
+                <font>font12</font>
+                <label>$INFO[ListItem.Rating]</label>
+                <textcolor>FFFFFFFF</textcolor>
+                <visible>!String.IsEmpty(ListItem.Rating)</visible>
+                <shadowcolor>FF000000</shadowcolor>
+            </control>
+            <control type="image">
+                <left>42</left>
+                <top>350</top>
+                <width>32</width>
+                <height>32</height>
+                <texture>common/film.png</texture>
+                <visible>String.IsEqual(ListItem.DBType,movie) | String.IsEqual(ListItem.DBType,set)</visible>
+            </control>
+            <control type="image">
+                <left>42</left>
+                <top>350</top>
+                <width>32</width>
+                <height>32</height>
+                <texture>common/tv.png</texture>
+                <visible>String.IsEqual(ListItem.DBType,tvshow)</visible>
+            </control>
+            <control type="label">
+                <left>13</left>
+                <top>423</top>
+                <width>284</width>
+                <height>38</height>
+                <align>center</align>
+                <aligny>top</aligny>
+                <font>font14</font>
+                <label>$INFO[ListItem.Label]</label>
+                <textcolor>FFFFFFFF</textcolor>
+                <scroll>false</scroll>
+                <wrapmultiline>false</wrapmultiline>
+            </control>
+            <control type="label">
+                <left>13</left>
+                <top>463</top>
+                <width>284</width>
+                <height>26</height>
+                <align>center</align>
+                <aligny>top</aligny>
+                <font>font12</font>
+                <textcolor>FFCCCCCC</textcolor>
+                <label>$INFO[ListItem.Year]</label>
+                <visible>!String.IsEmpty(ListItem.Year)</visible>
+            </control>
+        </control>
+        <control type="group">
+            <control type="group">
+                <width>310</width>
+                <height>424</height>
+                <animation type="Focus">
+                    <effect type="zoom" start="100" end="108" time="200" tween="sine" easing="inout" center="155,211.5" />
+                </animation>
+                <animation type="Unfocus">
+                    <effect type="zoom" start="108" end="100" time="200" tween="sine" easing="inout" center="155,211.5" />
+                </animation>
+                <control type="group">
+                    <control type="group">
+                        <control type="image">
+                            <animation type="Unfocus">
+                                <effect type="fade" start="100" end="0" time="0" />
+                            </animation>
+                            <left>26</left>
+                            <top>20</top>
+                            <width>258</width>
+                            <height>383</height>
+                            <texture colordiffuse="button_focus">rounded/mask-258x383-r20.png</texture>
+                        </control>
+                        <control type="image">
+                            <left>30</left>
+                            <top>24</top>
+                            <width>250</width>
+                            <height>375</height>
+                            <texture fallback="DefaultVideoCover.png" diffuse="rounded/mask-250x375-r16.png" background="true">$INFO[ListItem.Art(poster)]</texture>
+                            <aspectratio scalediffuse="false">scale</aspectratio>
+                        </control>
+                    </control>
+                </control>
+                <control type="progress">
+                    <visible>Integer.IsGreater(ListItem.Property(SkinPercentPlayed),0)</visible>
+                    <left>42</left>
+                    <top>388</top>
+                    <width>226</width>
+                    <height>4</height>
+                    <info>ListItem.Property(SkinPercentPlayed)</info>
+                    <texturebg colordiffuse="20FFFFFF">colors/fm_white.png</texturebg>
+                    <lefttexture />
+                    <midtexture colordiffuse="$INFO[Window(Home).Property(MFG.ProgressBarColor)]">colors/fm_white.png</midtexture>
+                    <righttexture />
+                </control>
+                <control type="label">
+                    <left>78</left>
+                    <top>350</top>
+                    <width>190</width>
+                    <height>34</height>
+                    <align>right</align>
+                    <aligny>center</aligny>
+                    <font>font12</font>
+                    <label>$INFO[ListItem.Rating]</label>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <visible>!String.IsEmpty(ListItem.Rating)</visible>
+                    <shadowcolor>FF000000</shadowcolor>
+                </control>
+                <control type="image">
+                    <left>42</left>
+                    <top>350</top>
+                    <width>32</width>
+                    <height>32</height>
+                    <texture>common/film.png</texture>
+                    <visible>String.IsEqual(ListItem.DBType,movie) | String.IsEqual(ListItem.DBType,set)</visible>
+                </control>
+                <control type="image">
+                    <left>42</left>
+                    <top>350</top>
+                    <width>32</width>
+                    <height>32</height>
+                    <texture>common/tv.png</texture>
+                    <visible>String.IsEqual(ListItem.DBType,tvshow)</visible>
+                </control>
+            </control>
+            <visible>[Control.HasFocus(1006)] + String.IsEmpty(ListItem.Property(MFG.ViewAll))</visible>
+            <depth>DepthContentPopout</depth>
+            <width>310</width>
+            <height>489</height>
+            <control type="label">
+                <left>13</left>
+                <top>423</top>
+                <width>284</width>
+                <height>38</height>
+                <align>center</align>
+                <aligny>top</aligny>
+                <font>font14</font>
+                <label>$INFO[ListItem.Label]</label>
+                <textcolor>FFFFFFFF</textcolor>
+                <scroll>true</scroll>
+                <wrapmultiline>false</wrapmultiline>
+            </control>
+            <control type="label">
+                <left>13</left>
+                <top>463</top>
+                <width>284</width>
+                <height>26</height>
+                <align>center</align>
+                <aligny>top</aligny>
+                <font>font12</font>
+                <textcolor>FFCCCCCC</textcolor>
+                <label>$INFO[ListItem.Year]</label>
+                <visible>!String.IsEmpty(ListItem.Year)</visible>
+            </control>
+        </control>
+        <control type="group">
+            <visible>!String.IsEmpty(ListItem.Property(MFG.ViewAll))</visible>
+            <control type="group">
+                <width>310</width>
+                <height>424</height>
+                <animation type="Conditional" condition="Control.HasFocus(1006)" reversible="true">
+                    <effect type="zoom" start="100" end="108" time="200" tween="sine" easing="inout" center="155,211.5" />
+                </animation>
+                <control type="image">
+                    <left>26</left>
+                    <top>20</top>
+                    <width>258</width>
+                    <height>383</height>
+                    <texture colordiffuse="button_focus">rounded/mask-258x383-r20.png</texture>
+                    <visible>Control.HasFocus(1006)</visible>
+                </control>
+                <control type="image">
+                    <left>30</left>
+                    <top>24</top>
+                    <width>250</width>
+                    <height>375</height>
+                    <texture colordiffuse="FF303030">rounded/mask-250x375-r16.png</texture>
+                </control>
+                <control type="label">
+                    <left>45</left>
+                    <top>24</top>
+                    <width>220</width>
+                    <height>375</height>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <font>font14</font>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <label>查看全部</label>
+                    <scroll>false</scroll>
+                </control>
+            </control>
+        </control>
+    </focusedlayout>
+    <scrolltime>200</scrolltime>
+    <onup condition="String.IsEqual(Window.Property(MFG.Panel.1005.State),ready)">1005</onup>
+    <onup condition="!String.IsEqual(Window.Property(MFG.Panel.1005.State),ready) + String.IsEqual(Window.Property(MFG.Panel.1004.State),ready)">1004</onup>
+    <onup condition="!String.IsEqual(Window.Property(MFG.Panel.1005.State),ready) + !String.IsEqual(Window.Property(MFG.Panel.1004.State),ready)">1003</onup>
+    <ondown condition="String.IsEqual(Window.Property(MFG.Panel.1007.State),ready)">1007</ondown>
+    <ondown condition="!String.IsEqual(Window.Property(MFG.Panel.1007.State),ready) + String.IsEqual(Window.Property(MFG.Panel.1008.State),ready)">1008</ondown>
+    <ondown condition="!String.IsEqual(Window.Property(MFG.Panel.1007.State),ready) + !String.IsEqual(Window.Property(MFG.Panel.1008.State),ready)">1006</ondown>
+    <preloaditems>1</preloaditems>
+</control>
+                <left>0</left>
+                <top>0</top>
+                <width>1920</width>
+                <height>559</height>
+                <visible>String.IsEqual(Window.Property(MFG.Panel.1006.State),ready)</visible>
+            </control>
+            <control type="group" id="806">
+                <control type="label">
+                    <left>50</left>
+                    <top>0</top>
+                    <width>900</width>
+                    <height>40</height>
+                    <font>font14</font>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <label>$ADDON[plugin.video.filteredmovies 32161]</label>
+                </control>
+                <control type="list" id="1007">
+    <enable>Integer.IsGreater(Container(1007).NumItems,0)</enable>
+    <onright>Noop</onright>
+    <onleft>Noop</onleft>
+    <wraparound>false</wraparound>
+    <orientation>horizontal</orientation>
+    <left>30</left>
+    <top>70</top>
+    <width>1860</width>
+    <height>489</height>
+    <itemlayout width="310" height="489">
+        <control type="group">
+            <visible>String.IsEmpty(ListItem.Property(MFG.ViewAll))</visible>
+            <width>310</width>
+            <height>489</height>
+            <control type="image">
+                <left>30</left>
+                <top>24</top>
+                <width>250</width>
+                <height>375</height>
+                <texture fallback="DefaultVideoCover.png" diffuse="rounded/mask-250x375-r16.png" background="true">$INFO[ListItem.Art(poster)]</texture>
+                <aspectratio scalediffuse="false">scale</aspectratio>
+            </control>
+            <control type="progress">
+                <visible>Integer.IsGreater(ListItem.Property(SkinPercentPlayed),0)</visible>
+                <left>42</left>
+                <top>388</top>
+                <width>226</width>
+                <height>4</height>
+                <info>ListItem.Property(SkinPercentPlayed)</info>
+                <texturebg colordiffuse="20FFFFFF">colors/fm_white.png</texturebg>
+                <lefttexture />
+                <midtexture colordiffuse="$INFO[Window(Home).Property(MFG.ProgressBarColor)]">colors/fm_white.png</midtexture>
+                <righttexture />
+            </control>
+            <control type="label">
+                <left>78</left>
+                <top>350</top>
+                <width>190</width>
+                <height>34</height>
+                <align>right</align>
+                <aligny>center</aligny>
+                <font>font12</font>
+                <label>$INFO[ListItem.Rating]</label>
+                <textcolor>FFFFFFFF</textcolor>
+                <visible>!String.IsEmpty(ListItem.Rating)</visible>
+                <shadowcolor>FF000000</shadowcolor>
+            </control>
+            <control type="image">
+                <left>42</left>
+                <top>350</top>
+                <width>32</width>
+                <height>32</height>
+                <texture>common/film.png</texture>
+                <visible>String.IsEqual(ListItem.DBType,movie) | String.IsEqual(ListItem.DBType,set)</visible>
+            </control>
+            <control type="image">
+                <left>42</left>
+                <top>350</top>
+                <width>32</width>
+                <height>32</height>
+                <texture>common/tv.png</texture>
+                <visible>String.IsEqual(ListItem.DBType,tvshow)</visible>
+            </control>
+            <control type="label">
+                <left>13</left>
+                <top>423</top>
+                <width>284</width>
+                <height>38</height>
+                <align>center</align>
+                <aligny>top</aligny>
+                <font>font14</font>
+                <label>$INFO[ListItem.Label]</label>
+                <textcolor>FFFFFFFF</textcolor>
+                <scroll>false</scroll>
+                <wrapmultiline>false</wrapmultiline>
+            </control>
+            <control type="label">
+                <left>13</left>
+                <top>463</top>
+                <width>284</width>
+                <height>26</height>
+                <align>center</align>
+                <aligny>top</aligny>
+                <font>font12</font>
+                <textcolor>FFCCCCCC</textcolor>
+                <label>$INFO[ListItem.Year]</label>
+                <visible>!String.IsEmpty(ListItem.Year)</visible>
+            </control>
+        </control>
+        <control type="group">
+            <visible>!String.IsEmpty(ListItem.Property(MFG.ViewAll))</visible>
+            <control type="group">
+                <width>310</width>
+                <height>424</height>
+                <control type="image">
+                    <left>30</left>
+                    <top>24</top>
+                    <width>250</width>
+                    <height>375</height>
+                    <texture colordiffuse="FF303030">rounded/mask-250x375-r16.png</texture>
+                </control>
+                <control type="label">
+                    <left>45</left>
+                    <top>24</top>
+                    <width>220</width>
+                    <height>375</height>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <font>font14</font>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <label>查看全部</label>
+                    <scroll>false</scroll>
+                </control>
+            </control>
+        </control>
+    </itemlayout>
+    <focusedlayout width="310" height="489">
+        <control type="group">
+            <visible>[!Control.HasFocus(1007)] + String.IsEmpty(ListItem.Property(MFG.ViewAll))</visible>
+            <width>310</width>
+            <height>489</height>
+            <control type="image">
+                <left>30</left>
+                <top>24</top>
+                <width>250</width>
+                <height>375</height>
+                <texture fallback="DefaultVideoCover.png" diffuse="rounded/mask-250x375-r16.png" background="true">$INFO[ListItem.Art(poster)]</texture>
+                <aspectratio scalediffuse="false">scale</aspectratio>
+            </control>
+            <control type="progress">
+                <visible>Integer.IsGreater(ListItem.Property(SkinPercentPlayed),0)</visible>
+                <left>42</left>
+                <top>388</top>
+                <width>226</width>
+                <height>4</height>
+                <info>ListItem.Property(SkinPercentPlayed)</info>
+                <texturebg colordiffuse="20FFFFFF">colors/fm_white.png</texturebg>
+                <lefttexture />
+                <midtexture colordiffuse="$INFO[Window(Home).Property(MFG.ProgressBarColor)]">colors/fm_white.png</midtexture>
+                <righttexture />
+            </control>
+            <control type="label">
+                <left>78</left>
+                <top>350</top>
+                <width>190</width>
+                <height>34</height>
+                <align>right</align>
+                <aligny>center</aligny>
+                <font>font12</font>
+                <label>$INFO[ListItem.Rating]</label>
+                <textcolor>FFFFFFFF</textcolor>
+                <visible>!String.IsEmpty(ListItem.Rating)</visible>
+                <shadowcolor>FF000000</shadowcolor>
+            </control>
+            <control type="image">
+                <left>42</left>
+                <top>350</top>
+                <width>32</width>
+                <height>32</height>
+                <texture>common/film.png</texture>
+                <visible>String.IsEqual(ListItem.DBType,movie) | String.IsEqual(ListItem.DBType,set)</visible>
+            </control>
+            <control type="image">
+                <left>42</left>
+                <top>350</top>
+                <width>32</width>
+                <height>32</height>
+                <texture>common/tv.png</texture>
+                <visible>String.IsEqual(ListItem.DBType,tvshow)</visible>
+            </control>
+            <control type="label">
+                <left>13</left>
+                <top>423</top>
+                <width>284</width>
+                <height>38</height>
+                <align>center</align>
+                <aligny>top</aligny>
+                <font>font14</font>
+                <label>$INFO[ListItem.Label]</label>
+                <textcolor>FFFFFFFF</textcolor>
+                <scroll>false</scroll>
+                <wrapmultiline>false</wrapmultiline>
+            </control>
+            <control type="label">
+                <left>13</left>
+                <top>463</top>
+                <width>284</width>
+                <height>26</height>
+                <align>center</align>
+                <aligny>top</aligny>
+                <font>font12</font>
+                <textcolor>FFCCCCCC</textcolor>
+                <label>$INFO[ListItem.Year]</label>
+                <visible>!String.IsEmpty(ListItem.Year)</visible>
+            </control>
+        </control>
+        <control type="group">
+            <control type="group">
+                <width>310</width>
+                <height>424</height>
+                <animation type="Focus">
+                    <effect type="zoom" start="100" end="108" time="200" tween="sine" easing="inout" center="155,211.5" />
+                </animation>
+                <animation type="Unfocus">
+                    <effect type="zoom" start="108" end="100" time="200" tween="sine" easing="inout" center="155,211.5" />
+                </animation>
+                <control type="group">
+                    <control type="group">
+                        <control type="image">
+                            <animation type="Unfocus">
+                                <effect type="fade" start="100" end="0" time="0" />
+                            </animation>
+                            <left>26</left>
+                            <top>20</top>
+                            <width>258</width>
+                            <height>383</height>
+                            <texture colordiffuse="button_focus">rounded/mask-258x383-r20.png</texture>
+                        </control>
+                        <control type="image">
+                            <left>30</left>
+                            <top>24</top>
+                            <width>250</width>
+                            <height>375</height>
+                            <texture fallback="DefaultVideoCover.png" diffuse="rounded/mask-250x375-r16.png" background="true">$INFO[ListItem.Art(poster)]</texture>
+                            <aspectratio scalediffuse="false">scale</aspectratio>
+                        </control>
+                    </control>
+                </control>
+                <control type="progress">
+                    <visible>Integer.IsGreater(ListItem.Property(SkinPercentPlayed),0)</visible>
+                    <left>42</left>
+                    <top>388</top>
+                    <width>226</width>
+                    <height>4</height>
+                    <info>ListItem.Property(SkinPercentPlayed)</info>
+                    <texturebg colordiffuse="20FFFFFF">colors/fm_white.png</texturebg>
+                    <lefttexture />
+                    <midtexture colordiffuse="$INFO[Window(Home).Property(MFG.ProgressBarColor)]">colors/fm_white.png</midtexture>
+                    <righttexture />
+                </control>
+                <control type="label">
+                    <left>78</left>
+                    <top>350</top>
+                    <width>190</width>
+                    <height>34</height>
+                    <align>right</align>
+                    <aligny>center</aligny>
+                    <font>font12</font>
+                    <label>$INFO[ListItem.Rating]</label>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <visible>!String.IsEmpty(ListItem.Rating)</visible>
+                    <shadowcolor>FF000000</shadowcolor>
+                </control>
+                <control type="image">
+                    <left>42</left>
+                    <top>350</top>
+                    <width>32</width>
+                    <height>32</height>
+                    <texture>common/film.png</texture>
+                    <visible>String.IsEqual(ListItem.DBType,movie) | String.IsEqual(ListItem.DBType,set)</visible>
+                </control>
+                <control type="image">
+                    <left>42</left>
+                    <top>350</top>
+                    <width>32</width>
+                    <height>32</height>
+                    <texture>common/tv.png</texture>
+                    <visible>String.IsEqual(ListItem.DBType,tvshow)</visible>
+                </control>
+            </control>
+            <visible>[Control.HasFocus(1007)] + String.IsEmpty(ListItem.Property(MFG.ViewAll))</visible>
+            <depth>DepthContentPopout</depth>
+            <width>310</width>
+            <height>489</height>
+            <control type="label">
+                <left>13</left>
+                <top>423</top>
+                <width>284</width>
+                <height>38</height>
+                <align>center</align>
+                <aligny>top</aligny>
+                <font>font14</font>
+                <label>$INFO[ListItem.Label]</label>
+                <textcolor>FFFFFFFF</textcolor>
+                <scroll>true</scroll>
+                <wrapmultiline>false</wrapmultiline>
+            </control>
+            <control type="label">
+                <left>13</left>
+                <top>463</top>
+                <width>284</width>
+                <height>26</height>
+                <align>center</align>
+                <aligny>top</aligny>
+                <font>font12</font>
+                <textcolor>FFCCCCCC</textcolor>
+                <label>$INFO[ListItem.Year]</label>
+                <visible>!String.IsEmpty(ListItem.Year)</visible>
+            </control>
+        </control>
+        <control type="group">
+            <visible>!String.IsEmpty(ListItem.Property(MFG.ViewAll))</visible>
+            <control type="group">
+                <width>310</width>
+                <height>424</height>
+                <animation type="Conditional" condition="Control.HasFocus(1007)" reversible="true">
+                    <effect type="zoom" start="100" end="108" time="200" tween="sine" easing="inout" center="155,211.5" />
+                </animation>
+                <control type="image">
+                    <left>26</left>
+                    <top>20</top>
+                    <width>258</width>
+                    <height>383</height>
+                    <texture colordiffuse="button_focus">rounded/mask-258x383-r20.png</texture>
+                    <visible>Control.HasFocus(1007)</visible>
+                </control>
+                <control type="image">
+                    <left>30</left>
+                    <top>24</top>
+                    <width>250</width>
+                    <height>375</height>
+                    <texture colordiffuse="FF303030">rounded/mask-250x375-r16.png</texture>
+                </control>
+                <control type="label">
+                    <left>45</left>
+                    <top>24</top>
+                    <width>220</width>
+                    <height>375</height>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <font>font14</font>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <label>查看全部</label>
+                    <scroll>false</scroll>
+                </control>
+            </control>
+        </control>
+    </focusedlayout>
+    <scrolltime>200</scrolltime>
+    <onup condition="String.IsEqual(Window.Property(MFG.Panel.1006.State),ready)">1006</onup>
+    <onup condition="!String.IsEqual(Window.Property(MFG.Panel.1006.State),ready) + String.IsEqual(Window.Property(MFG.Panel.1005.State),ready)">1005</onup>
+    <onup condition="!String.IsEqual(Window.Property(MFG.Panel.1006.State),ready) + !String.IsEqual(Window.Property(MFG.Panel.1005.State),ready) + String.IsEqual(Window.Property(MFG.Panel.1004.State),ready)">1004</onup>
+    <onup condition="!String.IsEqual(Window.Property(MFG.Panel.1006.State),ready) + !String.IsEqual(Window.Property(MFG.Panel.1005.State),ready) + !String.IsEqual(Window.Property(MFG.Panel.1004.State),ready)">1003</onup>
+    <ondown condition="String.IsEqual(Window.Property(MFG.Panel.1008.State),ready)">1008</ondown>
+    <ondown condition="!String.IsEqual(Window.Property(MFG.Panel.1008.State),ready)">1007</ondown>
+    <preloaditems>1</preloaditems>
+</control>
+                <left>0</left>
+                <top>0</top>
+                <width>1920</width>
+                <height>559</height>
+                <visible>String.IsEqual(Window.Property(MFG.Panel.1007.State),ready)</visible>
+            </control>
+            <control type="group" id="807">
+                <control type="label">
+                    <left>50</left>
+                    <top>0</top>
+                    <width>900</width>
+                    <height>40</height>
+                    <font>font14</font>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <label>$ADDON[plugin.video.filteredmovies 32162]</label>
+                </control>
+                <control type="list" id="1008">
+    <enable>Integer.IsGreater(Container(1008).NumItems,0)</enable>
+    <onright>Noop</onright>
+    <onleft>Noop</onleft>
+    <wraparound>false</wraparound>
+    <orientation>horizontal</orientation>
+    <left>30</left>
+    <top>70</top>
+    <width>1860</width>
+    <height>489</height>
+    <itemlayout width="310" height="489">
+        <control type="group">
+            <visible>String.IsEmpty(ListItem.Property(MFG.ViewAll))</visible>
+            <width>310</width>
+            <height>489</height>
+            <control type="image">
+                <left>30</left>
+                <top>24</top>
+                <width>250</width>
+                <height>375</height>
+                <texture fallback="DefaultVideoCover.png" diffuse="rounded/mask-250x375-r16.png" background="true">$INFO[ListItem.Art(poster)]</texture>
+                <aspectratio scalediffuse="false">scale</aspectratio>
+            </control>
+            <control type="progress">
+                <visible>Integer.IsGreater(ListItem.Property(SkinPercentPlayed),0)</visible>
+                <left>42</left>
+                <top>388</top>
+                <width>226</width>
+                <height>4</height>
+                <info>ListItem.Property(SkinPercentPlayed)</info>
+                <texturebg colordiffuse="20FFFFFF">colors/fm_white.png</texturebg>
+                <lefttexture />
+                <midtexture colordiffuse="$INFO[Window(Home).Property(MFG.ProgressBarColor)]">colors/fm_white.png</midtexture>
+                <righttexture />
+            </control>
+            <control type="label">
+                <left>78</left>
+                <top>350</top>
+                <width>190</width>
+                <height>34</height>
+                <align>right</align>
+                <aligny>center</aligny>
+                <font>font12</font>
+                <label>$INFO[ListItem.Rating]</label>
+                <textcolor>FFFFFFFF</textcolor>
+                <visible>!String.IsEmpty(ListItem.Rating)</visible>
+                <shadowcolor>FF000000</shadowcolor>
+            </control>
+            <control type="image">
+                <left>42</left>
+                <top>350</top>
+                <width>32</width>
+                <height>32</height>
+                <texture>common/film.png</texture>
+                <visible>String.IsEqual(ListItem.DBType,movie) | String.IsEqual(ListItem.DBType,set)</visible>
+            </control>
+            <control type="image">
+                <left>42</left>
+                <top>350</top>
+                <width>32</width>
+                <height>32</height>
+                <texture>common/tv.png</texture>
+                <visible>String.IsEqual(ListItem.DBType,tvshow)</visible>
+            </control>
+            <control type="label">
+                <left>13</left>
+                <top>423</top>
+                <width>284</width>
+                <height>38</height>
+                <align>center</align>
+                <aligny>top</aligny>
+                <font>font14</font>
+                <label>$INFO[ListItem.Label]</label>
+                <textcolor>FFFFFFFF</textcolor>
+                <scroll>false</scroll>
+                <wrapmultiline>false</wrapmultiline>
+            </control>
+            <control type="label">
+                <left>13</left>
+                <top>463</top>
+                <width>284</width>
+                <height>26</height>
+                <align>center</align>
+                <aligny>top</aligny>
+                <font>font12</font>
+                <textcolor>FFCCCCCC</textcolor>
+                <label>$INFO[ListItem.Year]</label>
+                <visible>!String.IsEmpty(ListItem.Year)</visible>
+            </control>
+        </control>
+        <control type="group">
+            <visible>!String.IsEmpty(ListItem.Property(MFG.ViewAll))</visible>
+            <control type="group">
+                <width>310</width>
+                <height>424</height>
+                <control type="image">
+                    <left>30</left>
+                    <top>24</top>
+                    <width>250</width>
+                    <height>375</height>
+                    <texture colordiffuse="FF303030">rounded/mask-250x375-r16.png</texture>
+                </control>
+                <control type="label">
+                    <left>45</left>
+                    <top>24</top>
+                    <width>220</width>
+                    <height>375</height>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <font>font14</font>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <label>查看全部</label>
+                    <scroll>false</scroll>
+                </control>
+            </control>
+        </control>
+    </itemlayout>
+    <focusedlayout width="310" height="489">
+        <control type="group">
+            <visible>[!Control.HasFocus(1008)] + String.IsEmpty(ListItem.Property(MFG.ViewAll))</visible>
+            <width>310</width>
+            <height>489</height>
+            <control type="image">
+                <left>30</left>
+                <top>24</top>
+                <width>250</width>
+                <height>375</height>
+                <texture fallback="DefaultVideoCover.png" diffuse="rounded/mask-250x375-r16.png" background="true">$INFO[ListItem.Art(poster)]</texture>
+                <aspectratio scalediffuse="false">scale</aspectratio>
+            </control>
+            <control type="progress">
+                <visible>Integer.IsGreater(ListItem.Property(SkinPercentPlayed),0)</visible>
+                <left>42</left>
+                <top>388</top>
+                <width>226</width>
+                <height>4</height>
+                <info>ListItem.Property(SkinPercentPlayed)</info>
+                <texturebg colordiffuse="20FFFFFF">colors/fm_white.png</texturebg>
+                <lefttexture />
+                <midtexture colordiffuse="$INFO[Window(Home).Property(MFG.ProgressBarColor)]">colors/fm_white.png</midtexture>
+                <righttexture />
+            </control>
+            <control type="label">
+                <left>78</left>
+                <top>350</top>
+                <width>190</width>
+                <height>34</height>
+                <align>right</align>
+                <aligny>center</aligny>
+                <font>font12</font>
+                <label>$INFO[ListItem.Rating]</label>
+                <textcolor>FFFFFFFF</textcolor>
+                <visible>!String.IsEmpty(ListItem.Rating)</visible>
+                <shadowcolor>FF000000</shadowcolor>
+            </control>
+            <control type="image">
+                <left>42</left>
+                <top>350</top>
+                <width>32</width>
+                <height>32</height>
+                <texture>common/film.png</texture>
+                <visible>String.IsEqual(ListItem.DBType,movie) | String.IsEqual(ListItem.DBType,set)</visible>
+            </control>
+            <control type="image">
+                <left>42</left>
+                <top>350</top>
+                <width>32</width>
+                <height>32</height>
+                <texture>common/tv.png</texture>
+                <visible>String.IsEqual(ListItem.DBType,tvshow)</visible>
+            </control>
+            <control type="label">
+                <left>13</left>
+                <top>423</top>
+                <width>284</width>
+                <height>38</height>
+                <align>center</align>
+                <aligny>top</aligny>
+                <font>font14</font>
+                <label>$INFO[ListItem.Label]</label>
+                <textcolor>FFFFFFFF</textcolor>
+                <scroll>false</scroll>
+                <wrapmultiline>false</wrapmultiline>
+            </control>
+            <control type="label">
+                <left>13</left>
+                <top>463</top>
+                <width>284</width>
+                <height>26</height>
+                <align>center</align>
+                <aligny>top</aligny>
+                <font>font12</font>
+                <textcolor>FFCCCCCC</textcolor>
+                <label>$INFO[ListItem.Year]</label>
+                <visible>!String.IsEmpty(ListItem.Year)</visible>
+            </control>
+        </control>
+        <control type="group">
+            <control type="group">
+                <width>310</width>
+                <height>424</height>
+                <animation type="Focus">
+                    <effect type="zoom" start="100" end="108" time="200" tween="sine" easing="inout" center="155,211.5" />
+                </animation>
+                <animation type="Unfocus">
+                    <effect type="zoom" start="108" end="100" time="200" tween="sine" easing="inout" center="155,211.5" />
+                </animation>
+                <control type="group">
+                    <control type="group">
+                        <control type="image">
+                            <animation type="Unfocus">
+                                <effect type="fade" start="100" end="0" time="0" />
+                            </animation>
+                            <left>26</left>
+                            <top>20</top>
+                            <width>258</width>
+                            <height>383</height>
+                            <texture colordiffuse="button_focus">rounded/mask-258x383-r20.png</texture>
+                        </control>
+                        <control type="image">
+                            <left>30</left>
+                            <top>24</top>
+                            <width>250</width>
+                            <height>375</height>
+                            <texture fallback="DefaultVideoCover.png" diffuse="rounded/mask-250x375-r16.png" background="true">$INFO[ListItem.Art(poster)]</texture>
+                            <aspectratio scalediffuse="false">scale</aspectratio>
+                        </control>
+                    </control>
+                </control>
+                <control type="progress">
+                    <visible>Integer.IsGreater(ListItem.Property(SkinPercentPlayed),0)</visible>
+                    <left>42</left>
+                    <top>388</top>
+                    <width>226</width>
+                    <height>4</height>
+                    <info>ListItem.Property(SkinPercentPlayed)</info>
+                    <texturebg colordiffuse="20FFFFFF">colors/fm_white.png</texturebg>
+                    <lefttexture />
+                    <midtexture colordiffuse="$INFO[Window(Home).Property(MFG.ProgressBarColor)]">colors/fm_white.png</midtexture>
+                    <righttexture />
+                </control>
+                <control type="label">
+                    <left>78</left>
+                    <top>350</top>
+                    <width>190</width>
+                    <height>34</height>
+                    <align>right</align>
+                    <aligny>center</aligny>
+                    <font>font12</font>
+                    <label>$INFO[ListItem.Rating]</label>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <visible>!String.IsEmpty(ListItem.Rating)</visible>
+                    <shadowcolor>FF000000</shadowcolor>
+                </control>
+                <control type="image">
+                    <left>42</left>
+                    <top>350</top>
+                    <width>32</width>
+                    <height>32</height>
+                    <texture>common/film.png</texture>
+                    <visible>String.IsEqual(ListItem.DBType,movie) | String.IsEqual(ListItem.DBType,set)</visible>
+                </control>
+                <control type="image">
+                    <left>42</left>
+                    <top>350</top>
+                    <width>32</width>
+                    <height>32</height>
+                    <texture>common/tv.png</texture>
+                    <visible>String.IsEqual(ListItem.DBType,tvshow)</visible>
+                </control>
+            </control>
+            <visible>[Control.HasFocus(1008)] + String.IsEmpty(ListItem.Property(MFG.ViewAll))</visible>
+            <depth>DepthContentPopout</depth>
+            <width>310</width>
+            <height>489</height>
+            <control type="label">
+                <left>13</left>
+                <top>423</top>
+                <width>284</width>
+                <height>38</height>
+                <align>center</align>
+                <aligny>top</aligny>
+                <font>font14</font>
+                <label>$INFO[ListItem.Label]</label>
+                <textcolor>FFFFFFFF</textcolor>
+                <scroll>true</scroll>
+                <wrapmultiline>false</wrapmultiline>
+            </control>
+            <control type="label">
+                <left>13</left>
+                <top>463</top>
+                <width>284</width>
+                <height>26</height>
+                <align>center</align>
+                <aligny>top</aligny>
+                <font>font12</font>
+                <textcolor>FFCCCCCC</textcolor>
+                <label>$INFO[ListItem.Year]</label>
+                <visible>!String.IsEmpty(ListItem.Year)</visible>
+            </control>
+        </control>
+        <control type="group">
+            <visible>!String.IsEmpty(ListItem.Property(MFG.ViewAll))</visible>
+            <control type="group">
+                <width>310</width>
+                <height>424</height>
+                <animation type="Conditional" condition="Control.HasFocus(1008)" reversible="true">
+                    <effect type="zoom" start="100" end="108" time="200" tween="sine" easing="inout" center="155,211.5" />
+                </animation>
+                <control type="image">
+                    <left>26</left>
+                    <top>20</top>
+                    <width>258</width>
+                    <height>383</height>
+                    <texture colordiffuse="button_focus">rounded/mask-258x383-r20.png</texture>
+                    <visible>Control.HasFocus(1008)</visible>
+                </control>
+                <control type="image">
+                    <left>30</left>
+                    <top>24</top>
+                    <width>250</width>
+                    <height>375</height>
+                    <texture colordiffuse="FF303030">rounded/mask-250x375-r16.png</texture>
+                </control>
+                <control type="label">
+                    <left>45</left>
+                    <top>24</top>
+                    <width>220</width>
+                    <height>375</height>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <font>font14</font>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <label>查看全部</label>
+                    <scroll>false</scroll>
+                </control>
+            </control>
+        </control>
+    </focusedlayout>
+    <scrolltime>200</scrolltime>
+    <onup condition="String.IsEqual(Window.Property(MFG.Panel.1007.State),ready)">1007</onup>
+    <onup condition="!String.IsEqual(Window.Property(MFG.Panel.1007.State),ready) + String.IsEqual(Window.Property(MFG.Panel.1006.State),ready)">1006</onup>
+    <onup condition="!String.IsEqual(Window.Property(MFG.Panel.1007.State),ready) + !String.IsEqual(Window.Property(MFG.Panel.1006.State),ready) + String.IsEqual(Window.Property(MFG.Panel.1005.State),ready)">1005</onup>
+    <onup condition="!String.IsEqual(Window.Property(MFG.Panel.1007.State),ready) + !String.IsEqual(Window.Property(MFG.Panel.1006.State),ready) + !String.IsEqual(Window.Property(MFG.Panel.1005.State),ready) + String.IsEqual(Window.Property(MFG.Panel.1004.State),ready)">1004</onup>
+    <onup condition="!String.IsEqual(Window.Property(MFG.Panel.1007.State),ready) + !String.IsEqual(Window.Property(MFG.Panel.1006.State),ready) + !String.IsEqual(Window.Property(MFG.Panel.1005.State),ready) + !String.IsEqual(Window.Property(MFG.Panel.1004.State),ready)">1003</onup>
+    <ondown>1008</ondown>
+    <preloaditems>1</preloaditems>
+</control>
+                <left>0</left>
+                <top>0</top>
+                <width>1920</width>
+                <height>559</height>
+                <visible>String.IsEqual(Window.Property(MFG.Panel.1008.State),ready)</visible>
+            </control>
+            <left>0</left>
+            <top>74</top>
+            <width>1920</width>
+            <height>996</height>
+            <orientation>vertical</orientation>
+            <itemgap>30</itemgap>
+            <scrolltime>200</scrolltime>
+            <usecontrolcoords>false</usecontrolcoords>
+        </control>
+        <control type="button" id="9997">
+            <left>-1000</left>
+            <top>-1000</top>
+            <width>1</width>
+            <height>1</height>
+            <label/>
+            <onfocus>SetFocus(6050,10)</onfocus>
+        </control>
+        <control type="button" id="9998">
+            <left>-1000</left>
+            <top>-1000</top>
+            <width>1</width>
+            <height>1</height>
+            <label/>
+            <onfocus condition="Integer.IsEqual(Container(9999).CurrentItem,1)">SetFocus(9997)</onfocus>
+            <onfocus condition="Integer.IsEqual(Container(9999).CurrentItem,2)">SetFocus(5002)</onfocus>
+            <onfocus condition="Integer.IsEqual(Container(9999).CurrentItem,3)">SetFocus(5005)</onfocus>
+            <onfocus>SetFocus(1005)</onfocus>
+        </control>
+        <control type="button" id="9000">
+            <left>-1000</left>
+            <top>-1000</top>
+            <width>1</width>
+            <height>1</height>
+            <label/>
+            <onfocus condition="Integer.IsEqual(Container(6050).CurrentItem,6)">SetFocus($INFO[Window(Home).Property(Return_Key6)])</onfocus>
+            <onfocus condition="Integer.IsEqual(Container(6050).CurrentItem,12)">SetFocus($INFO[Window(Home).Property(Return_KeyClr)])</onfocus>
+            <onfocus condition="Integer.IsEqual(Container(6050).CurrentItem,3)">SetFocus(1013)</onfocus>
+            <onfocus condition="Integer.IsEqual(Container(6050).CurrentItem,9)">SetFocus(3001)</onfocus>
+        </control>
+        <!-- Native click bridges for static-content panels: no script startup
+             and no synthetic focus/action changes during navigation. -->
+        <control type="button" id="7101">
+            <visible>false</visible>
+            <left>-1000</left><top>-1000</top>
+            <width>1</width><height>1</height><label/>
+        </control>
+        <control type="button" id="7102">
+            <visible>false</visible>
+            <left>-1000</left><top>-1000</top>
+            <width>1</width><height>1</height><label/>
+        </control>
+        <control type="button" id="7103">
+            <visible>false</visible>
+            <left>-1000</left><top>-1000</top>
+            <width>1</width><height>1</height><label/>
+        </control>
+        <control type="button" id="7104">
+            <visible>false</visible>
+            <left>-1000</left><top>-1000</top>
+            <width>1</width><height>1</height><label/>
+        </control>
+        <control type="button" id="7105">
+            <visible>false</visible>
+            <left>-1000</left><top>-1000</top>
+            <width>1</width><height>1</height><label/>
+        </control>
+        <control type="button" id="7106">
+            <visible>false</visible>
+            <left>-1000</left><top>-1000</top>
+            <width>1</width><height>1</height><label/>
+        </control>
+    </controls>
+</window>

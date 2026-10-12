@@ -1,0 +1,651 @@
+# Kodi Media Center language file
+# Addon Name: Filtered Movies
+# Addon id: plugin.video.filteredmovies
+msgid ""
+msgstr ""
+"Project-Id-Version: plugin.video.filteredmovies\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: forbxy\n"
+"Language-Team: Chinese (China)\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgctxt "#32001"
+msgid "General"
+msgstr "通用"
+
+msgctxt "#32002"
+msgid "Digit key input mode"
+msgstr "数字键输入模式"
+
+msgctxt "#32003"
+msgid "In pure digit mode, keys input digits directly; in digit+letter mode, keys open a character selector with cycling selection."
+msgstr "纯数字模式下按键直接输入数字；数字+字母模式下按键弹出字符选择器，连续按键循环或按方向键选择。"
+
+msgctxt "#32004"
+msgid "Digit + Letter"
+msgstr "数字+字母"
+
+msgctxt "#32005"
+msgid "Pure Digit"
+msgstr "纯数字"
+
+msgctxt "#32006"
+msgid "UI Style"
+msgstr "界面风格"
+
+msgctxt "#32007"
+msgid "Automatically choose rounded or square based on skin, or set manually."
+msgstr "自动根据皮肤选择圆角或方角，也可手动指定。"
+
+msgctxt "#32008"
+msgid "Auto"
+msgstr "自动"
+
+msgctxt "#32009"
+msgid "Rounded"
+msgstr "圆角"
+
+msgctxt "#32010"
+msgid "Square"
+msgstr "方角"
+
+msgctxt "#32011"
+msgid "Set Global Background"
+msgstr "设置全局背景"
+
+msgctxt "#32012"
+msgid "Filter result limit"
+msgstr "筛选结果最大数量"
+
+msgctxt "#32013"
+msgid "Maximum number of items returned when browsing with filters."
+msgstr "使用筛选浏览时返回的最大条目数。"
+
+msgctxt "#32014"
+msgid "Search result limit"
+msgstr "搜索结果最大数量"
+
+msgctxt "#32015"
+msgid "Maximum number of items returned when searching."
+msgstr "搜索时返回的最大条目数。"
+
+msgctxt "#32016"
+msgid "Enable movie set search"
+msgstr "启用系列电影搜索"
+
+msgctxt "#32017"
+msgid "When enabled, movie sets can be searched by T9/initials. After toggling this option, enter 000000 (six zeros) in T9 input to manually rebuild or clean up the index."
+msgstr "启用后可通过T9/首字母搜索系列电影,但是搜索索引会添加到系列电影介绍里，在某些皮肤上可能不太美观。切换开关后需要在T9输入000000（六个0）以手动清理或创建一次索引。"
+
+msgctxt "#32018"
+msgid "Search index field"
+msgstr "搜索索引字段"
+
+msgctxt "#32019"
+msgid "Which database field to store and match the T9 search index. originaltitle is the default; sorttitle can be used as an alternative if originaltitle is needed for other purposes."
+msgstr "用于存储和匹配T9搜索索引的数据库字段。默认使用originaltitle；如果originaltitle需要用于其他用途，可改用sorttitle。"
+
+msgctxt "#32020"
+msgid "originaltitle"
+msgstr "originaltitle（原始标题）"
+
+msgctxt "#32021"
+msgid "sorttitle"
+msgstr "sorttitle（排序标题）"
+
+msgctxt "#32022"
+msgid "Auto write search index"
+msgstr "自动写入搜索索引"
+
+msgctxt "#32023"
+msgid "When enabled, the plugin will automatically write T9 search index data to the selected search field for movies and TV shows."
+msgstr "启用后，插件会自动将T9搜索索引数据写入所选的搜索字段中（电影和剧集）。"
+
+msgctxt "#32024"
+msgid "Autofill/fix playlist for current episode or folder"
+msgstr "播放时自动补全或修正当前播放剧集/文件夹内视频的播放列表"
+
+msgctxt "#32025"
+msgid "When enabled, starting an episode or a video file from a folder will automatically fill and sort the current playlist with the full season or all videos in that folder. For scraped TV shows, misplaced or out-of-order episodes are also corrected. Up to 50 items before and 50 after the current item are kept."
+msgstr "启用后，开始播放剧集或文件夹中的视频文件时，自动将当前播放列表补全为整季剧集或该文件夹下全部视频，并修正已刷剥剧集的乱序问题；当前项前方保留最多50集，后方保留最多50集。"
+
+msgctxt "#32026"
+msgid "Media selector position"
+msgstr "字幕/音轨选择器弹出位置"
+
+msgctxt "#32027"
+msgid "Set the screen position where the subtitle/audio selector appears"
+msgstr "设置字幕和音轨选择器弹出的屏幕位置"
+
+msgctxt "#32028"
+msgid "Bottom right"
+msgstr "右下角"
+
+msgctxt "#32029"
+msgid "Bottom left"
+msgstr "左下角"
+
+msgctxt "#32030"
+msgid "Top right"
+msgstr "右上角"
+
+msgctxt "#32031"
+msgid "Top left"
+msgstr "左上角"
+
+msgctxt "#32032"
+msgid "Center"
+msgstr "居中"
+
+msgctxt "#32033"
+msgid "Media selector background opacity"
+msgstr "字幕/音轨选择器背景不透明度"
+
+msgctxt "#32034"
+msgid "Adjust subtitle/audio selector background opacity (0-100)."
+msgstr "调整字幕/音轨选择器背景不透明度（0-100）。"
+
+msgctxt "#32035"
+msgid "United States"
+msgstr "美国"
+
+msgctxt "#32036"
+msgid "United Kingdom"
+msgstr "英国"
+
+msgctxt "#32037"
+msgid "France"
+msgstr "法国"
+
+msgctxt "#32038"
+msgid "Germany"
+msgstr "德国"
+
+msgctxt "#32039"
+msgid "Italy"
+msgstr "意大利"
+
+msgctxt "#32040"
+msgid "Japan"
+msgstr "日本"
+
+msgctxt "#32041"
+msgid "South Korea"
+msgstr "韩国"
+
+msgctxt "#32042"
+msgid "China"
+msgstr "中国内地"
+
+msgctxt "#32043"
+msgid "Hong Kong"
+msgstr "中国香港"
+
+msgctxt "#32044"
+msgid "Taiwan"
+msgstr "中国台湾"
+
+msgctxt "#32045"
+msgid "India"
+msgstr "印度"
+
+msgctxt "#32046"
+msgid "Russia"
+msgstr "俄罗斯"
+
+msgctxt "#32047"
+msgid "Canada"
+msgstr "加拿大"
+
+msgctxt "#32048"
+msgid "Australia"
+msgstr "澳大利亚"
+
+msgctxt "#32049"
+msgid "New Zealand"
+msgstr "新西兰"
+
+msgctxt "#32050"
+msgid "Spain"
+msgstr "西班牙"
+
+msgctxt "#32051"
+msgid "Brazil"
+msgstr "巴西"
+
+msgctxt "#32052"
+msgid "Mexico"
+msgstr "墨西哥"
+
+msgctxt "#32053"
+msgid "Sweden"
+msgstr "瑞典"
+
+msgctxt "#32054"
+msgid "Denmark"
+msgstr "丹麦"
+
+msgctxt "#32055"
+msgid "Norway"
+msgstr "挪威"
+
+msgctxt "#32056"
+msgid "Netherlands"
+msgstr "荷兰"
+
+msgctxt "#32057"
+msgid "Belgium"
+msgstr "比利时"
+
+msgctxt "#32058"
+msgid "Ireland"
+msgstr "爱尔兰"
+
+msgctxt "#32059"
+msgid "Switzerland"
+msgstr "瑞士"
+
+msgctxt "#32060"
+msgid "Austria"
+msgstr "奥地利"
+
+msgctxt "#32061"
+msgid "Poland"
+msgstr "波兰"
+
+msgctxt "#32062"
+msgid "Czech Republic"
+msgstr "捷克"
+
+msgctxt "#32063"
+msgid "Thailand"
+msgstr "泰国"
+
+msgctxt "#32064"
+msgid "Argentina"
+msgstr "阿根廷"
+
+msgctxt "#32065"
+msgid "South Africa"
+msgstr "南非"
+
+msgctxt "#32066"
+msgid "Turkey"
+msgstr "土耳其"
+
+msgctxt "#32067"
+msgid "Portugal"
+msgstr "葡萄牙"
+
+msgctxt "#32068"
+msgid "Finland"
+msgstr "芬兰"
+
+msgctxt "#32069"
+msgid "Hungary"
+msgstr "匈牙利"
+
+msgctxt "#32070"
+msgid "Iceland"
+msgstr "冰岛"
+
+msgctxt "#32071"
+msgid "Greece"
+msgstr "希腊"
+
+msgctxt "#32072"
+msgid "Chile"
+msgstr "智利"
+
+msgctxt "#32073"
+msgid "Colombia"
+msgstr "哥伦比亚"
+
+msgctxt "#32074"
+msgid "Philippines"
+msgstr "菲律宾"
+
+msgctxt "#32075"
+msgid "Singapore"
+msgstr "新加坡"
+
+msgctxt "#32076"
+msgid "Malaysia"
+msgstr "马来西亚"
+
+msgctxt "#32077"
+msgid "Indonesia"
+msgstr "印尼"
+
+msgctxt "#32078"
+msgid "Israel"
+msgstr "以色列"
+
+msgctxt "#32079"
+msgid "Egypt"
+msgstr "埃及"
+
+msgctxt "#32080"
+msgid "United Arab Emirates"
+msgstr "阿联酋"
+
+msgctxt "#32081"
+msgid "Saudi Arabia"
+msgstr "沙特"
+
+msgctxt "#32082"
+msgid "Luxembourg"
+msgstr "卢森堡"
+
+msgctxt "#32083"
+msgid "Romania"
+msgstr "罗马尼亚"
+
+msgctxt "#32084"
+msgid "Bulgaria"
+msgstr "保加利亚"
+
+msgctxt "#32085"
+msgid "Ukraine"
+msgstr "乌克兰"
+
+msgctxt "#32086"
+msgid "Iran"
+msgstr "伊朗"
+
+msgctxt "#32087"
+msgid "Nigeria"
+msgstr "尼日利亚"
+
+msgctxt "#32088"
+msgid "Kenya"
+msgstr "肯尼亚"
+
+msgctxt "#32089"
+msgid "Peru"
+msgstr "秘鲁"
+
+msgctxt "#32090"
+msgid "Pakistan"
+msgstr "巴基斯坦"
+
+msgctxt "#32100"
+msgid "Date added"
+msgstr "最新入库"
+
+msgctxt "#32101"
+msgid "lastplayed"
+msgstr "最近观看"
+
+msgctxt "#32102"
+msgid "Random"
+msgstr "随机"
+
+msgctxt "#32103"
+msgid "Latest"
+msgstr "最新上线"
+
+msgctxt "#32104"
+msgid "Rating"
+msgstr "影片评分"
+
+msgctxt "#32110"
+msgid "Movie"
+msgstr "电影"
+
+msgctxt "#32111"
+msgid "Movie set"
+msgstr "系列电影"
+
+msgctxt "#32112"
+msgid "Tv Show"
+msgstr "剧集"
+
+msgctxt "#32113"
+msgid "Concert"
+msgstr "演唱会"
+
+msgctxt "#32114"
+msgid "Documentary"
+msgstr "纪录片"
+
+msgctxt "#32115"
+msgid "All"
+msgstr "全部"
+
+msgctxt "#32120"
+msgid "This year"
+msgstr "今年"
+
+msgctxt "#32121"
+msgid "2020s"
+msgstr "2020年代"
+
+msgctxt "#32122"
+msgid "2010s"
+msgstr "2010年代"
+
+msgctxt "#32123"
+msgid "2000s"
+msgstr "2000年代"
+
+msgctxt "#32124"
+msgid "1990s"
+msgstr "90年代"
+
+msgctxt "#32125"
+msgid "1980s"
+msgstr "80年代"
+
+msgctxt "#32126"
+msgid "1970s"
+msgstr "70年代"
+
+msgctxt "#32127"
+msgid "1960s"
+msgstr "60年代"
+
+msgctxt "#32128"
+msgid "Older"
+msgstr "更早"
+
+msgctxt "#32129"
+msgid "Other"
+msgstr "其他"
+
+msgctxt "#32130"
+msgid "Your poster wall is empty. Please go to the "Add Matching Directory" section, add a media matching directory, and you will be able to browse it in the library."
+msgstr "你的海报墙内容为空。请进入“添加匹配目录”区，添加媒体匹配目录，你就能在资料库中浏览了。"
+
+msgctxt "#32131"
+msgid "Match Management"
+msgstr "匹配管理"
+
+msgctxt "#32132"
+msgid "Genre"
+msgstr "类型"
+
+msgctxt "#32133"
+msgid "Action"
+msgstr "动作"
+
+msgctxt "#32134"
+msgid "Comedy"
+msgstr "喜剧"
+
+msgctxt "#32135"
+msgid "Romance"
+msgstr "爱情"
+
+msgctxt "#32136"
+msgid "Sci-Fi"
+msgstr "科幻"
+
+msgctxt "#32137"
+msgid "Crime"
+msgstr "犯罪"
+
+msgctxt "#32138"
+msgid "Adventure"
+msgstr "冒险"
+
+msgctxt "#32139"
+msgid "Horror"
+msgstr "恐怖"
+
+msgctxt "#32140"
+msgid "Animation"
+msgstr "动画"
+
+msgctxt "#32141"
+msgid "War"
+msgstr "战争"
+
+msgctxt "#32142"
+msgid "Mystery"
+msgstr "悬疑"
+
+msgctxt "#32143"
+msgid "History"
+msgstr "历史"
+
+msgctxt "#32144"
+msgid "Music"
+msgstr "音乐"
+
+msgctxt "#32145"
+msgid "Drama"
+msgstr "剧情"
+
+msgctxt "#32146"
+msgid "Other"
+msgstr "其他"
+
+msgctxt "#32147"
+msgid "Search"
+msgstr "搜索"
+
+msgctxt "#32148"
+msgid "Genre Filter"
+msgstr "类型筛选"
+
+msgctxt "#32149"
+msgid "Match Management"
+msgstr "匹配管理"
+
+msgctxt "#32150"
+msgid "Settings"
+msgstr "设置"
+
+msgctxt "#32151"
+msgid "Continue Watching"
+msgstr "继续观看"
+
+msgctxt "#32152"
+msgid "All Videos"
+msgstr "全部影片"
+
+msgctxt "#32153"
+msgid "Movies"
+msgstr "电影"
+
+msgctxt "#32154"
+msgid "Collections"
+msgstr "系列合集"
+
+msgctxt "#32155"
+msgid "TV Shows"
+msgstr "电视剧"
+
+msgctxt "#32156"
+msgid "Concerts"
+msgstr "演唱会"
+
+msgctxt "#32157"
+msgid "Documentaries"
+msgstr "纪录片"
+
+msgctxt "#32158"
+msgid "Recently Added Movies"
+msgstr "最近加入的电影"
+
+msgctxt "#32159"
+msgid "Recently Added TV Shows"
+msgstr "最近加入的电视剧"
+
+msgctxt "#32160"
+msgid "Recently Added Concerts"
+msgstr "最近加入的演唱会"
+
+msgctxt "#32161"
+msgid "Recently Added Documentaries"
+msgstr "最近加入的纪录片"
+
+msgctxt "#32162"
+msgid "Recently Added Collections"
+msgstr "最近加入的系列电影"
+
+msgctxt "#32163"
+msgid "Rating"
+msgstr "评分"
+
+msgctxt "#32164"
+msgid "Below 6"
+msgstr "6分以下"
+
+msgctxt "#32165"
+msgid "Delete"
+msgstr "删除"
+
+msgctxt "#32166"
+msgid "Are you sure you want to delete「%s」? This will delete all related entries in the database."
+msgstr "确定要删除「%s」吗？将联级删除数据库中所有相关内容。"
+
+msgctxt "#32167"
+msgid "Deleted"
+msgstr "已删除"
+
+msgctxt "#32168"
+msgid "Delete failed:"
+msgstr "删除失败: "
+
+msgctxt "#32169"
+msgid "Unlimited"
+msgstr "无限制"
+
+msgctxt "#32170"
+msgid "48"
+msgstr "48"
+
+msgctxt "#32171"
+msgid "96"
+msgstr "96"
+
+msgctxt "#32172"
+msgid "144"
+msgstr "144"
+
+msgctxt "#32173"
+msgid "300"
+msgstr "300"
+
+msgctxt "#32174"
+msgid "600"
+msgstr "600"
+
+msgctxt "#32175"
+msgid "1200"
+msgstr "1200"
+
+msgctxt "#32400"
+msgid "Use cached artwork only while browsing"
+msgstr "浏览时仅使用已缓存图片"
+
+msgctxt "#32401"
+msgid "Disable automatic artwork downloads on this wall. Use Matching Management to cache images before browsing."
+msgstr "禁止海报墙浏览时自动下载图片。请通过匹配管理先缓存图片，再浏览影片。"

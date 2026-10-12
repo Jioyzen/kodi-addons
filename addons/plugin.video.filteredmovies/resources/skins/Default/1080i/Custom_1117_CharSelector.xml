@@ -1,0 +1,365 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<window type="dialog" id="1117">
+    <defaultcontrol>9900</defaultcontrol>
+    <controls>
+        <control type="group">
+            <left>30</left>
+            <top>320</top>
+            <width>310</width>
+            <height>310</height>
+            <animation effect="fade" start="100" end="0" time="100">WindowClose</animation>
+
+            <!-- 上方字符 (chars[0]) -->
+            <control type="group">
+                <left>105</left>
+                <top>0</top>
+                <width>100</width>
+                <height>100</height>
+                <!-- 选中背景 -->
+                <control type="image">
+                    <visible>String.IsEqual(Window(Home).Property(MFG.CharSel.Active),0)</visible>
+                    <width>100%</width>
+                    <height>100%</height>
+                    <texture colordiffuse="button_focus">rounded/mask-100x100-r16.png</texture>
+                </control>
+                <!-- 未选中背景 -->
+                <control type="image">
+                    <visible>!String.IsEqual(Window(Home).Property(MFG.CharSel.Active),0)</visible>
+                    <width>100%</width>
+                    <height>100%</height>
+                    <texture colordiffuse="FA333333">rounded/mask-100x100-r16.png</texture>
+                </control>
+                <control type="label">
+                    <width>100%</width>
+                    <height>100%</height>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <font>font13</font>
+                    <textcolor>white</textcolor>
+                    <label>$INFO[Window(Home).Property(MFG.CharSel.0)]</label>
+                </control>
+            </control>
+
+            <!-- 左侧字符 (chars[1]) -->
+            <control type="group">
+                <left>0</left>
+                <top>105</top>
+                <width>100</width>
+                <height>100</height>
+                <control type="image">
+                    <visible>String.IsEqual(Window(Home).Property(MFG.CharSel.Active),1)</visible>
+                    <width>100%</width>
+                    <height>100%</height>
+                    <texture colordiffuse="button_focus">rounded/mask-100x100-r16.png</texture>
+                </control>
+                <control type="image">
+                    <visible>!String.IsEqual(Window(Home).Property(MFG.CharSel.Active),1)</visible>
+                    <width>100%</width>
+                    <height>100%</height>
+                    <texture colordiffuse="FA333333">rounded/mask-100x100-r16.png</texture>
+                </control>
+                <control type="label">
+                    <width>100%</width>
+                    <height>100%</height>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <font>font13</font>
+                    <textcolor>white</textcolor>
+                    <label>$INFO[Window(Home).Property(MFG.CharSel.1)]</label>
+                </control>
+            </control>
+
+            <!-- 中间数字 (digit) -->
+            <control type="group">
+                <left>105</left>
+                <top>105</top>
+                <width>100</width>
+                <height>100</height>
+                <control type="image">
+                    <visible>String.IsEqual(Window(Home).Property(MFG.CharSel.Active),2)</visible>
+                    <width>100%</width>
+                    <height>100%</height>
+                    <texture colordiffuse="button_focus">rounded/mask-100x100-r16.png</texture>
+                </control>
+                <control type="image">
+                    <visible>!String.IsEqual(Window(Home).Property(MFG.CharSel.Active),2)</visible>
+                    <width>100%</width>
+                    <height>100%</height>
+                    <texture colordiffuse="FA333333">rounded/mask-100x100-r16.png</texture>
+                </control>
+                <control type="label">
+                    <width>100%</width>
+                    <height>100%</height>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <font>font13</font>
+                    <textcolor>white</textcolor>
+                    <label>$INFO[Window(Home).Property(MFG.CharSel.2)]</label>
+                </control>
+            </control>
+
+            <!-- 右侧字符 (chars[2]) -->
+            <control type="group">
+                <left>210</left>
+                <top>105</top>
+                <width>100</width>
+                <height>100</height>
+                <control type="image">
+                    <visible>String.IsEqual(Window(Home).Property(MFG.CharSel.Active),3)</visible>
+                    <width>100%</width>
+                    <height>100%</height>
+                    <texture colordiffuse="button_focus">rounded/mask-100x100-r16.png</texture>
+                </control>
+                <control type="image">
+                    <visible>!String.IsEqual(Window(Home).Property(MFG.CharSel.Active),3)</visible>
+                    <width>100%</width>
+                    <height>100%</height>
+                    <texture colordiffuse="FA333333">rounded/mask-100x100-r16.png</texture>
+                </control>
+                <control type="label">
+                    <width>100%</width>
+                    <height>100%</height>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <font>font13</font>
+                    <textcolor>white</textcolor>
+                    <label>$INFO[Window(Home).Property(MFG.CharSel.3)]</label>
+                </control>
+            </control>
+
+            <!-- 下方字符 (chars[3]) — 仅4字母键可见 -->
+            <control type="group">
+                <left>105</left>
+                <top>210</top>
+                <width>100</width>
+                <height>100</height>
+                <visible>!String.IsEmpty(Window(Home).Property(MFG.CharSel.4))</visible>
+                <control type="image">
+                    <visible>String.IsEqual(Window(Home).Property(MFG.CharSel.Active),4)</visible>
+                    <width>100%</width>
+                    <height>100%</height>
+                    <texture colordiffuse="button_focus">rounded/mask-100x100-r16.png</texture>
+                </control>
+                <control type="image">
+                    <visible>!String.IsEqual(Window(Home).Property(MFG.CharSel.Active),4)</visible>
+                    <width>100%</width>
+                    <height>100%</height>
+                    <texture colordiffuse="FA333333">rounded/mask-100x100-r16.png</texture>
+                </control>
+                <control type="label">
+                    <width>100%</width>
+                    <height>100%</height>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <font>font13</font>
+                    <textcolor>white</textcolor>
+                    <label>$INFO[Window(Home).Property(MFG.CharSel.4)]</label>
+                </control>
+            </control>
+        </control>
+
+        <!-- 隐藏按钮：初始焦点落此处，避免 panel item 0 闪高亮 -->
+        <control type="button" id="9900">
+            <left>-100</left><top>-100</top>
+            <width>1</width><height>1</height>
+            <visible>true</visible>
+            <texturefocus/><texturenofocus/>
+            <label/>
+        </control>
+
+        <!-- T9 Keypad（与 5111 完全一致） -->
+        <control type="group">
+            <left>60</left>
+            <top>30</top>
+            <width>310</width>
+            <height>400</height>
+            <!-- Display -->
+            <control type="label">
+                <left>0</left>
+                <top>265</top>
+                <width>310</width>
+                <height>35</height>
+                <label>$INFO[Window.Property(MFG.T9Input)]</label>
+                <align>center</align>
+                <font>font13</font>
+                <textcolor>white</textcolor>
+            </control>
+            <!-- Square T9 Keypad Panel -->
+            <control type="panel" id="6050">
+                <left>0</left>
+                <top>0</top>
+                <width>310</width>
+                <height>260</height>
+                <orientation>vertical</orientation>
+                <itemlayout width="91" height="65">
+                    <control type="image">
+                        <width>88</width>
+                        <height>62</height>
+                        <texture colordiffuse="00FFFFFF">rounded/mask-88x62-r16.png</texture>
+                    </control>
+                    <control type="label">
+                        <top>8</top>
+                        <width>88</width>
+                        <height>25</height>
+                        <align>center</align>
+                        <aligny>center</aligny>
+                        <font>font12</font>
+                        <label>$INFO[ListItem.Property(DisplayLabel)]</label>
+                        <textcolor>FFFFFFFF</textcolor>
+                    <focusedcolor>button_focus</focusedcolor>
+                    <texturefocus/>
+                    <texturenofocus/>
+                        <visible>!String.IsEmpty(ListItem.Label2)</visible>
+                    </control>
+                    <control type="label">
+                        <top>32</top>
+                        <width>88</width>
+                        <height>20</height>
+                        <align>center</align>
+                        <aligny>center</aligny>
+                        <font>font10</font>
+                        <label>$INFO[ListItem.Label2]</label>
+                        <textcolor>FFAAAAAA</textcolor>
+                        <visible>!String.IsEmpty(ListItem.Label2)</visible>
+                    </control>
+                    <control type="label">
+                        <width>88</width>
+                        <height>62</height>
+                        <align>center</align>
+                        <aligny>center</aligny>
+                        <font>font12</font>
+                        <label>$INFO[ListItem.Property(DisplayLabel)]</label>
+                        <textcolor>FFFFFFFF</textcolor>
+                    <focusedcolor>button_focus</focusedcolor>
+                    <texturefocus/>
+                    <texturenofocus/>
+                        <visible>String.IsEmpty(ListItem.Label2)</visible>
+                    </control>
+                </itemlayout>
+                <focusedlayout width="91" height="65">
+                    <control type="image">
+                        <width>88</width>
+                        <height>62</height>
+                        <texture colordiffuse="button_focus">rounded/mask-88x62-r16.png</texture>
+                    </control>
+                    <control type="label">
+                        <top>8</top>
+                        <width>88</width>
+                        <height>25</height>
+                        <align>center</align>
+                        <aligny>center</aligny>
+                        <font>font12</font>
+                        <label>$INFO[ListItem.Property(DisplayLabel)]</label>
+                        <textcolor>FFFFFFFF</textcolor>
+                    <focusedcolor>button_focus</focusedcolor>
+                    <texturefocus/>
+                    <texturenofocus/>
+                        <visible>!String.IsEmpty(ListItem.Label2)</visible>
+                    </control>
+                    <control type="label">
+                        <top>32</top>
+                        <width>88</width>
+                        <height>20</height>
+                        <align>center</align>
+                        <aligny>center</aligny>
+                        <font>font10</font>
+                        <label>$INFO[ListItem.Label2]</label>
+                        <textcolor>FFFFFFFF</textcolor>
+                    <focusedcolor>button_focus</focusedcolor>
+                    <texturefocus/>
+                    <texturenofocus/>
+                        <visible>!String.IsEmpty(ListItem.Label2)</visible>
+                    </control>
+                    <control type="label">
+                        <width>88</width>
+                        <height>62</height>
+                        <align>center</align>
+                        <aligny>center</aligny>
+                        <font>font12</font>
+                        <label>$INFO[ListItem.Property(DisplayLabel)]</label>
+                        <textcolor>FFFFFFFF</textcolor>
+                    <focusedcolor>button_focus</focusedcolor>
+                    <texturefocus/>
+                    <texturenofocus/>
+                        <visible>String.IsEmpty(ListItem.Label2)</visible>
+                    </control>
+                </focusedlayout>
+                <content>
+                    <item>
+                        <label>1</label>
+                        <label2>[B][/B]</label2>
+                        <property name="DisplayLabel">[B]1[/B]</property>
+                        <onclick>Action(Number1)</onclick>
+                    </item>
+                    <item>
+                        <label>2</label>
+                        <label2>ABC</label2>
+                        <property name="DisplayLabel">[B]2[/B]</property>
+                        <onclick>Action(Number2)</onclick>
+                    </item>
+                    <item>
+                        <label>3</label>
+                        <label2>DEF</label2>
+                        <property name="DisplayLabel">[B]3[/B]</property>
+                        <onclick>Action(Number3)</onclick>
+                    </item>
+                    <item>
+                        <label>4</label>
+                        <label2>GHI</label2>
+                        <property name="DisplayLabel">[B]4[/B]</property>
+                        <onclick>Action(Number4)</onclick>
+                    </item>
+                    <item>
+                        <label>5</label>
+                        <label2>JKL</label2>
+                        <property name="DisplayLabel">[B]5[/B]</property>
+                        <onclick>Action(Number5)</onclick>
+                    </item>
+                    <item>
+                        <label>6</label>
+                        <label2>MNO</label2>
+                        <property name="DisplayLabel">[B]6[/B]</property>
+                        <onclick>Action(Number6)</onclick>
+                    </item>
+                    <item>
+                        <label>7</label>
+                        <label2>PQRS</label2>
+                        <property name="DisplayLabel">[B]7[/B]</property>
+                        <onclick>Action(Number7)</onclick>
+                    </item>
+                    <item>
+                        <label>8</label>
+                        <label2>TUV</label2>
+                        <property name="DisplayLabel">[B]8[/B]</property>
+                        <onclick>Action(Number8)</onclick>
+                    </item>
+                    <item>
+                        <label>9</label>
+                        <label2>WXYZ</label2>
+                        <property name="DisplayLabel">[B]9[/B]</property>
+                        <onclick>Action(Number9)</onclick>
+                    </item>
+                    <item>
+                        <label>Del</label>
+                        <label2/>
+                        <property name="DisplayLabel">Del</property>
+                        <onclick>Action(Delete)</onclick>
+                    </item>
+                    <item>
+                        <label>0</label>
+                        <label2/>
+                        <property name="DisplayLabel">[B]0[/B]</property>
+                        <onclick>Action(Number0)</onclick>
+                    </item>
+                    <item>
+                        <label>键盘</label>
+                        <label2/>
+                        <property name="DisplayLabel">键盘</property>
+                        <onclick>Action(Stop)</onclick>
+                    </item>
+                </content>
+            </control>
+            <!-- Rounded T9 Keypad Panel -->
+            </control>
+    </controls>
+</window>

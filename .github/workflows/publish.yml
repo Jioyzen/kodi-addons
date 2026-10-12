@@ -1,0 +1,77 @@
+name: Check and publish Kodi add-ons
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: kodi-addons-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Enforce add-on version bumps
+        env:
+          BASE_REVISION: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          if [ -n "$BASE_REVISION" ]; then
+            python scripts/check_versions.py --base "$BASE_REVISION"
+          fi
+      - name: Test packaging, checksums and privacy checks
+        run: python scripts/test_repository.py
+      - name: Build repository site
+        run: python scripts/build_repository.py
+      - name: Upload downloadable packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: kodi-addons
+          path: |
+            docs/*/*.zip
+            docs/*/*.zip.sha256
+            docs/manifest.json
+            docs/addons.xml*
+      - name: Upload Pages artifact
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+  release:
+    if: github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: kodi-addons
+          path: dist
+      - name: Publish official release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python scripts/publish_release.py --directory dist
+  deploy:
+    if: github.event_name != 'pull_request'
+    needs: [build, release]
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy Kodi repository to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

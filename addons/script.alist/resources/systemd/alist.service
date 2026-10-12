@@ -1,0 +1,12 @@
+[Unit]
+Description=Alist service
+After=network-online.target
+Wants=network-online.target
+[Service]
+WorkingDirectory=/storage/.kodi/userdata/addon_data/service.alist
+ExecStart=/storage/.kodi/addons/service.alist/alist server --data /storage/.kodi/userdata/addon_data/service.alist
+Restart=on-failure
+RestartSec=5
+UMask=0077
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,1 @@
+CONFIG = {'addon_id': 'script.clouddrive2', 'name': 'CloudDrive2', 'unit': 'clouddrive2.service', 'binary': '/storage/.kodi/addons/service.clouddrive/clouddrive', 'data_dir': '/storage/.kodi/userdata/addon_data/service.clouddrive', 'port': 19798, 'password_reset': False}

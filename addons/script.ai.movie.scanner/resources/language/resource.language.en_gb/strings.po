@@ -1,0 +1,657 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: script.ai.movie.scanner\n"
+"Language: en_US\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+# ==========================================
+# Settings labels (32001-32009)
+# ==========================================
+msgctxt "#600"
+msgid "AI Movie Scanner"
+msgstr "AI Poster Scraper"
+
+msgctxt "#32001"
+msgid "AI Settings"
+msgstr "AI Settings"
+
+msgctxt "#32002"
+msgid "AI API Base URL"
+msgstr "AI API Base URL"
+
+msgctxt "#32003"
+msgid "AI API Key"
+msgstr "AI API Key"
+
+msgctxt "#32170"
+msgid "AI Model"
+msgstr "AI Model"
+
+msgctxt "#32171"
+msgid "Enable AI Fallback"
+msgstr "Enable AI Fallback"
+
+msgctxt "#32172"
+msgid "AI API Key is empty"
+msgstr "AI API Key is empty. Please open the add-on settings and fill in your AI API Key before scanning."
+
+msgctxt "#32182"
+msgid "AI fallback not configured (tap to set)"
+msgstr "AI fallback not configured - tap to open settings"
+
+msgctxt "#32180"
+msgid "TMDB API Key is empty"
+msgstr "TMDB API Key is empty. Please open the add-on settings and fill in your TMDB API Key before scanning."
+
+msgctxt "#32181"
+msgid "TMDB API Key is invalid"
+msgstr "TMDB API Key is invalid. Please check and re-enter a valid TMDB API Key in the add-on settings."
+
+msgctxt "#32004"
+msgid "TMDB Settings"
+msgstr "TMDB Settings"
+
+msgctxt "#32005"
+msgid "TMDB API Key"
+msgstr "TMDB API Key"
+
+msgctxt "#32006"
+msgid "Scraper Language"
+msgstr "Scraper Language"
+
+msgctxt "#32007"
+msgid "Scan Settings"
+msgstr "Scan Settings"
+
+msgctxt "#32008"
+msgid "File Interval (seconds)"
+msgstr "File Interval (seconds)"
+
+msgctxt "#32009"
+msgid "Skip existing movies"
+msgstr "Skip existing movies"
+
+# ==========================================
+# Status labels (32010-32014)
+# ==========================================
+msgctxt "#32010"
+msgid "[Pending]"
+msgstr "[Pending]"
+
+msgctxt "#32011"
+msgid "[Matched]"
+msgstr "[Matched]"
+
+msgctxt "#32012"
+msgid "[Merged]"
+msgstr "[Merged]"
+
+msgctxt "#32013"
+msgid "[Failed]"
+msgstr "[Failed]"
+
+msgctxt "#32014"
+msgid "[Unknown]"
+msgstr "[Unknown]"
+
+# ==========================================
+# Menu labels (32020-32029)
+# ==========================================
+msgctxt "#32020"
+msgid "[B]+ Add Directory[/B]"
+msgstr "[B]+ Add Directory[/B]"
+
+msgctxt "#32021"
+msgid "[B]Scan All[/B] (%d pending)"
+msgstr "[B]Scan All[/B] (%d pending)"
+
+msgctxt "#32022"
+msgid "[COLOR=FFFF4444][B]Stop Scan[/B][/COLOR]"
+msgstr "[COLOR=FFFF4444][B]Stop Scan[/B][/COLOR]"
+
+msgctxt "#32023"
+msgid "[B]Cache Images[/B]"
+msgstr "[B]Cache Images[/B]"
+
+msgctxt "#32024"
+msgid "Settings"
+msgstr "Settings"
+
+msgctxt "#32025"
+msgid "[B]Refresh All Directories[/B]"
+msgstr "[B]Refresh All Directories[/B]"
+
+msgctxt "#32026"
+msgid "[COLOR=FFFF4444][B]Clear All Data[/B][/COLOR]"
+msgstr "[COLOR=FFFF4444][B]Clear All Data[/B][/COLOR]"
+
+msgctxt "#32027"
+msgid "Scan This Directory"
+msgstr "Scan This Directory"
+
+msgctxt "#32028"
+msgid "Remove Directory"
+msgstr "Remove Directory"
+
+msgctxt "#32029"
+msgid "Manual Match"
+msgstr "Manual Match"
+
+# ==========================================
+# Notifications (32030-32049)
+# ==========================================
+msgctxt "#32030"
+msgid "Stopping scan..."
+msgstr "Stopping scan..."
+
+msgctxt "#32031"
+msgid "No scan task running"
+msgstr "No scan task running"
+
+msgctxt "#32032"
+msgid "No managed directories"
+msgstr "No managed directories"
+
+msgctxt "#32033"
+msgid "Refreshing directories..."
+msgstr "Refreshing directories..."
+
+msgctxt "#32034"
+msgid "Refreshing: %s"
+msgstr "Refreshing: %s"
+
+msgctxt "#32035"
+msgid "Found %d new, %d deleted"
+msgstr "Found %d new, %d deleted"
+
+msgctxt "#32036"
+msgid "Scanning directory files..."
+msgstr "Scanning directory files..."
+
+msgctxt "#32037"
+msgid "No video files found"
+msgstr "No video files found"
+
+msgctxt "#32038"
+msgid "Directory already exists"
+msgstr "Directory already exists"
+
+msgctxt "#32039"
+msgid "Directory not found"
+msgstr "Directory not found"
+
+msgctxt "#32040"
+msgid "Directory removed"
+msgstr "Directory removed"
+
+msgctxt "#32041"
+msgid "Scan task already running"
+msgstr "Scan task already running"
+
+msgctxt "#32042"
+msgid "Scan task running, please wait"
+msgstr "Scan task running, please wait"
+
+msgctxt "#32043"
+msgid "File not found"
+msgstr "File not found"
+
+msgctxt "#32044"
+msgid "No files to scan"
+msgstr "No files to scan"
+
+msgctxt "#32045"
+msgid "Scanning..."
+msgstr "Scanning..."
+
+msgctxt "#32046"
+msgid "All data cleared"
+msgstr "All data cleared"
+
+msgctxt "#32047"
+msgid "Added %d files"
+msgstr "Added %d files"
+
+msgctxt "#32048"
+msgid "Refresh: +%d new, -%d deleted"
+msgstr "Refresh: +%d new, -%d deleted"
+
+# ==========================================
+# Dialogs (32050-32059)
+# ==========================================
+msgctxt "#32050"
+msgid "Select directory to scan"
+msgstr "Select directory to scan"
+
+msgctxt "#32051"
+msgid "Remove directory and all associated database records?"
+msgstr "Remove directory and all associated database records?"
+
+msgctxt "#32052"
+msgid "Clear all poster data? This cannot be undone!"
+msgstr "Clear all poster data? This cannot be undone!"
+
+msgctxt "#32053"
+msgid "Please add a directory first"
+msgstr "Please add a directory first"
+
+msgctxt "#32054"
+msgid "[No Files]"
+msgstr "[No Files]"
+
+msgctxt "#32055"
+msgid "Unknown error"
+msgstr "Unknown error"
+
+msgctxt "#32056"
+msgid "Pending"
+msgstr "Pending"
+
+# ==========================================
+# Scan results (32060-32069)
+# ==========================================
+msgctxt "#32060"
+msgid "Refresh: %d new files\n%d deleted (with DB records)"
+msgstr "Refresh: %d new files\n%d deleted (with DB records)"
+
+msgctxt "#32061"
+msgid "Refresh complete - no changes"
+msgstr "Refresh complete - no changes"
+
+msgctxt "#32062"
+msgid "Processing (%d/%d)"
+msgstr "Processing (%d/%d)"
+
+msgctxt "#32063"
+msgid "Success:%d  Merged:%d  Failed:%d"
+msgstr "Success:%d  Merged:%d  Failed:%d"
+
+msgctxt "#32064"
+msgid "Scan Complete"
+msgstr "Scan Complete"
+
+msgctxt "#32065"
+msgid "Success: %d (Merged: %d)\nFailed: %d"
+msgstr "Success: %d (Merged: %d)\nFailed: %d"
+
+# ==========================================
+# Directory list stats (32070-32074)
+# ==========================================
+msgctxt "#32070"
+msgid "%d files | Matched:%d | Failed:%d | Pending:%d"
+msgstr "%d files | Matched:%d | Failed:%d | Pending:%d"
+
+msgctxt "#32071"
+msgid "[COLOR=FFFF4444][Pending:%d][/COLOR] [COLOR=FF44DD44][%d Matched/%d Failed][/COLOR] %s"
+msgstr "[COLOR=FFFF4444][Pending:%d][/COLOR] [COLOR=FF44DD44][%d Matched/%d Failed][/COLOR] %s"
+
+msgctxt "#32072"
+msgid "[COLOR=FF44DD44][%d Matched/%d Failed][/COLOR] %s"
+msgstr "[COLOR=FF44DD44][%d Matched/%d Failed][/COLOR] %s"
+
+msgctxt "#32073"
+msgid "[COLOR=FF44DD44][%d Matched][/COLOR] %s"
+msgstr "[COLOR=FF44DD44][%d Matched][/COLOR] %s"
+
+# ==========================================
+# Manual match (32080-32109)
+# ==========================================
+msgctxt "#32080"
+msgid "Enter movie/TV name or TMDB ID\n%s"
+msgstr "Enter movie/TV name or TMDB ID\n%s"
+
+msgctxt "#32081"
+msgid "Select media type"
+msgstr "Select media type"
+
+msgctxt "#32082"
+msgid "Movie"
+msgstr "Movie"
+
+msgctxt "#32083"
+msgid "TV Show"
+msgstr "TV Show"
+
+msgctxt "#32084"
+msgid "Loading movie details..."
+msgstr "Loading movie details..."
+
+msgctxt "#32085"
+msgid "Movie not found\nTMDB ID: %s"
+msgstr "Movie not found\nTMDB ID: %s"
+
+msgctxt "#32086"
+msgid "Loading TV show details..."
+msgstr "Loading TV show details..."
+
+msgctxt "#32087"
+msgid "TV show not found\nTMDB ID: %s"
+msgstr "TV show not found\nTMDB ID: %s"
+
+msgctxt "#32088"
+msgid "Searching..."
+msgstr "Searching..."
+
+msgctxt "#32089"
+msgid "No results found for \"%s\" in TMDB"
+msgstr "No results found for \"%s\" in TMDB"
+
+msgctxt "#32090"
+msgid "Select Movie/TV (%d results)"
+msgstr "Select Movie/TV (%d results)"
+
+msgctxt "#32091"
+msgid "Failed to get movie details"
+msgstr "Failed to get movie details"
+
+msgctxt "#32092"
+msgid "Failed to get TV show details"
+msgstr "Failed to get TV show details"
+
+msgctxt "#32093"
+msgid "Search error\n%s"
+msgstr "Search error\n%s"
+
+msgctxt "#32094"
+msgid "Matched: %s"
+msgstr "Matched: %s"
+
+msgctxt "#32095"
+msgid "Failed to write to database"
+msgstr "Failed to write to database"
+
+msgctxt "#32096"
+msgid "This TV show has no season info"
+msgstr "This TV show has no season info"
+
+msgctxt "#32097"
+msgid "%s (%d episodes)"
+msgstr "%s (%d episodes)"
+
+msgctxt "#32098"
+msgid "Select season: %s"
+msgstr "Select season: %s"
+
+msgctxt "#32099"
+msgid "Loading episode list..."
+msgstr "Loading episode list..."
+
+msgctxt "#32100"
+msgid "Cannot get episode list"
+msgstr "Cannot get episode list"
+
+msgctxt "#32101"
+msgid "Select episode: S%02d"
+msgstr "Select episode: S%02d"
+
+msgctxt "#32102"
+msgid "Loading episode details..."
+msgstr "Loading episode details..."
+
+msgctxt "#32103"
+msgid "Episode %d"
+msgstr "Episode %d"
+
+msgctxt "#32104"
+msgid "Matched: %s S%02dE%02d"
+msgstr "Matched: %s S%02dE%02d"
+
+msgctxt "#32105"
+msgid "Database write error\n%s"
+msgstr "Database write error\n%s"
+
+# ==========================================
+# Scan worker errors (32110-32119)
+# ==========================================
+msgctxt "#32110"
+msgid "AI could not identify movie name"
+msgstr "AI could not identify movie name"
+
+msgctxt "#32111"
+msgid "TMDB not found: %s (%s)"
+msgstr "TMDB not found: %s (%s)"
+
+msgctxt "#32112"
+msgid "Failed to get details: %s"
+msgstr "Failed to get details: %s"
+
+msgctxt "#32113"
+msgid "AI could not detect season/episode (S%02dE%02d)"
+msgstr "AI could not detect season/episode (S%02dE%02d)"
+
+msgctxt "#32114"
+msgid "TMDB TV show not found: %s (%s)"
+msgstr "TMDB TV show not found: %s (%s)"
+
+msgctxt "#32115"
+msgid "Failed to get TV details: %s"
+msgstr "Failed to get TV details: %s"
+
+msgctxt "#32116"
+msgid "Failed to write to database"
+msgstr "Failed to write to database"
+
+# ==========================================
+# Image cacher (32120-32135)
+# ==========================================
+msgctxt "#32120"
+msgid "Caching images..."
+msgstr "Caching images..."
+
+msgctxt "#32121"
+msgid "Reading media library..."
+msgstr "Reading media library..."
+
+msgctxt "#32122"
+msgid "Image Cache"
+msgstr "Image Cache"
+
+msgctxt "#32123"
+msgid "No videos found in library"
+msgstr "No videos found in library"
+
+msgctxt "#32124"
+msgid "No images to cache"
+msgstr "No images to cache"
+
+msgctxt "#32125"
+msgid "%d images, downloading..."
+msgstr "%d images, downloading..."
+
+msgctxt "#32126"
+msgid "Total:%d  Success:%d  Skip:%d  Failed:%d"
+msgstr "Total:%d  Success:%d  Skip:%d  Failed:%d"
+
+msgctxt "#32127"
+msgid "Downloading images...\n"
+msgstr "Downloading images...\n"
+
+msgctxt "#32128"
+msgid "Caching cancelled"
+msgstr "Caching cancelled"
+
+msgctxt "#32129"
+msgid "Success: %d\nSkip: %d\nFailed: %d"
+msgstr "Success: %d\nSkip: %d\nFailed: %d"
+
+msgctxt "#32130"
+msgid "Caching Complete"
+msgstr "Caching Complete"
+
+msgctxt "#32131"
+msgid "Total: %d\nSuccess: %d\nSkip: %d\nFailed: %d"
+msgstr "Total: %d\nSuccess: %d\nSkip: %d\nFailed: %d"
+
+# ==========================================
+# Misc (32140-32149)
+# ==========================================
+msgctxt "#32140"
+msgid "%d dirs / %d files / %d success / %d failed"
+msgstr "%d dirs / %d files / %d success / %d failed"
+
+msgctxt "#32141"
+msgid "Success:%d  Failed:%d"
+msgstr "Success:%d  Failed:%d"
+
+msgctxt "#32142"
+msgid "File list"
+msgstr "File list"
+
+msgctxt "#32143"
+msgid " - Pending"
+msgstr " - Pending"
+
+msgctxt "#32144"
+msgid "Ready to process"
+msgstr "Ready to process"
+
+msgctxt "#32145"
+msgid "Internal error"
+msgstr "Internal error"
+
+# ==========================================
+# Auto Scan (32150-32159)
+# ==========================================
+msgctxt "#32150"
+msgid "Auto Scan"
+msgstr "Auto Scan"
+
+msgctxt "#32151"
+msgid "Enable auto-scan on startup"
+msgstr "Enable auto-scan on startup"
+
+msgctxt "#32152"
+msgid "Auto-scan check interval (hours)"
+msgstr "Auto-scan check interval (hours)"
+
+msgctxt "#32153"
+msgid "Auto-scan: %d new file(s) found, scanning..."
+msgstr "Auto-scan: %d new file(s) found, scanning..."
+
+msgctxt "#32154"
+msgid "Auto-scan: no new files"
+msgstr "Auto-scan: no new files"
+
+msgctxt "#32155"
+msgid "Auto-scan complete: %d success, %d failed"
+msgstr "Auto-scan complete: %d success, %d failed"
+
+msgctxt "#32160"
+msgid "Low match confidence (%.2f). Guessed: %s"
+msgstr "Low match confidence (%.2f). Guessed: %s - please confirm via Manual Match"
+
+msgctxt "#32161"
+msgid "Pending matches (%d)"
+msgstr "Pending matches (%d)"
+
+msgctxt "#32162"
+msgid "Pending files (%d) - pick one to match manually"
+msgstr "Pending files (%d) - pick one to match manually"
+
+msgctxt "#32163"
+msgid "No matches need manual confirmation"
+msgstr "No matches need manual confirmation"
+
+msgctxt "#32164"
+msgid "Scan finished. %d file(s) had low match confidence and need manual confirmation. Review now?"
+msgstr "Scan finished. %d file(s) had low match confidence and need manual confirmation. Review now?"
+
+msgctxt "#32183"
+msgid "AI Fallback"
+msgstr "AI Fallback"
+
+
+
+
+
+
+msgctxt "#32184"
+msgid "Fill in your OpenAI-compatible API Key here. Leave it empty to disable AI fallback parsing."
+msgstr "Fill in your OpenAI-compatible API Key here. Leave it empty to disable AI fallback parsing."
+
+
+
+
+msgctxt "#32185"
+msgid "Scan worker threads"
+msgstr "Scan worker threads (higher = faster)"
+
+msgctxt "#32106"
+msgid "Select rename part"
+msgstr "Select rename part"
+
+msgctxt "#32107"
+msgid "Auto-extracted: %s"
+msgstr "Auto-extracted: %s"
+
+
+msgctxt "#32200"
+msgid "[B]Cache actor images[/B]"
+msgstr "[B]Cache actor images[/B]"
+
+
+msgctxt "#32201"
+msgid "Cache first 5 actor photos"
+msgstr "Cache first 5 actor photos"
+
+
+msgctxt "#32202"
+msgid "Reading the first 5 cast entries per resource from the local Kodi library. Existing cached photos will be skipped."
+msgstr "Reading the first 5 cast entries per resource from the local Kodi library. Existing cached photos will be skipped."
+
+
+msgctxt "#32203"
+msgid "Scope: first 5 cast entries per resource.\nActors: %d\nUnique online photos: %d\nAlready cached: %d\nActors without a usable online photo address: %d\nDownload the remaining %d photos now?"
+msgstr "Scope: first 5 cast entries per resource.\nActors: %d\nUnique online photos: %d\nAlready cached: %d\nActors without a usable online photo address: %d\nDownload the remaining %d photos now?"
+
+
+msgctxt "#32204"
+msgid "No online actor photo addresses are available. Scrape actor photos first."
+msgstr "No online actor photo addresses are available. Scrape actor photos first."
+
+
+msgctxt "#32205"
+msgid "%d / %d — downloaded %d, cached %d, failed %d"
+msgstr "%d / %d — downloaded %d, cached %d, failed %d"
+
+
+msgctxt "#32206"
+msgid "Canceling… waiting for current downloads to finish."
+msgstr "Canceling… waiting for current downloads to finish."
+
+
+msgctxt "#32207"
+msgid "Finished: %d downloaded, %d already cached, %d failed.\n%d actors have no usable online photo address."
+msgstr "Finished: %d downloaded, %d already cached, %d failed.\n%d actors have no usable online photo address."
+
+
+msgctxt "#32208"
+msgid "Canceled: %d downloaded, %d already cached, %d failed. Run again to continue."
+msgstr "Canceled: %d downloaded, %d already cached, %d failed. Run again to continue."
+
+
+msgctxt "#32209"
+msgid "Actor image caching is already running."
+msgstr "Actor image caching is already running."
+
+
+msgctxt "#32210"
+msgid "Could not read the local library or image cache. See the Kodi log."
+msgstr "Could not read the local library or image cache. See the Kodi log."
+
+
+msgctxt "#32211"
+msgid "All %d online actor photos are already cached.\n%d actors have no usable online photo address."
+msgstr "All %d online actor photos are already cached.\n%d actors have no usable online photo address."
+
+
+msgctxt "#32167"
+msgid "Multiple movies share this title and year: %s (%s): %s. Please confirm manually."
+msgstr ""
+
+msgctxt "#32168"
+msgid "The candidate identity could not be verified against the original title and year (%s). Please match manually."
+msgstr "The candidate identity could not be verified against the original title and year (%s). Please match manually."

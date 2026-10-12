@@ -1,0 +1,13 @@
+[Unit]
+Description=CloudDrive2 service
+After=network-online.target
+Wants=network-online.target
+[Service]
+WorkingDirectory=/storage/.kodi/addons/service.clouddrive
+Environment=CLOUDDRIVE_HOME=/storage/.kodi/userdata/addon_data/service.clouddrive
+ExecStart=/storage/.kodi/addons/service.clouddrive/clouddrive
+Restart=on-failure
+RestartSec=5
+UMask=0077
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,650 @@
+# Kodi Media Center language file
+# Addon Name: Filtered Movies
+# Addon id: plugin.video.filteredmovies
+msgid ""
+msgstr ""
+"Project-Id-Version: plugin.video.filteredmovies\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: forbxy\n"
+"Language-Team: English\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgctxt "#32001"
+msgid "General"
+msgstr "General"
+
+msgctxt "#32002"
+msgid "Digit key input mode"
+msgstr "Digit key input mode"
+
+msgctxt "#32003"
+msgid "In pure digit mode, keys input digits directly; in digit+letter mode, keys open a character selector with cycling selection."
+msgstr "In pure digit mode, keys input digits directly; in digit+letter mode, keys open a character selector with cycling selection."
+
+msgctxt "#32004"
+msgid "Digit + Letter"
+msgstr "Digit + Letter"
+
+msgctxt "#32005"
+msgid "Pure Digit"
+msgstr "Pure Digit"
+
+msgctxt "#32006"
+msgid "UI Style"
+msgstr "UI Style"
+
+msgctxt "#32007"
+msgid "Automatically choose rounded or square based on skin, or set manually."
+msgstr "Automatically choose rounded or square based on skin, or set manually."
+
+msgctxt "#32008"
+msgid "Auto"
+msgstr "Auto"
+
+msgctxt "#32009"
+msgid "Rounded"
+msgstr "Rounded"
+
+msgctxt "#32010"
+msgid "Square"
+msgstr "Square"
+
+msgctxt "#32011"
+msgid "Set Global Background"
+msgstr "Set Global Background"
+
+msgctxt "#32012"
+msgid "Filter result limit"
+msgstr "Filter result limit"
+
+msgctxt "#32013"
+msgid "Maximum number of items returned when browsing with filters."
+msgstr "Maximum number of items returned when browsing with filters."
+
+msgctxt "#32014"
+msgid "Search result limit"
+msgstr "Search result limit"
+
+msgctxt "#32015"
+msgid "Maximum number of items returned when searching."
+msgstr "Maximum number of items returned when searching."
+
+msgctxt "#32016"
+msgid "Enable movie set search"
+msgstr "Enable movie set search"
+
+msgctxt "#32017"
+msgid "When enabled, movie sets can be searched by T9/initials. After toggling this option, enter 000000 (six zeros) in T9 input to manually rebuild or clean up the index."
+msgstr "When enabled, movie sets can be searched by T9/initials. After toggling this option, enter 000000 (six zeros) in T9 input to manually rebuild or clean up the index."
+
+msgctxt "#32018"
+msgid "Search index field"
+msgstr "Search index field"
+
+msgctxt "#32019"
+msgid "Which database field to store and match the T9 search index. originaltitle is the default; sorttitle can be used as an alternative if originaltitle is needed for other purposes."
+msgstr "Which database field to store and match the T9 search index. originaltitle is the default; sorttitle can be used as an alternative if originaltitle is needed for other purposes."
+
+msgctxt "#32020"
+msgid "originaltitle"
+msgstr "originaltitle"
+
+msgctxt "#32021"
+msgid "sorttitle"
+msgstr "sorttitle"
+
+msgctxt "#32022"
+msgid "Auto write search index"
+msgstr "Auto write search index"
+
+msgctxt "#32023"
+msgid "When enabled, the plugin will automatically write T9 search index data to the selected search field for movies and TV shows."
+msgstr "When enabled, the plugin will automatically write T9 search index data to the selected search field for movies and TV shows."
+
+msgctxt "#32024"
+msgid "Autofill/fix playlist for current episode or folder"
+msgstr "Autofill/fix playlist for current episode or folder"
+
+msgctxt "#32025"
+msgid "When enabled, starting an episode or a video file from a folder will automatically fill and sort the current playlist with the full season or all videos in that folder. For scraped TV shows, misplaced or out-of-order episodes are also corrected. Up to 50 items before and 50 after the current item are kept."
+msgstr "When enabled, starting an episode or a video file from a folder will automatically fill and sort the current playlist with the full season or all videos in that folder. For scraped TV shows, misplaced or out-of-order episodes are also corrected. Up to 50 items before and 50 after the current item are kept."
+
+msgctxt "#32026"
+msgid "Media selector position"
+msgstr "Media selector position"
+
+msgctxt "#32027"
+msgid "Set the screen position where the subtitle/audio selector appears"
+msgstr "Set the screen position where the subtitle/audio selector appears"
+
+msgctxt "#32028"
+msgid "Bottom right"
+msgstr "Bottom right"
+
+msgctxt "#32029"
+msgid "Bottom left"
+msgstr "Bottom left"
+
+msgctxt "#32030"
+msgid "Top right"
+msgstr "Top right"
+
+msgctxt "#32031"
+msgid "Top left"
+msgstr "Top left"
+
+msgctxt "#32032"
+msgid "Center"
+msgstr "Center"
+
+msgctxt "#32033"
+msgid "Media selector background opacity"
+msgstr "Media selector background opacity"
+
+msgctxt "#32034"
+msgid "Adjust subtitle/audio selector background opacity (0-100)."
+msgstr "Adjust subtitle/audio selector background opacity (0-100)."
+
+msgctxt "#32035"
+msgid "United States"
+msgstr "United States"
+
+msgctxt "#32036"
+msgid "United Kingdom"
+msgstr "United Kingdom"
+
+msgctxt "#32037"
+msgid "France"
+msgstr "France"
+
+msgctxt "#32038"
+msgid "Germany"
+msgstr "Germany"
+
+msgctxt "#32039"
+msgid "Italy"
+msgstr "Italy"
+
+msgctxt "#32040"
+msgid "Japan"
+msgstr "Japan"
+
+msgctxt "#32041"
+msgid "South Korea"
+msgstr "South Korea"
+
+msgctxt "#32042"
+msgid "China"
+msgstr "China"
+
+msgctxt "#32043"
+msgid "Hong Kong"
+msgstr "Hong Kong"
+
+msgctxt "#32044"
+msgid "Taiwan"
+msgstr "Taiwan"
+
+msgctxt "#32045"
+msgid "India"
+msgstr "India"
+
+msgctxt "#32046"
+msgid "Russia"
+msgstr "Russia"
+
+msgctxt "#32047"
+msgid "Canada"
+msgstr "Canada"
+
+msgctxt "#32048"
+msgid "Australia"
+msgstr "Australia"
+
+msgctxt "#32049"
+msgid "New Zealand"
+msgstr "New Zealand"
+
+msgctxt "#32050"
+msgid "Spain"
+msgstr "Spain"
+
+msgctxt "#32051"
+msgid "Brazil"
+msgstr "Brazil"
+
+msgctxt "#32052"
+msgid "Mexico"
+msgstr "Mexico"
+
+msgctxt "#32053"
+msgid "Sweden"
+msgstr "Sweden"
+
+msgctxt "#32054"
+msgid "Denmark"
+msgstr "Denmark"
+
+msgctxt "#32055"
+msgid "Norway"
+msgstr "Norway"
+
+msgctxt "#32056"
+msgid "Netherlands"
+msgstr "Netherlands"
+
+msgctxt "#32057"
+msgid "Belgium"
+msgstr "Belgium"
+
+msgctxt "#32058"
+msgid "Ireland"
+msgstr "Ireland"
+
+msgctxt "#32059"
+msgid "Switzerland"
+msgstr "Switzerland"
+
+msgctxt "#32060"
+msgid "Austria"
+msgstr "Austria"
+
+msgctxt "#32061"
+msgid "Poland"
+msgstr "Poland"
+
+msgctxt "#32062"
+msgid "Czech Republic"
+msgstr "Czech Republic"
+
+msgctxt "#32063"
+msgid "Thailand"
+msgstr "Thailand"
+
+msgctxt "#32064"
+msgid "Argentina"
+msgstr "Argentina"
+
+msgctxt "#32065"
+msgid "South Africa"
+msgstr "South Africa"
+
+msgctxt "#32066"
+msgid "Turkey"
+msgstr "Turkey"
+
+msgctxt "#32067"
+msgid "Portugal"
+msgstr "Portugal"
+
+msgctxt "#32068"
+msgid "Finland"
+msgstr "Finland"
+
+msgctxt "#32069"
+msgid "Hungary"
+msgstr "Hungary"
+
+msgctxt "#32070"
+msgid "Iceland"
+msgstr "Iceland"
+
+msgctxt "#32071"
+msgid "Greece"
+msgstr "Greece"
+
+msgctxt "#32072"
+msgid "Chile"
+msgstr "Chile"
+
+msgctxt "#32073"
+msgid "Colombia"
+msgstr "Colombia"
+
+msgctxt "#32074"
+msgid "Philippines"
+msgstr "Philippines"
+
+msgctxt "#32075"
+msgid "Singapore"
+msgstr "Singapore"
+
+msgctxt "#32076"
+msgid "Malaysia"
+msgstr "Malaysia"
+
+msgctxt "#32077"
+msgid "Indonesia"
+msgstr "Indonesia"
+
+msgctxt "#32078"
+msgid "Israel"
+msgstr "Israel"
+
+msgctxt "#32079"
+msgid "Egypt"
+msgstr "Egypt"
+
+msgctxt "#32080"
+msgid "United Arab Emirates"
+msgstr "United Arab Emirates"
+
+msgctxt "#32081"
+msgid "Saudi Arabia"
+msgstr "Saudi Arabia"
+
+msgctxt "#32082"
+msgid "Luxembourg"
+msgstr "Luxembourg"
+
+msgctxt "#32083"
+msgid "Romania"
+msgstr "Romania"
+
+msgctxt "#32084"
+msgid "Bulgaria"
+msgstr "Bulgaria"
+
+msgctxt "#32085"
+msgid "Ukraine"
+msgstr "Ukraine"
+
+msgctxt "#32086"
+msgid "Iran"
+msgstr "Iran"
+
+msgctxt "#32087"
+msgid "Nigeria"
+msgstr "Nigeria"
+
+msgctxt "#32088"
+msgid "Kenya"
+msgstr "Kenya"
+
+msgctxt "#32089"
+msgid "Peru"
+msgstr "Peru"
+
+msgctxt "#32090"
+msgid "Pakistan"
+msgstr "Pakistan"
+
+msgctxt "#32100"
+msgid "Date added"
+msgstr "Date added"
+
+msgctxt "#32101"
+msgid "lastplayed"
+msgstr "Last played"
+
+msgctxt "#32102"
+msgid "Random"
+msgstr "Random"
+
+msgctxt "#32103"
+msgid "Latest"
+msgstr "Latest"
+
+msgctxt "#32104"
+msgid "Rating"
+msgstr "Rating"
+
+msgctxt "#32110"
+msgid "Movie"
+msgstr "Movie"
+
+msgctxt "#32111"
+msgid "Movie set"
+msgstr "Movie set"
+
+msgctxt "#32112"
+msgid "Tv Show"
+msgstr "TV Show"
+
+msgctxt "#32113"
+msgid "Concert"
+msgstr "Concert"
+
+msgctxt "#32114"
+msgid "Documentary"
+msgstr "Documentary"
+
+msgctxt "#32115"
+msgid "All"
+msgstr "All"
+
+msgctxt "#32120"
+msgid "This year"
+msgstr "This year"
+
+msgctxt "#32121"
+msgid "2020s"
+msgstr "2020s"
+
+msgctxt "#32122"
+msgid "2010s"
+msgstr "2010s"
+
+msgctxt "#32123"
+msgid "2000s"
+msgstr "2000s"
+
+msgctxt "#32124"
+msgid "1990s"
+msgstr "1990s"
+
+msgctxt "#32125"
+msgid "1980s"
+msgstr "1980s"
+
+msgctxt "#32126"
+msgid "1970s"
+msgstr "1970s"
+
+msgctxt "#32127"
+msgid "1960s"
+msgstr "1960s"
+
+msgctxt "#32128"
+msgid "Older"
+msgstr "Older"
+
+msgctxt "#32129"
+msgid "Other"
+msgstr "Other"
+
+msgctxt "#32130"
+msgid "Your poster wall is empty. Please go to the "Add Matching Directory" section, add a media matching directory, and you will be able to browse it in the library."
+msgstr "Your poster wall is empty. Please go to the "Add Matching Directory" section, add a media matching directory, and you will be able to browse it in the library."
+
+msgctxt "#32131"
+msgid "Match Management"
+msgstr "Match Management"
+
+msgctxt "#32132"
+msgid "Genre"
+msgstr "Genre"
+
+msgctxt "#32133"
+msgid "Action"
+msgstr "Action"
+
+msgctxt "#32134"
+msgid "Comedy"
+msgstr "Comedy"
+
+msgctxt "#32135"
+msgid "Romance"
+msgstr "Romance"
+
+msgctxt "#32136"
+msgid "Sci-Fi"
+msgstr "Sci-Fi"
+
+msgctxt "#32137"
+msgid "Crime"
+msgstr "Crime"
+
+msgctxt "#32138"
+msgid "Adventure"
+msgstr "Adventure"
+
+msgctxt "#32139"
+msgid "Horror"
+msgstr "Horror"
+
+msgctxt "#32140"
+msgid "Animation"
+msgstr "Animation"
+
+msgctxt "#32141"
+msgid "War"
+msgstr "War"
+
+msgctxt "#32142"
+msgid "Mystery"
+msgstr "Mystery"
+
+msgctxt "#32143"
+msgid "History"
+msgstr "History"
+
+msgctxt "#32144"
+msgid "Music"
+msgstr "Music"
+
+msgctxt "#32145"
+msgid "Drama"
+msgstr "Drama"
+
+msgctxt "#32146"
+msgid "Other"
+msgstr "Other"
+
+msgctxt "#32147"
+msgid "Search"
+msgstr "Search"
+
+msgctxt "#32148"
+msgid "Genre Filter"
+msgstr "Genre Filter"
+
+msgctxt "#32149"
+msgid "Match Management"
+msgstr "Match Management"
+
+msgctxt "#32150"
+msgid "Settings"
+msgstr "Settings"
+
+msgctxt "#32151"
+msgid "Continue Watching"
+msgstr "Continue Watching"
+
+msgctxt "#32152"
+msgid "All Videos"
+msgstr "All Videos"
+
+msgctxt "#32153"
+msgid "Movies"
+msgstr "Movies"
+
+msgctxt "#32154"
+msgid "Collections"
+msgstr "Collections"
+
+msgctxt "#32155"
+msgid "TV Shows"
+msgstr "TV Shows"
+
+msgctxt "#32156"
+msgid "Concerts"
+msgstr "Concerts"
+
+msgctxt "#32157"
+msgid "Documentaries"
+msgstr "Documentaries"
+
+msgctxt "#32158"
+msgid "Recently Added Movies"
+msgstr "Recently Added Movies"
+
+msgctxt "#32159"
+msgid "Recently Added TV Shows"
+msgstr "Recently Added TV Shows"
+
+msgctxt "#32160"
+msgid "Recently Added Concerts"
+msgstr "Recently Added Concerts"
+
+msgctxt "#32161"
+msgid "Recently Added Documentaries"
+msgstr "Recently Added Documentaries"
+
+msgctxt "#32162"
+msgid "Recently Added Collections"
+msgstr "Recently Added Collections"
+
+msgctxt "#32163"
+msgid "Rating"
+msgstr "Rating"
+
+msgctxt "#32164"
+msgid "Below 6"
+msgstr "Below 6"
+
+msgctxt "#32165"
+msgid "Delete"
+msgstr "Delete"
+
+msgctxt "#32166"
+msgid "Are you sure you want to delete「%s」? This will delete all related entries in the database."
+msgstr "Are you sure you want to delete「%s」? This will delete all related entries in the database."
+
+msgctxt "#32167"
+msgid "Deleted"
+msgstr "Deleted"
+
+msgctxt "#32168"
+msgid "Delete failed:"
+msgstr "Delete failed: "
+
+msgctxt "#32169"
+msgid "Unlimited"
+msgstr "Unlimited"
+
+msgctxt "#32170"
+msgid "48"
+msgstr "48"
+
+msgctxt "#32171"
+msgid "96"
+msgstr "96"
+
+msgctxt "#32172"
+msgid "144"
+msgstr "144"
+
+msgctxt "#32173"
+msgid "300"
+msgstr "300"
+
+msgctxt "#32174"
+msgid "600"
+msgstr "600"
+
+msgctxt "#32175"
+msgid "1200"
+msgstr "1200"
+msgctxt "#32400"
+msgid "Use cached artwork only while browsing"
+msgstr "Use cached artwork only while browsing"
+
+msgctxt "#32401"
+msgid "Disable automatic artwork downloads on this wall. Use Matching Management to cache images before browsing."
+msgstr "Disable automatic artwork downloads on this wall. Use Matching Management to cache images before browsing."

@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='utf-8'?>
+<addon id="plugin.video.filteredmovies" name="海报墙" version="2.3.18" provider-name="cebox">
+
+    <requires>
+        <import addon="xbmc.python" version="3.0.0" />
+    </requires>
+
+    
+    <extension point="xbmc.python.script" library="default.py">
+        <provides>executable</provides>
+    </extension>
+
+    
+    <extension point="xbmc.service" library="service.py" />
+
+
+    
+    <extension point="kodi.context.item">
+      <menu id="kodi.core.main">
+        <item library="delete_movie.py">
+          <label lang="zh_CN">删除影片</label>
+          <label lang="zh_TW">刪除影片</label>
+          <label lang="en_GB">Delete Movie</label>
+          <visible>String.IsEqual(ListItem.DBType,movie) | String.IsEqual(ListItem.DBType,tvshow) | String.IsEqual(ListItem.DBType,set)</visible>
+        </item>
+      </menu>
+    </extension>
+
+    
+    <extension point="xbmc.addon.metadata">
+        <summary lang="zh_CN">电影剧集筛选和增强工具</summary>
+        <summary lang="en_GB">Movies and TV shows filter and enhancement tool</summary>
+        <description lang="zh_CN">电影剧集筛选和增强工具插件。
+项目主页: github.com/forbxy
+主要功能包括：
+1. 完整的类似在线流媒体平台的筛选页面。
+2. 支持九宫格(T9)拼音搜索快速定位。
+3. 一键快捷切换字幕、音轨和播放倍速。
+4. 自动加载 ISO 格式视频的外部字幕。
+5. 自动补全/修正播放列表</description>
+        <description lang="en_GB">An advanced movie/TV show filtering and enhancement tool for Kodi.
+Key features include:
+1. Interactive filter UI similar to streaming platforms.
+2. T9 pinyin search for fast video lookup.
+3. Quick toggles for subtitles, audio tracks, and playback speed.
+4. Manually record and automatically skip TV show intros and outros.
+5. Auto-loading of external subtitles for ISO files.
+6. Set movie fanart as the global Kodi background.</description>
+        <platform>all</platform>
+        <assets>
+            <icon>icon.png</icon>
+        </assets>
+    <news>Jioyzen 维护版：适配 Kodi 22 / CoreELEC Amlogic-no，包含本分支已验证的修复；移除 script.module.cebox 依赖。</news></extension>
+
+</addon>

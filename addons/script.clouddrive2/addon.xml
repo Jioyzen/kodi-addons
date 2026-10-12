@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='utf-8'?>
+<addon id="script.clouddrive2" name="CloudDrive2" version="1.1.1" provider-name="senmang">
+  <requires>
+  <import addon="xbmc.python" version="3.0.0" /></requires>
+  <extension point="xbmc.python.script" library="default.py" />
+  <extension point="xbmc.addon.metadata">
+    <platform>all</platform>
+            <assets>
+            <icon>icon.png</icon>          
+        </assets>
+    <summary>CloudDrive2管理插件</summary>
+    <description>CloudDrive是一个强大的多云盘管理工具，为用户提供包含云盘本地挂载的一站式的多云盘解决方案。</description>
+    <source />
+  <news>Jioyzen 维护版：适配 Kodi 22 / CoreELEC Amlogic-no，包含本分支已验证的修复；移除 script.module.cebox 依赖。</news></extension>
+</addon>

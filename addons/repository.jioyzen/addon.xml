@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon id="repository.jioyzen" name="Jioyzen Kodi Add-ons" version="1.0.0" provider-name="Jioyzen">
+  <requires><import addon="xbmc.addon" version="12.0.0" /></requires>
+  <extension point="xbmc.addon.repository">
+    <dir>
+      <info>https://jioyzen.github.io/kodi-addons/addons.xml</info>
+      <checksum verify="sha256">https://jioyzen.github.io/kodi-addons/addons.xml.sha256</checksum>
+      <datadir zip="true">https://jioyzen.github.io/kodi-addons/</datadir>
+      <hashes>sha256</hashes>
+    </dir>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="zh_CN">Jioyzen 维护的 Kodi 插件仓库</summary>
+    <summary lang="en_GB">Kodi add-ons maintained by Jioyzen</summary>
+    <description lang="zh_CN">提供适配 Kodi 22 / CoreELEC Amlogic-no 的海报墙、AI 海报刮削、TMDB CN Optimization 和独立服务管理插件。</description>
+    <description lang="en_GB">Maintained add-ons tested on Kodi 22 / CoreELEC Amlogic-no.</description>
+    <platform>all</platform>
+    <license>MIT</license>
+    <source>https://github.com/Jioyzen/kodi-addons</source>
+    <assets><icon>icon.png</icon></assets>
+  </extension>
+</addon>

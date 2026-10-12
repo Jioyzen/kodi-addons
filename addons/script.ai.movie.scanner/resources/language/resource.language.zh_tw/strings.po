@@ -1,0 +1,656 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: script.ai.movie.scanner\n"
+"Language: zh_TW\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+# ==========================================
+# Settings labels (32001-32009)
+# ==========================================
+msgctxt "#600"
+msgid "AI Movie Scanner"
+msgstr "AI 海報刮削"
+
+msgctxt "#32001"
+msgid "AI Settings"
+msgstr "AI 設定"
+
+msgctxt "#32002"
+msgid "AI API Base URL"
+msgstr "AI 介面位址"
+
+msgctxt "#32003"
+msgid "AI API Key"
+msgstr "AI API 金鑰"
+
+msgctxt "#32170"
+msgid "AI Model"
+msgstr "AI 模型"
+
+msgctxt "#32171"
+msgid "Enable AI Fallback"
+msgstr "啟用 AI 兜底解析"
+
+msgctxt "#32172"
+msgid "AI API Key is empty"
+msgstr "AI API Key 為空，請先在插件設定中填寫 AI API Key 後再掃描。"
+
+msgctxt "#32182"
+msgid "AI fallback not configured (tap to set)"
+msgstr "AI 兜底未設定 API Key（點擊設定）"
+
+msgctxt "#32180"
+msgid "TMDB API Key is empty"
+msgstr "TMDB API Key 為空，請先在插件設定中填寫 TMDB API Key 後再掃描。"
+
+msgctxt "#32181"
+msgid "TMDB API Key is invalid"
+msgstr "TMDB API Key 無效，請檢查後在插件設定中重新填寫正確的 TMDB API Key。"
+
+msgctxt "#32004"
+msgid "TMDB Settings"
+msgstr "TMDB 設定"
+
+msgctxt "#32005"
+msgid "TMDB API Key"
+msgstr "TMDB API 金鑰"
+
+msgctxt "#32006"
+msgid "Scraper Language"
+msgstr "刮削語言"
+
+msgctxt "#32007"
+msgid "Scan Settings"
+msgstr "掃描設定"
+
+msgctxt "#32008"
+msgid "File Interval (seconds)"
+msgstr "檔案間隔 (秒)"
+
+msgctxt "#32009"
+msgid "Skip existing movies"
+msgstr "跳過已存在的影片"
+
+# ==========================================
+# Status labels (32010-32014)
+# ==========================================
+msgctxt "#32010"
+msgid "[Pending]"
+msgstr "[未處理]"
+
+msgctxt "#32011"
+msgid "[Matched]"
+msgstr "[已匹配]"
+
+msgctxt "#32012"
+msgid "[Merged]"
+msgstr "[已合併]"
+
+msgctxt "#32013"
+msgid "[Failed]"
+msgstr "[失敗]"
+
+msgctxt "#32014"
+msgid "[Unknown]"
+msgstr "[未知]"
+
+# ==========================================
+# Menu labels (32020-32029)
+# ==========================================
+msgctxt "#32020"
+msgid "[B]+ Add Directory[/B]"
+msgstr "[B]+ 新增目錄[/B]"
+
+msgctxt "#32021"
+msgid "[B]Scan All[/B] (%d pending)"
+msgstr "[B]掃描全部[/B] (%d 個待處理)"
+
+msgctxt "#32022"
+msgid "[COLOR=FFFF4444][B]Stop Scan[/B][/COLOR]"
+msgstr "[COLOR=FFFF4444][B]■ 停止掃描[/B][/COLOR]"
+
+msgctxt "#32023"
+msgid "[B]Cache Images[/B]"
+msgstr "[B]快取圖片[/B]"
+
+msgctxt "#32024"
+msgid "Settings"
+msgstr "設定"
+
+msgctxt "#32025"
+msgid "[B]Refresh All Directories[/B]"
+msgstr "[B]↻ 重新整理全部目錄[/B]"
+
+msgctxt "#32026"
+msgid "[COLOR=FFFF4444][B]Clear All Data[/B][/COLOR]"
+msgstr "[COLOR=FFFF4444][B]清除所有海報資料[/B][/COLOR]"
+
+msgctxt "#32027"
+msgid "Scan This Directory"
+msgstr "掃描此目錄"
+
+msgctxt "#32028"
+msgid "Remove Directory"
+msgstr "移除目錄"
+
+msgctxt "#32029"
+msgid "Manual Match"
+msgstr "手動匹配"
+
+# ==========================================
+# Notifications (32030-32049)
+# ==========================================
+msgctxt "#32030"
+msgid "Stopping scan..."
+msgstr "正在停止掃描..."
+
+msgctxt "#32031"
+msgid "No scan task running"
+msgstr "目前沒有掃描任務"
+
+msgctxt "#32032"
+msgid "No managed directories"
+msgstr "沒有管理的目錄"
+
+msgctxt "#32033"
+msgid "Refreshing directories..."
+msgstr "正在重新整理目錄..."
+
+msgctxt "#32034"
+msgid "Refreshing: %s"
+msgstr "重新整理目錄: %s"
+
+msgctxt "#32035"
+msgid "Found %d new, %d deleted"
+msgstr "已發現 %d 個新檔案, %d 個已刪除"
+
+msgctxt "#32036"
+msgid "Scanning directory files..."
+msgstr "正在掃描目錄檔案..."
+
+msgctxt "#32037"
+msgid "No video files found"
+msgstr "找不到影片檔案"
+
+msgctxt "#32038"
+msgid "Directory already exists"
+msgstr "該目錄已存在"
+
+msgctxt "#32039"
+msgid "Directory not found"
+msgstr "目錄不存在"
+
+msgctxt "#32040"
+msgid "Directory removed"
+msgstr "目錄已移除"
+
+msgctxt "#32041"
+msgid "Scan task already running"
+msgstr "掃描任務正在執行中"
+
+msgctxt "#32042"
+msgid "Scan task running, please wait"
+msgstr "掃描任務正在執行中，請等待完成"
+
+msgctxt "#32043"
+msgid "File not found"
+msgstr "檔案不存在"
+
+msgctxt "#32044"
+msgid "No files to scan"
+msgstr "沒有需要掃描的檔案"
+
+msgctxt "#32045"
+msgid "Scanning..."
+msgstr "正在掃描..."
+
+msgctxt "#32046"
+msgid "All data cleared"
+msgstr "所有海報資料已清除"
+
+msgctxt "#32047"
+msgid "Added %d files"
+msgstr "已新增 %d 個檔案"
+
+msgctxt "#32048"
+msgid "Refresh: +%d new, -%d deleted"
+msgstr "重新整理: +%d 新檔案, -%d 已刪除"
+
+# ==========================================
+# Dialogs (32050-32059)
+# ==========================================
+msgctxt "#32050"
+msgid "Select directory to scan"
+msgstr "選擇要掃描的目錄"
+
+msgctxt "#32051"
+msgid "Remove directory and all associated database records?"
+msgstr "確定要移除該目錄嗎？這將同時刪除該目錄下所有影片的資料庫紀錄！"
+
+msgctxt "#32052"
+msgid "Clear all poster data? This cannot be undone!"
+msgstr "確定要清除所有海報資料嗎？操作無法還原！"
+
+msgctxt "#32053"
+msgid "Please add a directory first"
+msgstr "請先新增目錄"
+
+msgctxt "#32054"
+msgid "[No Files]"
+msgstr "[無檔案]"
+
+msgctxt "#32055"
+msgid "Unknown error"
+msgstr "未知錯誤"
+
+msgctxt "#32056"
+msgid "Pending"
+msgstr "待處理"
+
+# ==========================================
+# Scan results (32060-32069)
+# ==========================================
+msgctxt "#32060"
+msgid "Refresh: %d new files\n%d deleted (with DB records)"
+msgstr "新發現: %d 個檔案\n已清理: %d 個檔案 (含資料庫紀錄)"
+
+msgctxt "#32061"
+msgid "Refresh complete - no changes"
+msgstr "重新整理完成 - 沒有變化，所有檔案都是最新的"
+
+msgctxt "#32062"
+msgid "Processing (%d/%d)"
+msgstr "處理中 (%d/%d)"
+
+msgctxt "#32063"
+msgid "Success:%d  Merged:%d  Failed:%d"
+msgstr "成功:%d  合併:%d  失敗:%d"
+
+msgctxt "#32064"
+msgid "Scan Complete"
+msgstr "掃描完成"
+
+msgctxt "#32065"
+msgid "Success: %d (Merged: %d)\nFailed: %d"
+msgstr "成功: %d (含合併: %d)\n失敗: %d"
+
+# ==========================================
+# Directory list stats (32070-32074)
+# ==========================================
+msgctxt "#32070"
+msgid "%d files | Matched:%d | Failed:%d | Pending:%d"
+msgstr "%d檔案 | 已匹配:%d | 失敗:%d | 待處理:%d"
+
+msgctxt "#32071"
+msgid "[COLOR=FFFF4444][Pending:%d][/COLOR] [COLOR=FF44DD44][%d Matched/%d Failed][/COLOR] %s"
+msgstr "[COLOR=FFFF4444][待處理:%d][/COLOR] [COLOR=FF44DD44][%d匹配/%d失敗][/COLOR] %s"
+
+msgctxt "#32072"
+msgid "[COLOR=FF44DD44][%d Matched/%d Failed][/COLOR] %s"
+msgstr "[COLOR=FF44DD44][%d匹配/%d失敗][/COLOR] %s"
+
+msgctxt "#32073"
+msgid "[COLOR=FF44DD44][%d Matched][/COLOR] %s"
+msgstr "[COLOR=FF44DD44][%d已匹配][/COLOR] %s"
+
+# ==========================================
+# Manual match (32080-32109)
+# ==========================================
+msgctxt "#32080"
+msgid "Enter movie/TV name or TMDB ID\n%s"
+msgstr "輸入電影/影集名稱或 TMDB ID\n%s"
+
+msgctxt "#32081"
+msgid "Select media type"
+msgstr "選擇媒體類型"
+
+msgctxt "#32082"
+msgid "Movie"
+msgstr "電影 (Movie)"
+
+msgctxt "#32083"
+msgid "TV Show"
+msgstr "影集 (TV Show)"
+
+msgctxt "#32084"
+msgid "Loading movie details..."
+msgstr "正在取得電影詳情..."
+
+msgctxt "#32085"
+msgid "Movie not found\nTMDB ID: %s"
+msgstr "找不到匹配的電影\nTMDB ID: %s"
+
+msgctxt "#32086"
+msgid "Loading TV show details..."
+msgstr "正在取得影集詳情..."
+
+msgctxt "#32087"
+msgid "TV show not found\nTMDB ID: %s"
+msgstr "找不到匹配的影集\nTMDB ID: %s"
+
+msgctxt "#32088"
+msgid "Searching..."
+msgstr "正在搜尋..."
+
+msgctxt "#32089"
+msgid "No results found for \"%s\" in TMDB"
+msgstr "找不到匹配的結果\n\"%s\" 在 TMDB 中沒有搜尋結果"
+
+msgctxt "#32090"
+msgid "Select Movie/TV (%d results)"
+msgstr "選擇電影/影集 (%d 筆結果)"
+
+msgctxt "#32091"
+msgid "Failed to get movie details"
+msgstr "取得電影詳情失敗"
+
+msgctxt "#32092"
+msgid "Failed to get TV show details"
+msgstr "取得影集詳情失敗"
+
+msgctxt "#32093"
+msgid "Search error\n%s"
+msgstr "搜尋出錯\n%s"
+
+msgctxt "#32094"
+msgid "Matched: %s"
+msgstr "匹配成功: %s"
+
+msgctxt "#32095"
+msgid "Failed to write to database"
+msgstr "寫入資料庫失敗"
+
+msgctxt "#32096"
+msgid "This TV show has no season info"
+msgstr "該影集沒有季數資訊\n無法繼續匹配"
+
+msgctxt "#32097"
+msgid "%s (%d episodes)"
+msgstr "%s (%d 集)"
+
+msgctxt "#32098"
+msgid "Select season: %s"
+msgstr "選擇季: %s"
+
+msgctxt "#32099"
+msgid "Loading episode list..."
+msgstr "正在取得集數列表..."
+
+msgctxt "#32100"
+msgid "Cannot get episode list"
+msgstr "無法取得該季的集數列表"
+
+msgctxt "#32101"
+msgid "Select episode: S%02d"
+msgstr "選擇集數: S%02d"
+
+msgctxt "#32102"
+msgid "Loading episode details..."
+msgstr "正在取得集數詳情..."
+
+msgctxt "#32103"
+msgid "Episode %d"
+msgstr "第 %d 集"
+
+msgctxt "#32104"
+msgid "Matched: %s S%02dE%02d"
+msgstr "匹配成功: %s S%02dE%02d"
+
+msgctxt "#32105"
+msgid "Database write error\n%s"
+msgstr "寫入資料庫出錯\n%s"
+
+# ==========================================
+# Scan worker errors (32110-32119)
+# ==========================================
+msgctxt "#32110"
+msgid "AI could not identify movie name"
+msgstr "AI 無法識別電影名稱"
+
+msgctxt "#32111"
+msgid "TMDB not found: %s (%s)"
+msgstr "TMDB 找不到匹配: %s (%s)"
+
+msgctxt "#32112"
+msgid "Failed to get details: %s"
+msgstr "取得詳情失敗: %s"
+
+msgctxt "#32113"
+msgid "AI could not detect season/episode (S%02dE%02d)"
+msgstr "AI 未能識別季/集號 (S%02dE%02d)"
+
+msgctxt "#32114"
+msgid "TMDB TV show not found: %s (%s)"
+msgstr "TMDB 找不到影集: %s (%s)"
+
+msgctxt "#32115"
+msgid "Failed to get TV details: %s"
+msgstr "取得影集詳情失敗: %s"
+
+msgctxt "#32116"
+msgid "Failed to write to database"
+msgstr "寫入資料庫失敗"
+
+# ==========================================
+# Image cacher (32120-32135)
+# ==========================================
+msgctxt "#32120"
+msgid "Caching images..."
+msgstr "快取圖片中..."
+
+msgctxt "#32121"
+msgid "Reading media library..."
+msgstr "正在讀取媒體庫所有項目..."
+
+msgctxt "#32122"
+msgid "Image Cache"
+msgstr "圖片快取"
+
+msgctxt "#32123"
+msgid "No videos found in library"
+msgstr "媒體庫中沒有找到影片"
+
+msgctxt "#32124"
+msgid "No images to cache"
+msgstr "不需快取"
+
+msgctxt "#32125"
+msgid "%d images, downloading..."
+msgstr "共 %d 張圖片，多執行緒下載中..."
+
+msgctxt "#32126"
+msgid "Total:%d  Success:%d  Skip:%d  Failed:%d"
+msgstr "總計:%d  成功:%d  跳過:%d  失敗:%d"
+
+msgctxt "#32127"
+msgid "Downloading images...\n"
+msgstr "正在下載圖片...\n"
+
+msgctxt "#32128"
+msgid "Caching cancelled"
+msgstr "快取已取消"
+
+msgctxt "#32129"
+msgid "Success: %d\nSkip: %d\nFailed: %d"
+msgstr "成功: %d\n跳過: %d\n失敗: %d"
+
+msgctxt "#32130"
+msgid "Caching Complete"
+msgstr "快取完成"
+
+msgctxt "#32131"
+msgid "Total: %d\nSuccess: %d\nSkip: %d\nFailed: %d"
+msgstr "總計: %d\n成功: %d\n跳過: %d\n失敗: %d"
+
+# ==========================================
+# Misc (32140-32149)
+# ==========================================
+msgctxt "#32140"
+msgid "%d dirs / %d files / %d success / %d failed"
+msgstr "%d個目錄 / %d個檔案 / 成功%d / 失敗%d"
+
+msgctxt "#32141"
+msgid "Success:%d  Failed:%d"
+msgstr "成功:%d  失敗:%d"
+
+msgctxt "#32142"
+msgid "File list"
+msgstr "檔案列表"
+
+msgctxt "#32143"
+msgid " - Pending"
+msgstr "  -  待處理"
+
+msgctxt "#32144"
+msgid "Ready to process"
+msgstr "待處理"
+
+msgctxt "#32145"
+msgid "Internal error"
+msgstr "內部錯誤"
+
+# ==========================================
+# Auto Scan (32150-32159)
+# ==========================================
+msgctxt "#32150"
+msgid "Auto Scan"
+msgstr "自動掃描"
+
+msgctxt "#32151"
+msgid "Enable auto-scan on startup"
+msgstr "開啟開機自動掃描新影片"
+
+msgctxt "#32152"
+msgid "Auto-scan check interval (hours)"
+msgstr "自動掃描間隔 (小時)"
+
+msgctxt "#32153"
+msgid "Auto-scan: %d new file(s) found, scanning..."
+msgstr "自動掃描: 發現 %d 個新檔案, 正在掃描..."
+
+msgctxt "#32154"
+msgid "Auto-scan: no new files"
+msgstr "自動掃描: 無新檔案"
+
+msgctxt "#32155"
+msgid "Auto-scan complete: %d success, %d failed"
+msgstr "自動掃描完成: 成功 %d, 失敗 %d"
+msgctxt "#32160"
+msgid "Low match confidence (%.2f). Guessed: %s"
+msgstr "匹配置信度偏低(%.2f)，疑似《%s》，已暫停寫入，請在檔案列表中選擇「手動匹配」確認"
+
+msgctxt "#32161"
+msgid "Pending matches (%d)"
+msgstr "待確認匹配 (%d)"
+
+msgctxt "#32162"
+msgid "Pending files (%d) - pick one to match manually"
+msgstr "待確認檔案 (%d) — 選擇要手動匹配的項目"
+
+msgctxt "#32163"
+msgid "No matches need manual confirmation"
+msgstr "沒有需要人工確認的匹配"
+
+msgctxt "#32164"
+msgid "Scan finished. %d file(s) had low match confidence and need manual confirmation. Review now?"
+msgstr "掃描完成，有 %d 個檔案匹配置信度較低，需人工確認。是否現在處理？"
+
+msgctxt "#32183"
+msgid "AI Fallback"
+msgstr "AI 兜底解析"
+
+
+
+
+
+
+msgctxt "#32184"
+msgid "Fill in your OpenAI-compatible API Key here. Leave it empty to disable AI fallback parsing."
+msgstr "在此填寫你的 OpenAI 相容介面 API Key。留空則不使用 AI 兜底解析。"
+
+
+
+
+msgctxt "#32185"
+msgid "Scan worker threads"
+msgstr "掃描執行緒數（並發數，越大越快）"
+
+msgctxt "#32106"
+msgid "Select rename part"
+msgstr "選擇重命名部分"
+
+msgctxt "#32107"
+msgid "Auto-extracted: %s"
+msgstr "自動提取: %s"
+
+
+msgctxt "#32200"
+msgid "[B]Cache actor images[/B]"
+msgstr "[B]快取演員圖片[/B]"
+
+
+msgctxt "#32201"
+msgid "Cache first 5 actor photos"
+msgstr "快取前 5 位演員圖片"
+
+
+msgctxt "#32202"
+msgid "Reading the first 5 cast entries per resource from the local Kodi library. Existing cached photos will be skipped."
+msgstr "正在讀取本機 Kodi 媒體庫中每個資源演員清單的前 5 位。已有快取的照片會自動略過。"
+
+
+msgctxt "#32203"
+msgid "Scope: first 5 cast entries per resource.\nActors: %d\nUnique online photos: %d\nAlready cached: %d\nActors without a usable online photo address: %d\nDownload the remaining %d photos now?"
+msgstr "範圍：每個資源演員清單的前 5 位。\n涉及演員：%d\n去重後的網路照片：%d\n已有快取：%d\n無有效網路照片位址的演員：%d\n現在下載剩餘 %d 張照片嗎？"
+
+
+msgctxt "#32204"
+msgid "No online actor photo addresses are available. Scrape actor photos first."
+msgstr "媒體庫中沒有可用的演員網路照片位址，請先刮削演員照片資訊。"
+
+
+msgctxt "#32205"
+msgid "%d / %d — downloaded %d, cached %d, failed %d"
+msgstr "%d / %d — 已下載 %d，已有快取 %d，失敗 %d"
+
+
+msgctxt "#32206"
+msgid "Canceling… waiting for current downloads to finish."
+msgstr "正在取消…等待進行中的下載結束。"
+
+
+msgctxt "#32207"
+msgid "Finished: %d downloaded, %d already cached, %d failed.\n%d actors have no usable online photo address."
+msgstr "完成：已下載 %d，已有快取 %d，失敗 %d。\n另有 %d 位演員沒有有效網路照片位址。"
+
+
+msgctxt "#32208"
+msgid "Canceled: %d downloaded, %d already cached, %d failed. Run again to continue."
+msgstr "已取消：已下載 %d，已有快取 %d，失敗 %d。再次執行可繼續快取。"
+
+
+msgctxt "#32209"
+msgid "Actor image caching is already running."
+msgstr "演員圖片快取工作已在執行，請勿重複啟動。"
+
+
+msgctxt "#32210"
+msgid "Could not read the local library or image cache. See the Kodi log."
+msgstr "無法讀取本機媒體庫或圖片快取，請查看 Kodi 記錄。"
+
+
+msgctxt "#32211"
+msgid "All %d online actor photos are already cached.\n%d actors have no usable online photo address."
+msgstr "全部 %d 張演員網路照片均已有快取。\n另有 %d 位演員沒有有效網路照片位址。"
+
+
+msgctxt "#32167"
+msgid "Multiple movies share this title and year: %s (%s): %s. Please confirm manually."
+msgstr "同名同年存在多個候選：%s (%s)：%s。請手動匹配確認。"
+
+msgctxt "#32168"
+msgid "The candidate identity could not be verified against the original title and year (%s). Please match manually."
+msgstr "原始片名、年份與候選身分無法充分核實（%s），請手動配對確認。"

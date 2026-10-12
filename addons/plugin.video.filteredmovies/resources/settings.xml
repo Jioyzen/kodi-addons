@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<settings version="1">
+    <section id="plugin.video.filteredmovies">
+        <category id="general" label="32001" help="">
+            <group id="1">
+                <setting id="cached_artwork_only" type="boolean" label="32400" help="32401">
+                    <level>0</level>
+                    <default>false</default>
+                    <control type="toggle"/>
+                </setting>
+                <setting id="input_mode" type="string" label="32002" help="32003">
+                    <level>0</level>
+                    <default>digit_letter</default>
+                    <constraints>
+                        <options>
+                            <option label="32004">digit_letter</option>
+                            <option label="32005">pure_digit</option>
+                        </options>
+                    </constraints>
+                    <control type="spinner" format="string"/>
+                </setting>
+                <setting id="filter_limit" type="integer" label="32012" help="32013">
+                    <level>0</level>
+                    <default>0</default>
+                    <constraints>
+                        <options>
+                            <option label="32170">48</option>
+                            <option label="32171">96</option>
+                            <option label="32172">144</option>
+                            <option label="32173">300</option>
+                            <option label="32174">600</option>
+                            <option label="32175">1200</option>
+                            <option label="32169">0</option>
+                        </options>
+                    </constraints>
+                    <control type="spinner" format="integer"/>
+                </setting>
+                <setting id="search_limit" type="integer" label="32014" help="32015">
+                    <level>0</level>
+                    <default>0</default>
+                    <constraints>
+                        <options>
+                            <option label="32170">48</option>
+                            <option label="32171">96</option>
+                            <option label="32172">144</option>
+                            <option label="32173">300</option>
+                            <option label="32174">600</option>
+                            <option label="32175">1200</option>
+                            <option label="32169">0</option>
+                        </options>
+                    </constraints>
+                    <control type="spinner" format="integer"/>
+                </setting>
+                <setting id="enable_set_search" type="boolean" label="32016" help="32017">
+                    <level>0</level>
+                    <default>false</default>
+                    <control type="toggle"/>
+                </setting>
+                <setting id="search_field" type="string" label="32018" help="32019">
+                    <level>0</level>
+                    <default>originaltitle</default>
+                    <constraints>
+                        <options>
+                            <option label="32020">originaltitle</option>
+                            <option label="32021">sorttitle</option>
+                        </options>
+                    </constraints>
+                    <control type="spinner" format="string"/>
+                </setting>
+                <setting id="auto_write_search_index" type="boolean" label="32022" help="32023">
+                    <level>0</level>
+                    <default>true</default>
+                    <control type="toggle"/>
+                </setting>
+                <setting id="autofill_playlist_on_play" type="boolean" label="32024" help="32025">
+                    <level>0</level>
+                    <default>true</default>
+                    <control type="toggle"/>
+                </setting>
+            </group>
+        </category>
+    </section>
+</settings>
