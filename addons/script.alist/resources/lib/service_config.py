@@ -1,1 +1,1 @@
-CONFIG = {'addon_id': 'script.alist', 'name': 'Alist', 'unit': 'alist.service', 'binary': '/storage/.kodi/addons/service.alist/alist', 'data_dir': '/storage/.kodi/userdata/addon_data/service.alist', 'port': 5244, 'password_reset': True}
+CONFIG = {'addon_id': 'script.alist', 'name': 'Alist', 'unit': 'alist.service', 'binary': '/storage/.kodi/addons/service.alist/alist', 'data_dir': '/storage/.kodi/userdata/addon_data/service.alist', 'port': 5244, 'password_reset': True, 'release_repository': 'AlistGo/alist', 'asset_name': 'alist-linux-arm64.tar.gz', 'known_versions': {}}

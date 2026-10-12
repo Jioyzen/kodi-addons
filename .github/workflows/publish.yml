@@ -27,7 +27,7 @@ jobs:
             python scripts/check_versions.py --base "$BASE_REVISION"
           fi
       - name: Test packaging, checksums and privacy checks
-        run: python scripts/test_repository.py
+        run: python -m unittest discover -s scripts -p 'test_*.py' -v
       - name: Build repository site
         run: python scripts/build_repository.py
       - name: Upload downloadable packages

@@ -1,15 +1,15 @@
 <?xml version='1.0' encoding='utf-8'?>
-<addon id="script.alist" name="Alist" version="1.1.1" provider-name="senmang">
+<addon id="script.alist" name="Alist" version="1.2.0" provider-name="senmang">
   <requires>
   <import addon="xbmc.python" version="3.0.0" /></requires>
   <extension point="xbmc.python.script" library="default.py" />
   <extension point="xbmc.addon.metadata">
-    <platform>all</platform>
+    <platform>linux</platform>
             <assets>
             <icon>icon.png</icon>          
         </assets>
     <summary>Alist管理插件</summary>
     <description> 支持多个存储提供商，包括本地存储、阿里云盘、OneDrive、Google Drive 等，且易于拓展。 支持WebDAV、AList 支持... </description>
     <source />
-  <news>Jioyzen 维护版：适配 Kodi 22 / CoreELEC Amlogic-no，包含本分支已验证的修复；移除 script.module.cebox 依赖。</news></extension>
+  <news>新增主程序手动安装、版本显示和官方稳定版更新；校验 Linux aarch64 安装包，保留配置及服务状态，启动失败自动回退。</news></extension>
 </addon>

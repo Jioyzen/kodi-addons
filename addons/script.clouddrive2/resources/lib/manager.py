@@ -7,6 +7,7 @@ import xbmcgui
 import xbmcvfs
 from service_config import CONFIG
 from service_control import ServiceController
+from runtime_installer import RuntimeInstaller
 
 
 def _operation(controller, name, function):
@@ -74,39 +75,86 @@ def _show_admin(controller, addon):
         del window
 
 
+
+def _runtime_operation(installer, release):
+    progress = xbmcgui.DialogProgress()
+    progress.create(CONFIG['name'], '正在准备安装主程序…')
+    monitor = xbmc.Monitor()
+    def update(percent, message):
+        if monitor.abortRequested() or progress.iscanceled():
+            raise RuntimeError('安装已取消；若已开始替换，会先恢复旧版本。')
+        progress.update(percent, message)
+    try:
+        installer.install(release, update)
+    finally:
+        progress.close()
+
+
+def _check_runtime(installer, dialog):
+    _progress = xbmcgui.DialogProgressBG()
+    _progress.create(CONFIG['name'], '正在查询官方稳定版…')
+    try:
+        release = installer.latest()
+    finally:
+        _progress.close()
+    current = installer.local_version()
+    installed = installer.installed()
+    if installed and not installer.needs_update(release):
+        dialog.ok(CONFIG['name'], '当前主程序：' + current + '\n官方稳定版：' + release['version'] + '\n当前版本已是最新或更新。')
+        return
+    detail = ('当前主程序：' + (current or '版本未知') + '\n') if installed else '尚未安装完整主程序。\n'
+    detail += '官方稳定版：' + release['version'] + '\n下载大小：%.1f MB\n' % (release['size'] / 1024 / 1024)
+    detail += '保留现有配置与自启选择；完成后保持原来的运行状态。'
+    if not dialog.yesno(CONFIG['name'], detail, nolabel='取消', yeslabel='更新主程序' if installed else '安装主程序'):
+        return
+    _runtime_operation(installer, release)
+    dialog.ok(CONFIG['name'], '主程序 ' + release['version'] + ' 安装完成。\n原先未运行的服务仍保持停止，可在管理菜单中启动。')
+
+
 def run():
     addon = xbmcaddon.Addon(CONFIG['addon_id'])
     controller = ServiceController(CONFIG)
+    installer = RuntimeInstaller(controller)
     dialog = xbmcgui.Dialog()
     while not xbmc.Monitor().abortRequested():
         try:
             state = controller.state()
             active = controller.is_active(state)
             enabled = controller.is_enabled(state)
+            installed = installer.installed()
+            version = installer.local_version()
             running = '运行中' if active else '启动失败' if state.get('ActiveState') == 'failed' else '未启动'
             if active and not controller.ready():
                 running += '（管理端口未就绪）'
             title = '%s · %s · 自启%s' % (CONFIG['name'], running, '开启' if enabled else '关闭')
-            entries = ['管理后台 / 登录', '停止服务' if active else '启动服务',
-                       '关闭开机自启' if enabled else '开启开机自启', '重启服务', '查看运行日志']
-            if CONFIG['password_reset']:
-                entries.append('重置管理员密码')
-            choice = dialog.select(title, entries)
+            title += ' · 主程序 ' + (version or '版本未知') if installed else ' · 主程序未安装'
+            if installed:
+                entries = [('admin', '管理后台 / 登录'), ('toggle', '停止服务' if active else '启动服务'),
+                           ('autostart', '关闭开机自启' if enabled else '开启开机自启'),
+                           ('restart', '重启服务'), ('update', '检查主程序更新'), ('logs', '查看运行日志')]
+                if CONFIG['password_reset']:
+                    entries.append(('password', '重置管理员密码'))
+            else:
+                entries = [('install', '安装主程序'), ('logs', '查看运行日志')]
+            choice = dialog.select(title, [label for action, label in entries])
             if choice < 0:
                 return
-            if choice == 0:
+            action = entries[choice][0]
+            if action == 'admin':
                 _show_admin(controller, addon)
-            elif choice == 1:
+            elif action == 'toggle':
                 _operation(controller, '正在停止服务…' if active else '正在启动服务…',
                            controller.stop if active else controller.start)
-            elif choice == 2:
+            elif action == 'autostart':
                 _operation(controller, '正在更新开机自启设置…',
                            lambda: controller.set_autostart(not enabled))
-            elif choice == 3:
+            elif action == 'restart':
                 _operation(controller, '正在重启服务…', controller.restart)
-            elif choice == 4:
+            elif action in ('install', 'update'):
+                _check_runtime(installer, dialog)
+            elif action == 'logs':
                 dialog.textviewer(CONFIG['name'] + ' 运行日志', controller.logs())
-            elif choice == 5 and CONFIG['password_reset']:
+            elif action == 'password':
                 password = dialog.input('新的管理员密码', option=xbmcgui.ALPHANUM_HIDE_INPUT)
                 if password:
                     _operation(controller, '正在更新管理员密码…',

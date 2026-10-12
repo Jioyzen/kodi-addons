@@ -13,8 +13,8 @@
 | `script.ai.movie.scanner` | AI 海报刮削 | 文件名提取、TMDb 候选校验、长片约束、歧义保留人工确认、类型与合集元数据、图片与演员缓存、手动匹配界面修复 |
 | `plugin.video.filteredmovies` | 海报墙 | 首页异步加载、空分类处理、图片与合集兜底、焦点和返回状态、导航边界、背景图、圆角布局、缓存与稳定性优化 |
 | `metadata.tmdb.cn.optimization` | TMDB CN Optimization | Kodi 22 数据库定位与缓存兼容修复；保留原作者刮削流程 |
-| `script.alist` | Alist 管理 | 独立服务控制、启动就绪核验、自启状态核验、UTF-8 输出、日志与二维码窗口修复 |
-| `script.clouddrive2` | CloudDrive2 管理 | 独立服务控制、启动就绪核验、自启状态核验、UTF-8 输出、日志与二维码窗口修复 |
+| `script.alist` | Alist 管理 | 主程序安装与更新、版本显示、独立服务控制、启动就绪核验、自启状态核验、UTF-8 输出、日志与二维码窗口修复 |
+| `script.clouddrive2` | CloudDrive2 管理 | 主程序安装与更新、版本显示、独立服务控制、启动就绪核验、自启状态核验、UTF-8 输出、日志与二维码窗口修复 |
 
 五个插件均已解除 `script.module.cebox` 依赖。媒体插件在自身内部定位有效的 Kodi 数据库；服务管理插件在自身内部包含管理代码和二维码库。
 
@@ -37,14 +37,23 @@ AI 海报刮削仍通过自己的“添加目录”入口扫描、匹配与入�
 
 ### Alist / CloudDrive2 安装条件
 
-当前发布包是 **CoreELEC aarch64 服务管理插件**，不含后台程序本体，也不负责下载安装后台程序。已完成 CEBOX 迁移的盒子继续使用现有程序与数据。
+当前发布包是 **CoreELEC aarch64 服务管理插件**。安装包不捆绑主程序，但可从插件菜单手动下载安装官方主程序。已有主程序会被识别，继续使用现有配置。
 
 | 工具 | 程序路径 | 数据路径 | 默认端口 |
 | --- | --- | --- | --- |
 | Alist | `/storage/.kodi/addons/service.alist/alist` | `/storage/.kodi/userdata/addon_data/service.alist` | 5244 |
 | CloudDrive2 | `/storage/.kodi/addons/service.clouddrive/clouddrive` | `/storage/.kodi/userdata/addon_data/service.clouddrive` | 19798 |
 
-程序须为兼容的 aarch64 Linux 版本且具备执行权限；CloudDrive2 还需匹配的 `wwwroot`。首次启动或开启自启时，如缺少 systemd unit，插件可从自带模板创建；存在的 unit 不会被覆盖。管理插件升级不会删除云盘数据或改变现有自启选择。
+未安装时，打开管理插件会显示“安装主程序”。已安装时，菜单显示当前版本并提供“检查主程序更新”；查询官方稳定版后，由用户确认下载安装。仅安装管理插件或打开菜单，不会自动下载或更新主程序。
+
+- Alist 发布源：<https://github.com/AlistGo/alist/releases>，使用 `alist-linux-arm64.tar.gz`。
+- CloudDrive2 发布源：<https://github.com/cloud-fs/cloud-fs.github.io/releases>，使用 `clouddrive-2-linux-aarch64-<版本>.tgz`，包含对应的 `wwwroot`。
+- 下载使用 HTTPS，并核验 GitHub 发布资产的 SHA-256、包大小、文件结构及 ARM64 ELF 格式。缺少官方 SHA-256 的发布不自动安装。
+- 下载和解包完成后才停止旧服务；备份旧程序及配置，替换后检查进程和管理端口。失败时恢复旧程序、配置及原来的运行状态；自动恢复受阻时保留恢复文件并提示路径。
+- 保留已有 systemd unit 和自启选择；原来停止的服务只临时启动进行检查，完成后仍停止。初次安装不自动开启开机自启。
+- 用户手动替换 CloudDrive2 程序后，如无法验证已有版本，会显示“版本未知”，不猜测版本。
+
+更新前需约 1.3 GB 可用空间，配置体积较大时还需额外空间。默认下载超时上限为 10 分钟，可取消安装；网络或校验失败不替换旧程序。
 
 ## 仓库结构
 
@@ -62,7 +71,7 @@ docs/                      生成的 Pages 下载站：索引、校验文件、Z
 1. 修改 `addons/<插件ID>/` 的源码，同时提高该插件 `addon.xml` 中的数字版本号。
 2. 本地执行：
    ```sh
-   python3 scripts/test_repository.py
+   python3 -m unittest discover -s scripts -p 'test_*.py' -v
    python3 scripts/build_repository.py
    ```
 3. 提交并推送到 `main`。Actions 自动验证 Python / XML、入口资源、敏感信息、版本递增与 ZIP 校验，然后创建正式 GitHub Release 并部署 Pages。

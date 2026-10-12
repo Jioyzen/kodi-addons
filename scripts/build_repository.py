@@ -120,7 +120,7 @@ def build(source, output):
 <p><a href="''' + repo['path'] + '''">下载仓库插件</a>，在 Kodi 中通过“从 ZIP 文件安装”安装，然后进入“从仓库安装 → Jioyzen Kodi Add-ons”。</p>
 <p>也可添加文件源：<code>https://jioyzen.github.io/kodi-addons/</code>，浏览下方插件目录安装 ZIP。</p>
 <table><tr><th>插件</th><th>版本</th><th>下载</th></tr>''' + table + '''</table>
-<p>Alist / CloudDrive2 包含管理插件，需要另行准备 aarch64 后台程序。安装不会删除现有配置或媒体库。</p>
+<p>Alist / CloudDrive2 管理插件可手动安装、检查并更新官方 Linux aarch64 主程序。已有配置继续保留。</p>
 <p><a href="https://github.com/Jioyzen/kodi-addons">源码与使用说明</a> · <a href="manifest.json">版本与 SHA-256 清单</a></p></html>''', encoding='utf-8')
     # Kodi's HTTP file-source browser needs folder listings as well.
     for row in rows:
