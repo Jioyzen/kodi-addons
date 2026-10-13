@@ -1062,8 +1062,8 @@ def _call_openai(filename, dirpath, api_key, api_base, model, mode):
     Returns parsed dict or None."""
     # Default to DeepSeek: api.openai.com is unreachable from China without
     # a VPN and burned every AI fallback call in real-world logs.
-    base = (api_base or 'https://api.deepseek.com/v1').rstrip('/')
-    model = model or 'deepseek-chat'
+    base = (api_base or 'https://api.deepseek.com').rstrip('/')
+    model = model or 'deepseek-flash'
     url = base + '/chat/completions'
     headers = {
         'Authorization': 'Bearer %s' % api_key,

@@ -323,10 +323,13 @@ class KodiDatabase:
             # 6. Delete old ratings and write new ones
             cur.execute("DELETE FROM rating WHERE media_id=? AND media_type='movie'",
                         (id_movie,))
+            default_rating_type = next(
+                (kind for kind, data in ratings.items() if data.get('default', False)),
+                'tmdb' if 'tmdb' in ratings else next(iter(ratings), None))
             for rating_type, rating_data in ratings.items():
                 rating_val = rating_data.get('rating', 0)
                 votes = rating_data.get('votes', 0)
-                is_default = rating_data.get('default', False)
+                is_default = rating_type == default_rating_type
                 cur.execute("""
                     INSERT INTO rating (media_id, media_type, rating_type, rating, votes)
                     VALUES (?, 'movie', ?, ?, ?)

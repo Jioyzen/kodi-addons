@@ -10,6 +10,8 @@ import time
 import urllib.parse
 import re
 import difflib
+import functools
+from task_state import task_lock, TaskBusy
 
 import xbmc
 
@@ -44,9 +46,14 @@ import xbmcgui
 import xbmcplugin
 import xbmcvfs
 
-import dns_override  # DoH bypass GFW DNS pollution for TMDB
+from path_display import directory_label, private_query, resolve_query, redact_text
 
-from image_cacher import ImageCacher
+
+def ImageCacher(*args, **kwargs):
+    # Menu browsing needs neither HTTP/DNS libraries nor texture-cache access.
+    import dns_override
+    from image_cacher import ImageCacher as implementation
+    return implementation(*args, **kwargs)
 
 ADDON = xbmcaddon.Addon()
 
@@ -77,11 +84,32 @@ STATUS_LABELS = {
     'success': L(32011),
     'merged': L(32012),
     'failed': L(32013),
+    'skipped': L(32404) or '已略过',
 }
 
 
 def log(msg, level=xbmc.LOGINFO):
-    xbmc.log('[%s] %s' % (ADDON_NAME, msg), level)
+    xbmc.log('[%s] %s' % (ADDON_NAME, redact_text(msg)), level)
+
+
+def guarded_task(function):
+    @functools.wraps(function)
+    def guarded(*args, **kwargs):
+        try:
+            with task_lock(DATA_PATH):
+                if (function.__name__ != 'clear_all_data' and
+                        os.path.exists(os.path.join(DATA_PATH, 'reset-pending.json'))):
+                    raise TaskBusy('An interrupted reset must be completed first')
+                return function(*args, **kwargs)
+        except TaskBusy as exc:
+            log(str(exc), xbmc.LOGWARNING)
+            xbmcgui.Dialog().notification(ADDON_NAME, L(32301),
+                                         xbmcgui.NOTIFICATION_WARNING, 5000)
+            if function.__name__ == '_run_scan':
+                return 0, 0, 0
+            if function.__name__ == 'refresh_directory_files':
+                return 0, 0
+    return guarded
 
 
 # ==========================================
@@ -189,7 +217,6 @@ def _clear_scanning():
 def stop_scan():
     if _is_scanning() or _is_refreshing():
         _request_stop()
-        _clear_refreshing()
         xbmcgui.Dialog().notification(ADDON_NAME, L(32030), xbmcgui.NOTIFICATION_INFO, 2000)
     else:
         xbmcgui.Dialog().notification(ADDON_NAME, L(32031), xbmcgui.NOTIFICATION_INFO, 2000)
@@ -204,11 +231,13 @@ def get_params():
     if len(paramstring) >= 2 and paramstring[0] == '?':
         paramstring = paramstring[1:]
         params = dict(urllib.parse.parse_qsl(paramstring))
+    if 'directory' in params or 'file' in params:
+        params = resolve_query(params,load_history())
     return params
 
 
 def build_url(query):
-    return sys.argv[0] + '?' + urllib.parse.urlencode(query)
+    return sys.argv[0] + '?' + urllib.parse.urlencode(private_query(query))
 
 
 def run_plugin_url(query):
@@ -228,7 +257,7 @@ def router(paramstring=''):
     elif action == 'add_directory':
         add_directory()
     elif action == 'view_directory':
-        view_directory(params.get('dirpath', ''))
+        view_directory(params.get('dirpath', ''),params.get('group',''),params.get('page',0))
     elif action == 'scan_directory':
         scan_directory(params.get('dirpath', ''))
     elif action == 'scan_all':
@@ -237,8 +266,14 @@ def router(paramstring=''):
         remove_directory(params.get('dirpath', ''))
     elif action == 'refresh_all':
         action_refresh_all()
+    elif action == 'refresh_directory':
+        action_refresh_directory(params.get('dirpath',''))
     elif action == 'manual_match':
         manual_match()
+    elif action == 'manual_match_show':
+        manual_match_show(params.get('dirpath',''),params.get('group',''))
+    elif action == 'play_file':
+        play_media_file(params.get('dirpath',''),params.get('filepath',''))
     elif action == 'review_pending':
         review_pending()
     elif action == 'cache_images':
@@ -259,7 +294,14 @@ def router(paramstring=''):
 
 # ==========================================
 # Main Menu
+# Build new plugin items offscreen, then transfer the completed list to Kodi.
 # ==========================================
+def _needs_scan(info):
+    status = info.get('status')
+    return status in ('pending','failed') or (status=='skipped' and
+           (info.get('is_tvshow') or info.get('match_evidence',{}).get('type')=='tvshow'))
+
+
 def show_main_menu():
     history = load_history()
     dirs = history.get('directories', {})
@@ -268,23 +310,24 @@ def show_main_menu():
     listing = []
 
     # --- [Stop Scan] ---
-    li = xbmcgui.ListItem(L(32022))
-    li.setArt({'icon': 'DefaultAddonInfoProvider.png'})
-    url = build_url({'action': 'stop_scan'})
-    listing.append((url, li, False))
+    if _is_busy():
+        li = xbmcgui.ListItem(L(32022), offscreen=True)
+        li.setArt({'icon': 'DefaultAddonInfoProvider.png'})
+        url = build_url({'action': 'stop_scan'})
+        listing.append((url, li, False))
 
     # --- [AI fallback not configured] (visible hint + jump to settings) ---
     ai_enabled = ADDON.getSetting('ai_enabled') == 'true'
     ai_key = ADDON.getSetting('ai_api_key') or ''
     if ai_enabled and not ai_key:
-        li = xbmcgui.ListItem('[COLOR=FFDD9933]%s[/COLOR]' % L(32182))
+        li = xbmcgui.ListItem('[COLOR=FFDD9933]%s[/COLOR]' % L(32182), offscreen=True)
         li.setArt({'icon': 'DefaultAddonInfoProvider.png'})
         li.setInfo('video', {'plot': L(32172)})
         url = build_url({'action': 'open_settings'})
         listing.append((url, li, False))
 
     # --- [Add Directory] ---
-    li = xbmcgui.ListItem(L(32020))
+    li = xbmcgui.ListItem(L(32020), offscreen=True)
     li.setArt({'icon': 'DefaultAddonVideo.png'})
     url = build_url({'action': 'add_directory'})
     listing.append((url, li, False))
@@ -294,15 +337,15 @@ def show_main_menu():
         pending = sum(
             1 for d in dirs.values()
             for f in d.get('files', {}).values()
-            if f.get('status') in ('pending', 'failed'))
+            if _needs_scan(f))
         if pending > 0:
-            li = xbmcgui.ListItem(L(32021) % pending)
+            li = xbmcgui.ListItem(L(32021) % pending, offscreen=True)
             li.setArt({'icon': 'DefaultAddonVideo.png'})
             url = build_url({'action': 'scan_all'})
             listing.append((url, li, False))
 
             # --- [Review Pending Matches] ---
-            li = xbmcgui.ListItem(L(32161) % pending)
+            li = xbmcgui.ListItem(L(32161) % pending, offscreen=True)
             li.setArt({'icon': 'DefaultAddonSearch.png'})
             url = build_url({'action': 'review_pending'})
             listing.append((url, li, False))
@@ -314,6 +357,7 @@ def show_main_menu():
             s = sum(1 for f in files.values() if f.get('status') in ('success', 'merged'))
             fl = sum(1 for f in files.values() if f.get('status') == 'failed')
             pn = sum(1 for f in files.values() if f.get('status') == 'pending')
+            skipped = sum(1 for f in files.values() if f.get('status') == 'skipped')
 
             # Build label with color-coded stats
             if fl > 0:
@@ -322,16 +366,26 @@ def show_main_menu():
                 label2 = L(32070) % (total, s, fl, pn)
 
             if pn > 0:
-                label = '[COLOR=FFFF4444][待处理:%d][/COLOR] [COLOR=FF44DD44][%d匹配/%d失败][/COLOR] %s' % (pn, s, fl, dirpath)
+                label = '[COLOR=FFFF4444][待处理:%d][/COLOR] [COLOR=FF44DD44][%d匹配/%d失败][/COLOR] %s' % (pn, s, fl, directory_label(dirpath))
             elif fl > 0:
-                label = '[COLOR=FF44DD44][%d匹配/%d失败][/COLOR] %s' % (s, fl, dirpath)
+                label = '[COLOR=FF44DD44][%d匹配/%d失败][/COLOR] %s' % (s, fl, directory_label(dirpath))
             else:
-                label = '[COLOR=FF44DD44][%d已匹配][/COLOR] %s' % (s, dirpath)
-            li = xbmcgui.ListItem(label)
+                label = '[COLOR=FF44DD44][%d已匹配][/COLOR] %s' % (s, directory_label(dirpath))
+            if skipped:
+                label += ' [COLOR=FF999999][%s:%d][/COLOR]' % (STATUS_LABELS['skipped'], skipped)
+                label2 += ' | %s:%d' % (STATUS_LABELS['skipped'], skipped)
+            li = xbmcgui.ListItem(label, offscreen=True)
+            li.setLabel2(label2)
             li.setArt({'icon': 'DefaultFolder.png'})
 
             # Context menu
-            cm = []
+            cm = [(L(32413),run_plugin_url({'action':'refresh_directory','dirpath':dirpath}))]
+            from directory_listing import group_inventory
+            from path_display import path_token
+            show_groups,plain = group_inventory(files,data.get('content_type','auto'))
+            if len(show_groups)==1 and not plain:
+                root = next(iter(show_groups))
+                cm.append((L(32029),run_plugin_url({'action':'manual_match_show','dirpath':dirpath,'group':path_token(root)})))
             if pn > 0 or fl > 0:
                 cm.append((L(32027), run_plugin_url({
                     'action': 'scan_directory',
@@ -347,31 +401,31 @@ def show_main_menu():
             listing.append((url, li, True))
 
         # --- [Refresh All] ---
-        li = xbmcgui.ListItem(L(32025))
+        li = xbmcgui.ListItem(L(32025), offscreen=True)
         li.setArt({'icon': 'DefaultAddonsUpdates.png'})
         url = build_url({'action': 'refresh_all'})
         listing.append((url, li, False))
 
     # --- [Cache Images] ---
-    li = xbmcgui.ListItem(L(32023))
+    li = xbmcgui.ListItem(L(32023), offscreen=True)
     li.setArt({'icon': 'DefaultAddonsZip.png'})
     url = build_url({'action': 'cache_images'})
     listing.append((url, li, False))
 
     # --- [Cache Actor Images] (independent of poster/background caching) ---
-    li = xbmcgui.ListItem(L(32200))
+    li = xbmcgui.ListItem(L(32200), offscreen=True)
     li.setArt({'icon': 'DefaultActor.png'})
     url = build_url({'action': 'cache_actor_images'})
     listing.append((url, li, False))
 
     # --- [Clear All Data] ---
-    li = xbmcgui.ListItem(L(32026))
+    li = xbmcgui.ListItem(L(32026), offscreen=True)
     li.setArt({'icon': 'DefaultAddonInfoProvider.png'})
     url = build_url({'action': 'clear_all_data'})
     listing.append((url, li, False))
 
     # --- [Settings] ---
-    li = xbmcgui.ListItem(L(32024))
+    li = xbmcgui.ListItem(L(32024), offscreen=True)
     li.setArt({'icon': 'DefaultAddonService.png'})
     url = build_url({'action': 'open_settings'})
     listing.append((url, li, False))
@@ -384,6 +438,7 @@ def show_main_menu():
 # ==========================================
 # Refresh All Directories
 # ==========================================
+@guarded_task
 def action_refresh_all():
     """Scan all managed directories for new/deleted files. No AI scan."""
     if _is_busy():
@@ -395,39 +450,60 @@ def action_refresh_all():
         xbmcgui.Dialog().notification(ADDON_NAME, L(32032), xbmcgui.NOTIFICATION_INFO, 2000)
         return
 
+    _refresh_library_files(list(dirs))
+
+
+@guarded_task
+def action_refresh_directory(dirpath):
+    """Discover files only in the selected managed directory, without scraping."""
+    if _is_busy():
+        xbmcgui.Dialog().notification(ADDON_NAME,L(32042),xbmcgui.NOTIFICATION_WARNING,3000)
+        return
+    if dirpath not in load_history().get('directories',{}):
+        return
+    _refresh_library_files([dirpath])
+
+
+def _refresh_library_files(dir_list):
     ensure_data_dir()
+    _clear_stop()
     _set_refreshing()
+    total_new = total_del = 0
+    pDialog = None
+    stopped = False
     try:
-        total_new = 0
-        total_del = 0
         pDialog = xbmcgui.DialogProgressBG()
-        pDialog.create(ADDON_NAME, L(32033))
-        dir_list = list(dirs.keys())
-        for i, dirpath in enumerate(dir_list):
-            pDialog.update(
-                int((i + 1) * 100 / len(dir_list)),
-                L(32034) % os.path.basename(dirpath.rstrip('/')),
-                L(32035) % (total_new, total_del))
-            nc, dc = refresh_directory_files(dirpath)
+        pDialog.create(ADDON_NAME,L(32033))
+        for i,dirpath in enumerate(dir_list):
+            if _is_stop_requested():
+                stopped = True
+                break
+            pDialog.update(int(i*100/max(1,len(dir_list))),
+                           L(32034)%directory_label(dirpath),
+                           L(32035)%(total_new,total_del))
+            nc,dc = refresh_directory_files(dirpath)
             total_new += nc
             total_del += dc
-        pDialog.close()
+        stopped = stopped or _is_stop_requested()
     finally:
+        if pDialog is not None:
+            pDialog.close()
         _clear_refreshing()
-
-    xbmc.executebuiltin('Container.Refresh')
-    if total_new or total_del:
-        msg = L(32060) % (total_new, total_del)
-        xbmcgui.Dialog().notification(ADDON_NAME, msg,
-                                       xbmcgui.NOTIFICATION_INFO, 5000)
+        _clear_stop()
+        xbmc.executebuiltin('Container.Refresh')
+    if stopped:
+        msg = L(32030)
+    elif total_new or total_del:
+        msg = L(32060)%(total_new,total_del)
     else:
-        xbmcgui.Dialog().notification(ADDON_NAME, L(32061),
-                                       xbmcgui.NOTIFICATION_INFO, 3000)
+        msg = L(32061)
+    xbmcgui.Dialog().notification(ADDON_NAME,msg,xbmcgui.NOTIFICATION_INFO,5000)
 
 
 # ==========================================
 # Add Directory
 # ==========================================
+@guarded_task
 def add_directory():
     if _is_busy():
         xbmcgui.Dialog().notification(ADDON_NAME, L(32042), xbmcgui.NOTIFICATION_WARNING, 3000)
@@ -441,6 +517,12 @@ def add_directory():
     if dirpath in history.get('directories', {}):
         dialog.ok(ADDON_NAME, L(32038))
         return
+
+    content_choice = dialog.select(L(32400) or '目录中的内容类型',
+        [L(32401) or '自动识别', L(32082) or '电影', L(32083) or '电视剧'])
+    if content_choice < 0:
+        return
+    content_type = ('auto','movie','tvshow')[content_choice]
 
     # Set refreshing marker to block other tasks
     _set_refreshing()
@@ -467,7 +549,7 @@ def add_directory():
         pDialog.create(ADDON_NAME, L(32036))
 
         while not scan_done.wait(0.3):
-            pDialog.update(50, L(32036), dirpath)
+            pDialog.update(50, L(32036), directory_label(dirpath))
 
         t.join(timeout=2)
         pDialog.close()
@@ -483,6 +565,7 @@ def add_directory():
 
         history.setdefault('directories', {})[dirpath] = {
             'added': time.strftime('%Y-%m-%d %H:%M:%S'),
+            'content_type': content_type,
             'files': files_dict,
         }
         save_history(history)
@@ -502,11 +585,13 @@ def add_directory():
 # ==========================================
 # Cache Images
 # ==========================================
+@guarded_task
 def cache_images():
     ImageCacher().start()
     xbmc.executebuiltin('Container.Refresh')
 
 
+@guarded_task
 def cache_actor_images():
     from actor_cache import ActorImageCacher
     ActorImageCacher().start_actors()
@@ -516,28 +601,46 @@ def cache_actor_images():
 # ==========================================
 # Clear All Data (poster data + DB)
 # ==========================================
+@guarded_task
 def clear_all_data():
+    from ai_database import current_database
+    import library_reset
+
     dialog = xbmcgui.Dialog()
-    if not dialog.yesno(ADDON_NAME,
-                        L(32052)):
+    if not dialog.yesno(ADDON_NAME, L(32052)):
+        return
+    booleans = json.loads(xbmc.executeJSONRPC(json.dumps({
+        'jsonrpc': '2.0', 'id': 1, 'method': 'XBMC.GetInfoBooleans',
+        'params': {'booleans': ['Library.IsScanningVideo', 'Library.IsCleaning']}})))
+    if (any(booleans.get('result', {}).values())
+            or xbmc.Player().isPlayingVideo()):
+        dialog.ok(ADDON_NAME, L(32301))
         return
 
-    # 1. Clear addon own data
-    try:
-        if xbmcvfs.exists(HISTORY_FILE):
-            os.remove(HISTORY_FILE)
-            log('Removed scan_history.json')
-        if xbmcvfs.exists(SCANNING_FILE):
-            os.remove(SCANNING_FILE)
-        if xbmcvfs.exists(STOP_FILE):
-            os.remove(STOP_FILE)
-    except Exception as e:
-        log('Failed to clear addon data: %s' % e, xbmc.LOGERROR)
+    def rpc(method, params):
+        response = json.loads(xbmc.executeJSONRPC(json.dumps({
+            'jsonrpc': '2.0', 'id': 1, 'method': method, 'params': params})))
+        if 'error' in response or 'result' not in response:
+            raise RuntimeError('%s: %s' % (method, response.get('error', 'no result')))
+        return response['result']
 
-    # Restart-safe library reset service preserves a recoverable copy of current DBs.
-    import subprocess
-    subprocess.Popen(['systemctl', 'start', 'cebox-library-reset.service'])
-    return
+    progress = xbmcgui.DialogProgressBG()
+    progress.create(ADDON_NAME, L(32300))
+    try:
+        plan = library_reset.prepare(DATA_PATH, current_database('MyVideos'), rpc)
+        report = library_reset.execute(
+            DATA_PATH, xbmcvfs.translatePath('special://thumbnails/'), plan, rpc,
+            progress=lambda done, total: progress.update(
+                int(done * 100 / max(1, total)), ADDON_NAME, L(32300)),
+            aborted=xbmc.Monitor().abortRequested)
+        log('Independent library reset complete: %s' % report)
+        xbmc.executebuiltin('Container.Refresh')
+        dialog.ok(ADDON_NAME, L(32046))
+    except Exception as exc:
+        log('Independent library reset failed: %s' % exc, xbmc.LOGERROR)
+        dialog.ok(ADDON_NAME, L(32302))
+    finally:
+        progress.close()
 
 
 # ==========================================
@@ -573,7 +676,7 @@ _NAME_SEGMENT_BRACKET_RE = re.compile(
 _NAME_SEGMENT_SPLIT_RE = re.compile(r'[ _\,\.\(\)\[\]\-]+')
 
 
-def _split_name_into_segments(fname):
+def _split_name_into_segments(fname, tv_context=None):
     """Split a media filename into candidate title segments.
 
     Returns (labels, query_for_label):
@@ -593,6 +696,11 @@ def _split_name_into_segments(fname):
     only there to help them quickly spot when one segment (e.g. the CJK
     title) really is the correct TMDB query and the rest is noise.
     """
+    if tv_context:
+        titles = tv_context.get('titles') or []
+        if titles and titles[0]:
+            return [L(32107) % titles[0]] + titles[1:] + [L(32408) or '输入剧名或 TMDb ID'], lambda index: titles[index] if 0 <= index < len(titles) else ''
+        return [L(32408) or '输入剧名或 TMDb ID'], lambda _index: ''
     if not fname:
         return [L(32107) % (fname or '')], lambda _i: fname or ''
 
@@ -654,10 +762,19 @@ def _split_name_into_segments(fname):
     return labels, _query_for_label
 
 
-def _manual_search_candidates(query, filename, auto_query, api_key, language):
+def _manual_search_candidates(query, filename, auto_query, api_key, language, tv_context=None):
     """Use scan-quality, multilingual candidates for the extracted-title row."""
     from ai_parser import regex_parse_filename
     from tmdb_api import search_movie_best, search_tv_best, search_multi
+    if tv_context:
+        results = search_tv_best(query,tv_context.get('year'),tv_context.get('english_title',''),api_key,language) or []
+        from matching import merge_candidates
+        combined,index = [],{}
+        merge_candidates(combined,index,results)
+        if tv_context.get('year'):
+            merge_candidates(combined,index,search_tv_best(query,None,tv_context.get('english_title',''),api_key,language) or [])
+        return [dict(r,media_type='tv') for r in sorted(combined,
+            key=lambda r:_match_score(r,query,tv_context.get('year'),tv_context.get('english_title','')),reverse=True)]
     parsed = regex_parse_filename(filename, '', mode='tvshow') if auto_query else None
     if not parsed:
         return search_multi(query, api_key, language)
@@ -672,7 +789,95 @@ def _manual_search_candidates(query, filename, auto_query, api_key, language):
 # ==========================================
 # Manual Match
 # ==========================================
-def manual_match(filepath=None, dirpath=None):
+def _manual_tv_apply(filepath, dirpath, tv_id, context, apply_all=False):
+    """Apply a confirmed show to one file or its known show-directory inventory."""
+    from tv_matcher import TvMatchSession, TvMatchError
+    from media_identity import title_key
+    history = load_history()
+    source = history.get('directories',{}).get(dirpath,{})
+    files = source.get('files',{})
+    key = ADDON.getSetting('tmdb_api_key') or ''
+    language = ADDON.getSetting('tmdb_language') or 'zh-CN'
+    if apply_all:
+        from tv_context import _show_directory
+        files = {path:info for path,info in files.items()
+                 if (info.get('match_evidence',{}).get('show_root') or _show_directory(path)[0])==context['show_root']}
+    session = TvMatchSession(files or [filepath],key,language,'tvshow' if apply_all else source.get('content_type','auto'),
+                             forced_ids={context['show_root']:tv_id},previous_results=files)
+    session.contexts[filepath] = context
+    if apply_all and not any(c.get('directory_titles') for c in session.contexts.values()) and len({title_key(c['title']) for c in session.contexts.values() if c['title']})>1:
+        xbmcgui.Dialog().ok(ADDON_NAME,L(32415) or '该目录包含多部不同的剧，请按独立剧目录管理后再匹配。')
+        return
+    if apply_all:
+        for other in session.contexts.values():
+            if not other['title']:
+                other.update(title=context['title'],titles=list(context['titles']))
+                if other.get('reason')=='show_title_missing' and other.get('episodes'):
+                    other.update(kind='episode',reason='')
+    peers = [path for path,other in session.contexts.items()
+             if other['show_root']==context['show_root']
+             and title_key(other['title'])==title_key(context['title'])
+             and other['year']==context['year']]
+    targets = [filepath]
+    if apply_all:
+        targets = list(session.contexts)
+    elif len(peers)>1:
+        default = 1 if any(_needs_scan(files.get(path,{})) for path in peers if path!=filepath) else 0
+        selection = xbmcgui.Dialog().select(L(32402) or '应用本次剧集匹配',
+            [L(32406) or '仅当前文件', (L(32403) or '同目录的全部 %d 个视频文件') % len(peers)],preselect=default)
+        if selection<0:
+            return
+        if selection==1:
+            targets = peers
+    try:
+        # Validate the selected identity/numbering before the first database write.
+        session.prepare_file(filepath)
+    except TvMatchError as error:
+        xbmcgui.Dialog().ok(ADDON_NAME,str(error))
+        return
+    if apply_all:
+        from path_display import path_token
+        confirmed_title = session.resolve_show(context)['details'].get('info',{}).get('title',context['title'])
+        source.setdefault('tv_matches',{})[path_token(context['show_root'])] = {'tmdb_id':int(tv_id),'title':confirmed_title}
+        save_history(history)
+    _run_scan([(path,os.path.dirname(path)) for path in targets],[dirpath],session)
+    xbmc.executebuiltin('Container.Refresh')
+
+
+def _tv_directory_files(source, group):
+    from directory_listing import group_inventory
+    from path_display import path_token
+    from tv_context import _show_directory
+    groups,_ = group_inventory(source.get('files',{}),source.get('content_type','auto'))
+    root = next((root for root in groups if path_token(root)==group),None)
+    if root is None:
+        return None,{}
+    files = {path:info for path,info in source.get('files',{}).items()
+             if (info.get('match_evidence',{}).get('show_root') or _show_directory(path)[0])==root}
+    return root,files
+
+
+@guarded_task
+def manual_match_show(dirpath, group):
+    """The visible TV matching entry point selects one physical show directory."""
+    if _is_busy():
+        xbmcgui.Dialog().notification(ADDON_NAME,L(32042),xbmcgui.NOTIFICATION_WARNING,3000)
+        return
+    source = load_history().get('directories',{}).get(dirpath,{})
+    root,files = _tv_directory_files(source,group)
+    if not files:
+        return
+    from tv_context import build_tv_contexts
+    from directory_listing import episode_order
+    contexts = build_tv_contexts(files,'tvshow')
+    # Prefer a regular episode as representative; search still uses the root
+    # title/year. Supplements and all-unknown inventories remain supported.
+    representative = min(files,key=lambda path:(contexts[path]['kind']!='episode',episode_order((path,files[path]))))
+    manual_match(representative,dirpath,show_root=root)
+
+
+@guarded_task
+def manual_match(filepath=None, dirpath=None, show_root=None):
     """Manual match entry point.
 
     Called either via the file-list context menu (params fetched from the
@@ -686,14 +891,23 @@ def manual_match(filepath=None, dirpath=None):
     if not filepath or not dirpath:
         return
 
-    fname = os.path.basename(filepath)
+    fname = os.path.basename(show_root.rstrip('/')) if show_root else os.path.basename(filepath)
     dialog = xbmcgui.Dialog()
+    history = load_history()
+    source = history.get('directories',{}).get(dirpath,{})
+    from tv_context import build_tv_contexts
+    if show_root:
+        from path_display import path_token
+        _,matching_files = _tv_directory_files(source,path_token(show_root))
+        tv_context = build_tv_contexts(matching_files,'tvshow').get(filepath)
+    else:
+        tv_context = build_tv_contexts(source.get('files',{}) or [filepath],source.get('content_type','auto')).get(filepath)
 
     # Auto-segment the original basename so the user can pick the real title
     # from a candidate list instead of retyping the whole thing every time a
     # match failed. Falls back to the manual input box when the file is so
     # garbled that segmentation produces zero usable chunks.
-    seg_labels, seg_query = _split_name_into_segments(fname)
+    seg_labels, seg_query = _split_name_into_segments(fname,tv_context)
     ret = dialog.select(L(32106), seg_labels)
     if ret < 0:
         return
@@ -711,6 +925,7 @@ def manual_match(filepath=None, dirpath=None):
     tmdb_key = ADDON.getSetting('tmdb_api_key') or 'f090bb54758cabf231fb605d3e3e0468'
     language = ADDON.getSetting('tmdb_language')
 
+    import dns_override
     from tmdb_api import search_multi, get_movie_details, get_tv_details, get_tv_episode_details, get_tv_season_episodes
     from kodi_db import KodiDatabase
     from tvshow_db import TvShowDatabase
@@ -723,7 +938,7 @@ def manual_match(filepath=None, dirpath=None):
     try:
         if query.strip().isdigit():
             # Numeric ID - ask user which type
-            ret = dialog.select(L(32081), [L(32082), L(32083)])
+            ret = 1 if tv_context else dialog.select(L(32081), [L(32082), L(32083)])
             if ret < 0:
                 return
             pDialog = xbmcgui.DialogProgress()
@@ -748,7 +963,7 @@ def manual_match(filepath=None, dirpath=None):
             # Search by name using multi search
             pDialog = xbmcgui.DialogProgress()
             pDialog.create(ADDON_NAME, L(32088))
-            results = _manual_search_candidates(query, fname, auto_query, tmdb_key, language)
+            results = _manual_search_candidates(query, fname, auto_query, tmdb_key, language,tv_context)
             pDialog.close()
 
             if not results:
@@ -858,6 +1073,28 @@ def manual_match(filepath=None, dirpath=None):
         # ==========================================
         # TV Show path
         # ==========================================
+        if tv_context:
+            from tv_matcher import TvMatchSession, TvMatchError
+            confirmed_context = dict(tv_context)
+            if not confirmed_context['title']:
+                confirmed_title = tv_details.get('info',{}).get('title','')
+                confirmed_context.update(title=confirmed_title,titles=[confirmed_title])
+                if confirmed_context.get('reason')=='show_title_missing' and confirmed_context.get('episodes'):
+                    confirmed_context.update(kind='episode',reason='')
+            check = TvMatchSession([],tmdb_key,language,forced_ids={confirmed_context['show_root']:tv_id})
+            check.contexts[filepath] = confirmed_context
+            try:
+                check.prepare_file(filepath)
+            except TvMatchError as error:
+                if error.reason not in ('episode_number_out_of_range','episode_not_found','season_not_found'):
+                    dialog.ok(ADDON_NAME,str(error))
+                    return
+                # A show confirmation cannot fix incorrect numbering. Continue
+                # to explicit season/episode selection instead of a dead end.
+                dialog.ok(ADDON_NAME,str(error))
+            else:
+                _manual_tv_apply(filepath,dirpath,tv_id,confirmed_context,apply_all=True)
+                return
         tv_title = tv_details.get('info', {}).get('title', '')
         seasons = tv_details.get('seasons', [])
 
@@ -906,68 +1143,17 @@ def manual_match(filepath=None, dirpath=None):
 
         episode_number = episodes[ep_ret].get('episode_number', 1)
 
-        # Get episode details
-        pDialog = xbmcgui.DialogProgress()
-        pDialog.create(ADDON_NAME, L(32086))
-        ep_details = get_tv_episode_details(tv_id, season_number, episode_number, tmdb_key, language)
-        pDialog.close()
-
-        if not ep_details:
-            ep_details = {
-                'info': {
-                    'title': L(32103) % episode_number,
-                    'plot': '',
-                    'aired': '',
-                    'duration': 0,
-                    'director': [],
-                    'credits': [],
-                },
-                'uniqueids': {},
-                'ratings': {},
-                'available_art': {'poster': [], 'fanart': []},
-                'cast': [],
-            }
-
-        # Clean up old DB record before writing new match
-        _delete_single_file_from_db(filepath)
-        # Save to database
-        tvdb = TvShowDatabase()
-        try:
-            tvdb.connect()
-            existing_show_id = tvdb.find_tvshow_by_uniqueid('tmdb', str(tv_id))
-            show_id, ep_id = tvdb.save_tvshow(
-                tv_details, ep_details, season_number, episode_number, filepath)
-            if show_id and ep_id:
-                status_flag = 'merged' if existing_show_id else 'success'
-                tv_year = tv_details.get('info', {}).get('year', '') or \
-                    (tv_details.get('info', {}).get('premiered', '')[:4] if tv_details.get('info', {}).get('premiered') else '')
-                history = load_history()
-                dir_files = history.get('directories', {}).get(dirpath, {}).get('files', {})
-                if filepath in dir_files:
-                    dir_files[filepath] = {
-                        'status': status_flag,
-                        'show_id': show_id,
-                        'tmdb_title': tv_title or '',
-                        'season_number': season_number,
-                        'episode_number': episode_number,
-                        'is_tvshow': True,
-                        'year': tv_year or '',
-                    }
-                save_history(history)
-                dialog.notification(ADDON_NAME, L(32104) % (tv_title, season_number, episode_number))
-                # Prefetch show art + cast thumbnails through the proxy
-                # chain (manual matches bypass the scan-end prefetch).
-                try:
-                    ImageCacher().prefetch_art([_art_with_cast(tv_details)])
-                except Exception as e:
-                    log('Manual match TV prefetch error: %s' % e, xbmc.LOGERROR)
-            else:
-                dialog.ok(ADDON_NAME, L(32095))
-        except Exception as e:
-            log('Manual match TV DB error: %s' % e, xbmc.LOGERROR)
-            dialog.ok(ADDON_NAME, L(32105) % str(e)[:120])
-        finally:
-            tvdb.close()
+        # A manually selected season/episode is still validated against the
+        # real season catalog. Do not delete old rows before a safe transaction.
+        context = dict(tv_context or {})
+        context.update(kind='episode',show_root=(tv_context or {}).get('show_root') or os.path.dirname(filepath).rstrip('/')+'/',
+                       title=tv_title,titles=[tv_title],english_title='',
+                       year=tv_details.get('info',{}).get('year'),
+                       season_number=season_number,season_explicit=True,
+                       episodes=[episode_number],source_episodes=[episode_number],
+                       edition='',episode_title='',reason='')
+        _manual_tv_apply(filepath,dirpath,tv_id,context)
+        return
 
     xbmc.executebuiltin('Container.Refresh')
 
@@ -981,7 +1167,7 @@ def _collect_pending():
     items = []
     for dirpath, data in history.get('directories', {}).items():
         for filepath, info in data.get('files', {}).items():
-            if info.get('status') in ('pending', 'failed'):
+            if _needs_scan(info):
                 items.append((dirpath, filepath, info))
     return items
 
@@ -992,7 +1178,7 @@ def _count_pending(dirpaths):
     for dp in dirpaths:
         files = history.get('directories', {}).get(dp, {}).get('files', {})
         n += sum(1 for f in files.values()
-                 if f.get('status') in ('pending', 'failed'))
+                 if _needs_scan(f))
     return n
 
 
@@ -1042,102 +1228,128 @@ def review_pending():
 # ==========================================
 # View Directory (files inside)
 # ==========================================
-def view_directory(dirpath):
+def view_directory(dirpath, group='', page=0):
     if not dirpath:
         return
-
+    from directory_listing import listing_page, is_tv, group_label
+    from path_display import path_token
     history = load_history()
-    dir_data = history.get('directories', {}).get(dirpath, {})
-    files = dir_data.get('files', {})
+    data = history.get('directories',{}).get(dirpath,{})
+    files = data.get('files',{})
+    model = listing_page(files,data.get('content_type','auto'),group,page)
     listing = []
+    pending = sum(_needs_scan(info) for info in files.values())
+    if pending:
+        li = xbmcgui.ListItem('[B]%s (%d)[/B]' % (L(32027),pending), offscreen=True)
+        li.setArt({'icon':'DefaultAddonVideo.png'})
+        listing.append((build_url({'action':'scan_directory','dirpath':dirpath}),li,False))
+    if model['page']>0:
+        li = xbmcgui.ListItem(L(32411) or '上一页', offscreen=True)
+        listing.append((build_url({'action':'view_directory','dirpath':dirpath,'group':group,'page':model['page']-1}),li,True))
+    for kind,path,info in model['rows']:
+        if kind=='group':
+            entries = info['files']
+            success = sum(i.get('status') in ('success','merged') for _,i in entries)
+            unknown = sum(i.get('match_evidence',{}).get('numbering_mode')=='local_unmatched' for _,i in entries)
+            li = xbmcgui.ListItem(group_label(path,entries), offscreen=True)
+            li.setLabel2('%d 文件 · 已匹配 %d · 未知集 %d' % (len(entries),success,unknown))
+            li.setArt({'icon':'DefaultFolder.png'})
+            li.addContextMenuItems([(L(32029),run_plugin_url({'action':'manual_match_show','dirpath':dirpath,'group':path_token(path)}))])
+            listing.append((build_url({'action':'view_directory','dirpath':dirpath,'group':path_token(path)}),li,True))
+            continue
+        status = info.get('status','pending')
+        fname = os.path.basename(path)
+        evidence = info.get('match_evidence',{})
+        unknown = evidence.get('numbering_mode')=='local_unmatched'
+        tv = is_tv(info) or data.get('content_type')=='tvshow'
+        prefix = (L(32409) or '未知集') if unknown else ('剧集' if tv else '电影')
+        color = 'FF44DD44' if status in ('success','merged') else 'FFDD4444'
+        label = '[COLOR=%s]%s[/COLOR] %s' % (color,prefix,redact_text(fname))
+        details = info.get('tmdb_title','')
+        if tv and status in ('success','merged'):
+            numbers = info.get('episode_numbers') or [info.get('episode_number',0)]
+            if not unknown:
+                details += ' · S%02d %s' % (info.get('season_number',0), ', '.join('E%02d'%n for n in numbers))
+            if evidence.get('numbering_mode')=='local_edited_version':
+                details += ' · '+(L(32407) or '精编版独立编号')
+        else:
+            details += ' · '+STATUS_LABELS.get(status,STATUS_LABELS['pending'])
+        if info.get('error'):
+            details += ' · '+redact_text(info['error'])
+        li = xbmcgui.ListItem(label, offscreen=True)
+        li.setLabel2(redact_text(details))
+        li.setArt({'icon':'DefaultVideo.png'})
+        # These are single-file plugin commands. Marking the menu entry as
+        # non-playable suppresses Kodi's automatic Play from here/queue menu;
+        # the click action below explicitly plays only the selected file.
+        li.setProperty('IsPlayable','false')
+        li.setProperty('CanQueue','false')
+        if not tv:
+            li.addContextMenuItems([(L(32029),run_plugin_url({'action':'manual_match','filepath':path,'dirpath':dirpath}))])
+        listing.append((build_url({'action':'play_file','dirpath':dirpath,'filepath':path}),li,False))
+    if model['page']+1<model['pages']:
+        li = xbmcgui.ListItem('%s (%d/%d)' % (L(32412) or '下一页',model['page']+2,model['pages']), offscreen=True)
+        listing.append((build_url({'action':'view_directory','dirpath':dirpath,'group':group,'page':model['page']+1}),li,True))
+    if not listing:
+        listing.append((build_url({}),xbmcgui.ListItem(L(32054), offscreen=True),False))
+    xbmcplugin.addDirectoryItems(addon_handle,listing,len(listing))
+    category = model['label'] or directory_label(dirpath)
+    if model['pages']>1:
+        category += ' · %d/%d' % (model['page']+1,model['pages'])
+    xbmcplugin.setPluginCategory(addon_handle,category)
+    xbmcplugin.endOfDirectory(addon_handle,cacheToDisc=False)
 
-    if not files:
-        li = xbmcgui.ListItem(L(32054))
-        listing.append((build_url({}), li, False))
+
+def play_media_file(dirpath, filepath):
+    """Play one registered physical file; never queue the surrounding listing.
+
+    A normal menu click invokes the non-playable plugin command with handle
+    -1. Kodi favourites can invoke PlayMedia on the same URL with a resolver
+    handle; support both paths without exposing credentials in menu URLs.
+    """
+    info = load_history().get('directories',{}).get(dirpath,{}).get('files',{}).get(filepath)
+    if info is None or not filepath:
+        if addon_handle>=0:
+            xbmcplugin.setResolvedUrl(addon_handle,False,xbmcgui.ListItem(offscreen=True))
+        xbmcgui.Dialog().notification(ADDON_NAME,L(32414) or '文件已不在插件媒体库中，请重新扫描目录。',
+                                     xbmcgui.NOTIFICATION_WARNING,4000)
+        return False
+    from file_scanner import VIDEO_EXTENSIONS
+    target = filepath
+    if os.path.splitext(filepath.rstrip('/'))[1].lower() not in VIDEO_EXTENSIONS:
+        # Scanner inventory represents Blu-ray directories by their parent.
+        # Resolve the disc entry by string, without probing the video share.
+        target = filepath.rstrip('/')+'/BDMV/index.bdmv'
+    from directory_listing import is_tv
+    tv = is_tv(info)
+    title = os.path.splitext(os.path.basename(filepath))[0] if tv else info.get('tmdb_title') or os.path.basename(filepath)
+    li = xbmcgui.ListItem(label=redact_text(title),path=target,offscreen=True)
+    li.setProperty('IsPlayable','true')
+    tag = li.getVideoInfoTag()
+    tag.setTitle(redact_text(title))
+    if tv:
+        tag.setMediaType('episode')
+        tag.setTvShowTitle(info.get('tmdb_title',''))
+        tag.setSeason(int(info.get('season_number',1) or 0))
+        tag.setEpisode(int(info.get('episode_number',0) or 0))
+        ids = info.get('episode_ids') or info.get('match_evidence',{}).get('episode_ids') or []
+        dbid = ids[0] if ids else info.get('episode_id')
     else:
-        # Sort: failed first, then pending, then success
-        def _sort_key(item):
-            fp, info = item
-            status = info.get('status', 'pending')
-            order = {'failed': 0, 'pending': 1, 'success': 2, 'merged': 3}
-            return (order.get(status, 9), fp)
-
-        sorted_files = sorted(files.items(), key=_sort_key)
-
-        # Stats header
-        total = len(files)
-        s = sum(1 for _, info in sorted_files if info.get('status') in ('success', 'merged'))
-        fl = sum(1 for _, info in sorted_files if info.get('status') == 'failed')
-        pn = sum(1 for _, info in sorted_files if info.get('status') == 'pending')
-
-        # Rescan button
-        if pn > 0 or fl > 0:
-            li = xbmcgui.ListItem('[B]' + L(32027) + ' (%d成功 / %d失败 / %d待处理)[/B]' % (s, fl, pn))
-            li.setArt({'icon': 'DefaultAddonVideo.png'})
-            url = build_url({'action': 'scan_directory', 'dirpath': dirpath})
-            listing.append((url, li, False))
-
-        for filepath, info in sorted_files:
-            status = info.get('status', 'pending')
-            fname = os.path.basename(filepath)
-            tmdb_title = info.get('tmdb_title', '')
-            error = info.get('error', '')
-
-            # Determine media type for label
-            if info.get('is_tvshow') or info.get('season_number', 0) > 0:
-                type_label = '[COLOR=FFFF4444]剧集[/COLOR] '
-            elif status in ('success', 'merged'):
-                type_label = '[COLOR=FFFF4444]电影[/COLOR] '
-            elif status == 'failed' and 'season_number' in info:
-                type_label = '[COLOR=FFFF4444]电影[/COLOR] '
-            else:
-                type_label = ''
-
-            match_year = info.get('year', '')
-            if status in ('success', 'merged'):
-                # Build title suffix: "TMDB标题 (年份)" or just "TMDB标题"
-                title_suffix = tmdb_title or 'OK'
-                if match_year:
-                    title_suffix += ' (%s)' % match_year
-                label = type_label + '[COLOR=FF44DD44]' + STATUS_LABELS[status] + ' ' + title_suffix + '[/COLOR]  ' + fname
-                if info.get('is_tvshow'):
-                    sn = info.get('season_number', 0)
-                    en = info.get('episode_number', 0)
-                    label2 = 'S%02dE%02d' % (sn, en)
-                else:
-                    label2 = ''
-            elif status == 'failed':
-                err_msg = error or L(32055)
-                label = type_label + '[COLOR=FFDD4444]' + STATUS_LABELS[status] + ' ' + err_msg + '[/COLOR]  ' + fname
-                label2 = ''
-            else:
-                label = STATUS_LABELS[status] + ' ' + fname
-                label2 = L(32056)
-
-            li = xbmcgui.ListItem(label)
-            li.setLabel2(label2)
-            li.setArt({'icon': 'DefaultVideo.png' if status in (
-                'success', 'merged') else 'DefaultIconInfo.png'})
-
-            # Context menu: manual match for all files
-            cm = [(L(32029), run_plugin_url({
-                'action': 'manual_match',
-                'filepath': filepath,
-                'dirpath': dirpath,
-            }))]
-            li.addContextMenuItems(cm)
-
-            url = build_url({})  # no-op click
-            listing.append((url, li, False))
-
-    xbmcplugin.addDirectoryItems(addon_handle, listing, len(listing))
-    xbmcplugin.setPluginCategory(addon_handle, dirpath)
-    xbmcplugin.endOfDirectory(addon_handle, cacheToDisc=False)
+        tag.setMediaType('movie')
+        dbid = info.get('movie_id')
+    if isinstance(dbid,int) and dbid>0:
+        tag.setDbId(dbid)
+    if addon_handle>=0:
+        xbmcplugin.setResolvedUrl(addon_handle,True,li)
+    else:
+        xbmc.Player().play(target,listitem=li)
+    return True
 
 
 # ==========================================
 # Remove Directory (cascade delete)
 # ==========================================
+@guarded_task
 def remove_directory(dirpath):
     if not dirpath:
         return
@@ -1246,6 +1458,7 @@ def _delete_single_file_from_db(filepath):
         db.close()
 
 
+@guarded_task
 def refresh_directory_files(dirpath):
     """Compare disk vs history: add new files as pending, remove deleted files from DB+history.
     Returns (new_count, deleted_count)."""
@@ -1288,6 +1501,7 @@ def refresh_directory_files(dirpath):
     return len(new_files), len(deleted_files)
 
 
+@guarded_task
 def cascade_delete_directory(dirpath):
     """Remove all movie/TV data from Kodi DB for files under dirpath."""
     from kodi_db import KodiDatabase
@@ -1399,6 +1613,7 @@ def cascade_delete_directory(dirpath):
 # ==========================================
 # Scan Single Directory
 # ==========================================
+@guarded_task
 def scan_directory(dirpath):
     if _is_busy():
         xbmcgui.Dialog().notification(ADDON_NAME, L(32042), xbmcgui.NOTIFICATION_WARNING, 3000)
@@ -1424,7 +1639,7 @@ def scan_directory(dirpath):
     files = history['directories'][dirpath].get('files', {})
     work_items = []
     for filepath, info in files.items():
-        if info.get('status') in ('pending', 'failed'):
+        if _needs_scan(info):
             if not xbmcvfs.exists(filepath) and not os.path.isdir(filepath):
                 info['status'] = 'failed'
                 info['error'] = L(32043)
@@ -1447,6 +1662,7 @@ def scan_directory(dirpath):
 # ==========================================
 # Scan All Directories
 # ==========================================
+@guarded_task
 def scan_all():
     if _is_busy():
         xbmcgui.Dialog().notification(ADDON_NAME, L(32042), xbmcgui.NOTIFICATION_WARNING, 3000)
@@ -1477,7 +1693,7 @@ def scan_all():
     for dirpath, data in history.get('directories', {}).items():
         dir_has_work = False
         for filepath, info in data.get('files', {}).items():
-            if info.get('status') in ('pending', 'failed'):
+            if _needs_scan(info):
                 if not xbmcvfs.exists(filepath):
                     info['status'] = 'failed'
                     info['error'] = L(32043)
@@ -1503,7 +1719,40 @@ def scan_all():
 # ==========================================
 # Scan Engine (multi-threaded)
 # ==========================================
-def _run_scan(work_items, affected_dirs):
+def _store_scan_result(history, affected_dirs, result):
+    parts = list(result)
+    status, filepath, _name, media_id, title, _art = parts[:6]
+    season, episode, error, year = (parts+[None]*10)[6:10]
+    evidence = parts[10] if len(parts)>10 and isinstance(parts[10],dict) else None
+    is_tv = bool(evidence and evidence.get('type')=='tvshow') or bool(episode and season is not None and season>=0)
+    if status in ('success','merged'):
+        entry = {'status':status,'tmdb_title':title or '', 'year':year or ''}
+        if media_id:
+            entry['show_id' if is_tv else 'movie_id'] = media_id
+    elif status=='skipped':
+        entry = {'status':'skipped','error':error or '附加内容已略过。','tmdb_title':title or '', 'year':year or ''}
+    else:
+        entry = {'status':'pending' if is_tv and status=='pending' else 'failed',
+                 'error':error or L(32055),'season_number':season or 0,
+                 'episode_number':episode or 0,'year':year or ''}
+    if evidence:
+        entry['match_evidence'] = evidence
+    if is_tv:
+        entry.update(is_tvshow=True,season_number=season if season is not None else 1,
+                     episode_number=episode or 0)
+        if evidence and evidence.get('episode_numbers'):
+            entry['episode_numbers'] = evidence['episode_numbers']
+            entry['episode_ids'] = evidence.get('episode_ids',[])
+    for directory in affected_dirs:
+        files = history.get('directories',{}).get(directory,{}).get('files',{})
+        if filepath in files:
+            files[filepath] = entry
+            break
+    return entry
+
+
+@guarded_task
+def _run_scan(work_items, affected_dirs, tv_session_override=None):
     if _is_scanning():
         xbmcgui.Dialog().notification(ADDON_NAME, L(32042), xbmcgui.NOTIFICATION_WARNING, 3000)
         return
@@ -1518,21 +1767,24 @@ def _run_scan(work_items, affected_dirs):
     success = 0
     merged = 0
     failed = 0
+    skipped = 0
     history = None
     art_entries = []
+    abort_event = threading.Event()
     try:
         ai_enabled = ADDON.getSetting('ai_enabled') == 'true'
         api_key = ADDON.getSetting('ai_api_key') or ''
         # Default to DeepSeek (reachable from China without a VPN).
         # api.openai.com times out on CoreELEC boxes without a proxy - it
         # must only be used when the user explicitly configures it.
-        api_base = ADDON.getSetting('ai_api_base') or 'https://api.deepseek.com/v1'
-        api_model = ADDON.getSetting('ai_model') or 'deepseek-chat'
+        api_base = ADDON.getSetting('ai_api_base') or 'https://api.deepseek.com'
+        api_model = ADDON.getSetting('ai_model') or 'deepseek-flash'
         tmdb_key = ADDON.getSetting('tmdb_api_key') or ''
         language = ADDON.getSetting('tmdb_language')
         scan_delay = max(0, int(ADDON.getSetting('scan_delay') or '1'))
 
         # TMDB key is mandatory - validate before scanning
+        import dns_override
         from tmdb_api import check_api_key
         tmdb_status = check_api_key(tmdb_key)
         if tmdb_status == 'empty':
@@ -1555,6 +1807,18 @@ def _run_scan(work_items, affected_dirs):
         scanned_count = len(work_items)
         abort_event = threading.Event()
         result_queue = queue.Queue()
+        from tv_matcher import TvMatchSession
+        from tv_context import build_tv_contexts
+        history = load_history()
+        tv_session = tv_session_override or TvMatchSession([], tmdb_key, language)
+        tv_session.forced_movies = set()
+        if tv_session_override is None:
+            for directory in affected_dirs:
+                data = history.get('directories',{}).get(directory,{})
+                tv_session.previous_results.update(data.get('files',{}))
+                if data.get('content_type') == 'movie':
+                    tv_session.forced_movies.update(data.get('files',{}))
+                tv_session.register_source(data.get('files',{}),data.get('content_type','auto'),data.get('tv_matches',{}))
         # Parallel workers (configurable 1-24, default 12). The global
         # token-bucket limiter inside tmdb_api keeps the total TMDB request
         # rate under the free-tier limit, so more workers = more files in
@@ -1570,7 +1834,7 @@ def _run_scan(work_items, affected_dirs):
             t = threading.Thread(
                 target=scan_worker,
                 args=(work_queue, result_queue, ai_enabled, api_key, api_base,
-                      api_model, tmdb_key, language, scan_delay, abort_event),
+                      api_model, tmdb_key, language, scan_delay, abort_event, tv_session),
                 name='AI-Scanner-%d' % (i + 1))
             t.daemon = True
             t.start()
@@ -1605,43 +1869,16 @@ def _run_scan(work_items, affected_dirs):
             error = result_parts[8] if len(result_parts) > 8 else None
             match_year = result_parts[9] if len(result_parts) > 9 else ''
 
-            for dirpath in affected_dirs:
-                dir_files = history.get('directories', {}).get(
-                    dirpath, {}).get('files', {})
-                if file_path in dir_files:
-                    if status in ('success', 'merged'):
-                        entry = {
-                            'status': status,
-                            'tmdb_title': tmdb_title or '',
-                            'year': match_year or '',
-                        }
-                        if len(result_parts) > 10 and isinstance(result_parts[10], dict):
-                            entry['match_evidence'] = result_parts[10]
-                        if media_id:
-                            entry['movie_id'] = media_id
-                        if season_num > 0:
-                            entry['season_number'] = season_num
-                            entry['episode_number'] = episode_num
-                            entry['is_tvshow'] = True
-                        dir_files[file_path] = entry
-                        success += 1
-                        if status == 'merged':
-                            merged += 1
-                        # NOTE: art rows were already written inside
-                        # save_movie()/save_tvshow() in the worker thread;
-                        # no extra per-movie DB round trip needed here.
-                        if art_urls:
-                            art_entries.append(art_urls)
-                    else:
-                        dir_files[file_path] = {
-                            'status': 'failed',
-                            'error': error or L(32055),
-                            'season_number': season_num,
-                            'episode_number': episode_num,
-                            'year': match_year or '',
-                        }
-                        failed += 1
-                    break
+            _store_scan_result(history,affected_dirs,result)
+            if status in ('success','merged'):
+                success += 1
+                merged += status=='merged'
+                if art_urls:
+                    art_entries.append(art_urls)
+            elif status=='skipped':
+                skipped += 1
+            else:
+                failed += 1
             if processed % HISTORY_SAVE_EVERY == 0:
                 save_history(history)
 
@@ -1654,7 +1891,18 @@ def _run_scan(work_items, affected_dirs):
         # Signal workers to stop immediately so join() doesn't hang for
         # timeout=5s per thread (12 workers = 60s delay).
         abort_event.set()
-        # Clean up marker files
+        for t in workers:
+            t.join()
+        if history is not None:
+            while True:
+                try:
+                    late_result = result_queue.get_nowait()
+                except queue.Empty:
+                    break
+                _store_scan_result(history,affected_dirs,late_result)
+                if late_result[0] in ('success','merged') and late_result[5]:
+                    art_entries.append(late_result[5])
+        # Clean up marker files only after every pending transaction finished.
         _clear_scanning()
         _clear_stop()
         if pDialog is not None:
@@ -1666,13 +1914,11 @@ def _run_scan(work_items, affected_dirs):
                 ImageCacher().prefetch_art(art_entries)
             except Exception as e:
                 log('Image prefetch trigger error: %s' % e, xbmc.LOGERROR)
-        for t in workers:
-            t.join(timeout=2)
         xbmc.executebuiltin('Container.Refresh')
 
     xbmcgui.Dialog().notification(ADDON_NAME,
                         L(32065) % (
-                            success, merged, failed),
+                            success, merged, failed) + ('；略过 %d 个附加内容' % skipped if skipped else ''),
                         xbmcgui.NOTIFICATION_INFO, 5000)
 
     return success, merged, failed
@@ -1695,7 +1941,7 @@ def _art_with_cast(details):
 
 
 def scan_worker(work_queue, result_queue, ai_enabled, api_key, api_base,
-                api_model, tmdb_key, language, delay, abort_event):
+                api_model, tmdb_key, language, delay, abort_event, tv_session=None):
     from ai_parser import parse_filename
     from tmdb_api import (search_movie_best, get_movie_details,
                           search_tv_best, get_tv_details, get_tv_episode_details)
@@ -1713,6 +1959,12 @@ def scan_worker(work_queue, result_queue, ai_enabled, api_key, api_base,
         fname = os.path.basename(filepath)
 
         try:
+            from tv_matcher import TvMatchSession
+            session = tv_session or TvMatchSession([filepath],tmdb_key,language)
+            if session.context(filepath) is not None:
+                result_queue.put(session.process_file(filepath))
+                work_queue.task_done()
+                continue
             # ================================================
             # ① Regex pre-filter: try Kodi-style cleaning + TMDB first
             # ================================================
@@ -1726,7 +1978,10 @@ def scan_worker(work_queue, result_queue, ai_enabled, api_key, api_base,
             episode_number = 0
 
             from ai_parser import regex_parse_filename
-            regex_result = regex_parse_filename(fname, dirpath, 'tvshow')
+            expected_type = 'movie' if filepath in getattr(session,'forced_movies',set()) else 'auto'
+            regex_result = regex_parse_filename(fname, dirpath, expected_type)
+            if regex_result and expected_type=='movie':
+                regex_result = dict(regex_result,type='movie',season_number=0,episode_number=0)
             source_evidence = build_evidence(fname, os.path.dirname(filepath))
             if regex_result is None and (source_evidence.get('tmdb_id') or source_evidence.get('imdb_id')):
                 regex_result = {'type':'movie','title':source_evidence['titles'][0] if source_evidence['titles'] else fname,
@@ -1767,7 +2022,7 @@ def scan_worker(work_queue, result_queue, ai_enabled, api_key, api_base,
             if ai is None:
                 if ai_enabled:
                     ai = parse_filename(fname, dirpath, api_key, api_base,
-                                        api_model, mode=regex_result.get('type', 'auto') if regex_result else 'auto',
+                                        api_model, mode='movie' if expected_type=='movie' else (regex_result.get('type', 'auto') if regex_result else 'auto'),
                                         skip_regex=True)
                     used_ai = ai is not None
                 else:
@@ -1784,6 +2039,8 @@ def scan_worker(work_queue, result_queue, ai_enabled, api_key, api_base,
                 time.sleep(delay)
                 continue
 
+            if expected_type=='movie':
+                ai = dict(ai,type='movie',season_number=0,episode_number=0)
             media_type = ai.get('type', 'movie')
             title = ai.get('title', '')
             year = ai.get('year')
@@ -1871,155 +2128,12 @@ def scan_worker(work_queue, result_queue, ai_enabled, api_key, api_base,
                 work_queue.task_done()
                 continue
 
-            # ================================================
-            # TV Show path
-            # ================================================
-            if season_number <= 0 or episode_number <= 0:
-                result_queue.put((
-                    'failed', filepath, fname, None, None, None,
-                    season_number, episode_number,
-                    L(32113) % (season_number, episode_number), ''))
-                work_queue.task_done()
-                time.sleep(delay)
-                continue
-
-            # Search TV - primary language first, English merged when weak
-            tv_results = search_tv_best(title, year, english_title,
-                                        tmdb_key, language)
-
-            if not tv_results:
-                result_queue.put((
-                    'failed', filepath, fname, None, None, None,
-                    season_number, episode_number,
-                    L(32114) % (title, year), ''))
-                work_queue.task_done()
-                time.sleep(delay)
-                continue
-
-            # --- confidence check: take the best candidate directly ---
-            best_tv, score = _select_best_match(tv_results, title, year, MATCH_THRESHOLD, english_title)
-
-            # --- AI second opinion for weak TV matches (same as movies) ---
-            if (best_tv is None or score < MATCH_THRESHOLD) \
-                    and ai_enabled and not used_ai:
-                ai2 = parse_filename(fname, dirpath, api_key, api_base,
-                                     api_model, mode='tvshow',
-                                     skip_regex=True)
-                if ai2 and ai2.get('type', 'movie') == 'tvshow':
-                    t2 = ai2.get('title', '')
-                    y2 = ai2.get('year')
-                    e2 = ai2.get('english_title', '')
-                    if t2 and (t2, y2, e2) != (title, year, english_title):
-                        tv_results2 = search_tv_best(t2, y2, e2,
-                                                     tmdb_key, language)
-                        best2, score2 = _select_best_match(
-                            tv_results2, t2, y2, MATCH_THRESHOLD, e2)
-                        if best2 is not None and \
-                                (best_tv is None or score2 > score):
-                            log('[Worker %s] AI TV rescue: "%s" (%s) '
-                                'score %.2f -> %.2f ("%s")'
-                                % (threading.current_thread().name,
-                                   title, year, score, score2, t2))
-                            ai = ai2
-                            title, year, english_title = t2, y2, e2
-                            best_tv, score = best2, score2
-
-            if best_tv is None or score < MATCH_FLOOR:
-                guessed = ''
-                log('[Worker %s] %s: "%s" (%s)'
-                    % (threading.current_thread().name,
-                       'No TV match' if best_tv is None
-                       else 'Very low-confidence TV match (%.2f) NOT applied' % score,
-                       title, year))
-                result_queue.put((
-                    'pending', filepath, fname, None, None, None,
-                    season_number, episode_number,
-                    L(32160) % (score, (best_tv or {}).get('title') or (best_tv or {}).get('name') or title), str(year or '')))
-                work_queue.task_done()
-                time.sleep(delay)
-                continue
-            if score < MATCH_THRESHOLD:
-                log('[Worker %s] Low-confidence TV match (%.2f) applied: "%s" -> %s'
-                     % (threading.current_thread().name, score, title,
-                        best_tv.get('name', '') or best_tv.get('title', '')))
-            tv_id = best_tv.get('id')
-            tv_name = best_tv.get('name', '')
-
-            # Get show details
-            tv_details = get_tv_details(tv_id, tmdb_key, language)
-            if not tv_details:
-                result_queue.put((
-                    'failed', filepath, fname, None, None, None,
-                    season_number, episode_number,
-                    L(32115) % tv_name, ''))
-                work_queue.task_done()
-                time.sleep(delay)
-                continue
-
-            # Get episode details
-            ep_details = get_tv_episode_details(
-                tv_id, season_number, episode_number, tmdb_key, language)
-            if not ep_details:
-                # Fallback: create minimal episode info so c00 isn't empty
-                ep_details = {
-                    'info': {
-                        'title': L(32103) % episode_number,
-                        'plot': '',
-                        'aired': '',
-                        'duration': 0,
-                        'director': [],
-                        'credits': [],
-                    },
-                    'uniqueids': {},
-                    'ratings': {},
-                    'available_art': {'poster': [], 'fanart': []},
-                    'cast': [],
-                }
-                log('[Worker %s] Episode S%02dE%02d 404 from TMDB, using fallback'
-                    % (threading.current_thread().name, season_number, episode_number))
-
-            # Save to database
-            tvdb = TvShowDatabase()
-            try:
-                tvdb.connect()
-                existing_show_id = tvdb.find_tvshow_by_uniqueid('tmdb', str(tv_id))
-                show_id, ep_id = tvdb.save_tvshow(
-                    tv_details, ep_details, season_number,
-                    episode_number, filepath)
-                if show_id and ep_id:
-                    status_flag = 'merged' if existing_show_id else 'success'
-                    media_id = show_id
-                else:
-                    status_flag = 'failed'
-                    media_id = None
-            except Exception as e:
-                xbmc.log('[%s] Worker TV DB error: %s' % (ADDON_NAME, e), xbmc.LOGERROR)
-                show_id = None
-                status_flag = 'error'
-            finally:
-                tvdb.close()
-
-            tv_year = tv_details.get('info', {}).get('year', '') or \
-                (tv_details.get('info', {}).get('premiered', '')[:4] if tv_details.get('info', {}).get('premiered') else '')
-            if show_id:
-                tv_art = _art_with_cast(tv_details)
-                # Also prefetch this episode's cast / guest-star thumbs -
-                # tvshow_db writes them into actor_link, so they must be
-                # cached through the proxy chain as well.
-                ep_cast = (ep_details or {}).get('cast', []) or []
-                if ep_cast:
-                    extra = [{'url': c['thumbnail']}
-                             for c in ep_cast[:20] if c.get('thumbnail')]
-                    tv_art['cast'] = (tv_art.get('cast') or []) + extra
-                result_queue.put((
-                    status_flag, filepath, fname, show_id, tv_name,
-                    tv_art,
-                    season_number, episode_number, None, tv_year))
-            else:
-                result_queue.put((
-                    'failed', filepath, fname, None, None, None,
-                    season_number, episode_number,
-                    L(32095), ''))
+            # A TV classification without a validated directory/episode
+            # context must remain reviewable; never fabricate episode data.
+            result_queue.put(('pending',filepath,fname,None,title,None,
+                              season_number,episode_number,
+                              '无法核实电视剧的季集编号，请按剧名手动确认。',str(year or ''),
+                              {'type':'tvshow','reason':'episode_context_unverified','source_title':title}))
 
         except Exception as e:
             xbmc.log('[%s] Worker exception: %s' % (ADDON_NAME, e), xbmc.LOGERROR)

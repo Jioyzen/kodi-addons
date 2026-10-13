@@ -32,7 +32,7 @@ _INT_FIELDS = ['year', 'playcount', 'runtime', 'episode', 'watchedepisodes',
 def _conn():
     from urllib.parse import quote
     conn = sqlite3.connect("file:"+quote(DB_PATH,safe="/")+"?mode=ro", uri=True, timeout=.3)
-    conn.create_function('cebox_region_match', 2, region_match)
+    conn.create_function('region_match', 2, region_match)
     return conn
 def _get_val(f, k, d=None): return f[k] if f and k in f else d
 
@@ -238,7 +238,7 @@ def _where(media_type, filters, props):
     region = filters.get('filter.region')
     if region:
         column = props.get('country')
-        clauses.append('cebox_region_match('+column+', ?) = 1' if column else '0')
+        clauses.append('region_match('+column+', ?) = 1' if column else '0')
         if column: args.append(str(region))
     year = filters.get('filter.year')
     if year and year != '年份':
@@ -279,7 +279,14 @@ def _sort(filters, props):
         seed=int((filters or {}).get('_random_seed',1)) & 0x7fffffff
         return '((CAST(%s AS INTEGER)*1103515245+%d)&2147483647)' % (identity,seed)
     key = {'latest':'year', 'hot':'playcount'}.get(value,value)
+    if key == 'title':
+        return props.get('title', 'c00') + ' COLLATE NOCASE'
     return props.get(key, props.get('dateadded','dateAdded'))
+
+
+def _sort_order(filters):
+    # Never interpolate arbitrary filter values into ORDER BY.
+    return 'ASC' if (filters or {}).get('filter.sortorder') == 'ascending' else 'DESC'
 
 
 def _build_sql(media_type, filters, limit, props, offset=0):
@@ -287,7 +294,7 @@ def _build_sql(media_type, filters, limit, props, offset=0):
     where, args = _where(media_type,filters,props)
     identity = 'idMovie' if table == 'movie_view' else 'idShow'
     sql = 'SELECT '+', '.join(column+' AS '+key for key,column in props.items())+' FROM '+table+where
-    sql += ' ORDER BY '+_sort(filters,props)+' DESC, '+identity+' ASC LIMIT ? OFFSET ?'
+    sql += ' ORDER BY '+_sort(filters,props)+' '+_sort_order(filters)+', '+identity+' ASC LIMIT ? OFFSET ?'
     return sql, args+[max(0,int(limit)),max(0,int(offset))]
 
 
@@ -325,7 +332,7 @@ def sqlite_get_items(filters=None, limit=500, offset=0):
             pieces.append("SELECT %s AS item_id, '%s' AS media_type, %s AS sort_value FROM %s%s" %
                           (identity,media_type,sort,table,where));args.extend(params)
         selected = conn.execute('SELECT item_id,media_type FROM ('+' UNION ALL '.join(pieces)+
-                                ') ORDER BY sort_value DESC,media_type ASC,item_id ASC LIMIT ? OFFSET ?',
+                                ') ORDER BY sort_value '+_sort_order(filters)+',media_type ASC,item_id ASC LIMIT ? OFFSET ?',
                                 args+[max(0,int(limit)),max(0,int(offset))]).fetchall()
         indexed = {}
         for media_type,table,identity,id_key in [('movie','movie_view','idMovie','movieid'),('tvshow','tvshow_view','idShow','tvshowid')]:
@@ -392,13 +399,22 @@ def sqlite_get_sets(filters=None, limit=500, offset=0):
         clauses,args=[],[]
         text=(filters or {}).get('filter.t9')
         if text:
-            clauses.append('(strSet LIKE ? OR strOverview LIKE ?)');args.extend(('%'+str(text)+'%',)*2)
+            clauses.append('(s.strSet LIKE ? OR s.strOverview LIKE ?)');args.extend(('%'+str(text)+'%',)*2)
         where=' WHERE '+' AND '.join(clauses) if clauses else ''
-        ids=[row[0] for row in conn.execute('SELECT idSet FROM sets'+where+' ORDER BY strSet,idSet LIMIT ? OFFSET ?',
-                                          args+[max(0,int(limit)),max(0,int(offset))])]
+        default_only = ' AND m.isDefaultVersion=1' if _build_props('movie').get('_default_version') else ''
+        sort = {
+            'title': 's.strSet COLLATE NOCASE',
+            'rating': 'AVG(NULLIF(m.rating,0))',
+            'premiered': 'MAX(m.premiered)',
+            'lastplayed': 'MAX(m.lastPlayed)',
+        }.get((filters or {}).get('filter.sort'), 'MAX(m.dateAdded)')
+        # Sort the whole collection list before applying bounded pagination.
+        ids=[row[0] for row in conn.execute(
+            'SELECT s.idSet FROM sets s LEFT JOIN movie_view m ON s.idSet=m.idSet'+default_only+
+            where+' GROUP BY s.idSet ORDER BY '+sort+' '+_sort_order(filters)+',s.idSet ASC LIMIT ? OFFSET ?',
+            args+[max(0,int(limit)),max(0,int(offset))])]
         if not ids:return []
         results=[]
-        default_only = ' AND m.isDefaultVersion=1' if _build_props('movie').get('_default_version') else ''
         for start in range(0,len(ids),200):
             part=ids[start:start+200];marks=','.join('?' for _ in part)
             sql='''SELECT s.idSet,s.strSet,s.strOverview,COUNT(m.idMovie),
@@ -432,6 +448,53 @@ def get_filtered_count(filters=None):
             where,args=_where(media_type,filters,_build_props(media_type))
             total+=conn.execute('SELECT COUNT(*) FROM '+table+where,args).fetchone()[0]
         return total
+
+
+_FACET_CACHE = {}
+
+
+def get_filter_facets(filters=None):
+    """Available metadata in this category, independent of active facet choices.
+
+    Narrow SQL rows only; never hydrate artwork/cast or inspect media paths.
+    Cache by scope and library revision so sorting/filter clicks stay cheap.
+    """
+    from contextlib import closing
+    from .catalog_cache import revision
+    selected = filters or {}
+    scope = {'filter.mediatype': selected.get('filter.mediatype', 'all')}
+    if '_collection_id' in selected:
+        scope['_collection_id'] = selected['_collection_id']
+    cache_key = (scope['filter.mediatype'], str(scope.get('_collection_id', '')), revision())
+    if cache_key in _FACET_CACHE:
+        return _FACET_CACHE[cache_key]
+    facets = {name: set() for name in ('genre', 'region', 'year', 'rating')}
+    mt = scope['filter.mediatype']
+    if mt != 'set':
+        from .regions import region_code
+        with closing(_conn()) as conn:
+            for media in (('movie', 'tvshow') if mt in ('all', '', None) else (mt,)):
+                props = _build_props(media)
+                table = 'tvshow_view' if media == 'tvshow' else 'movie_view'
+                where, args = _where(media, scope, props)
+                columns = [props.get(field, 'NULL') for field in ('genre', 'country', 'year', 'rating')]
+                for genre, country, year, rating in conn.execute('SELECT DISTINCT '+','.join(columns)+' FROM '+table+where, args):
+                    facets['genre'].update(_parse_list(genre))
+                    facets['region'].update(region_code(value) for value in _parse_list(country))
+                    try:
+                        if year and 1000 <= int(year) <= 9999:
+                            facets['year'].add(int(year))
+                    except (ValueError, TypeError, OverflowError):
+                        pass
+                    try:
+                        if rating is not None and 0 < float(rating) <= 10:
+                            facets['rating'].add(float(rating))
+                    except (ValueError, TypeError, OverflowError):
+                        pass
+    if len(_FACET_CACHE) >= 8:
+        _FACET_CACHE.clear()
+    _FACET_CACHE[cache_key] = facets
+    return facets
 
 
 def get_total_count():

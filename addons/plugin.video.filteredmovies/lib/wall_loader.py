@@ -168,8 +168,15 @@ class WallLoader:
             try:
                 # Direct-SQL scanners do not emit Kodi's library update event.
                 # Refresh availability in this existing worker, never block onInit.
-                from .window_handler import _update_filter_availability
-                _update_filter_availability()
+                if getattr(self.owner, '_has_filter_toolbar', False) and offset == 0:
+                    from .db import get_filter_facets
+                    facets = get_filter_facets(filters)
+                    with self.lock:
+                        if self.valid(generation):
+                            self.owner.bind_filter_facets(facets, generation)
+                elif not getattr(self.owner, '_has_filter_toolbar', False):
+                    from .window_handler import _update_filter_availability
+                    _update_filter_availability()
                 if kind == 'home':
                     # Recent movies first: don't wait for expensive progress aggregation.
                     for cid in (1004, 1002, 1005, 1006, 1007, 1008):

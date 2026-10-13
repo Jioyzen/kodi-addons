@@ -17,7 +17,7 @@ def revision():
     return json.dumps(values, separators=(',', ':'))
 
 def key(filters, limit, offset):
-    return hashlib.sha256(json.dumps(['collection-members-v4', filters or {}, limit, offset], sort_keys=True,
+    return hashlib.sha256(json.dumps(['catalog-sort-v5', filters or {}, limit, offset], sort_keys=True,
                                     ensure_ascii=False).encode()).hexdigest()
 
 def _connect():

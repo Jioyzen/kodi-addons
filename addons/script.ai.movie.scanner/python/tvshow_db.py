@@ -5,9 +5,11 @@ from ai_database import current_database
 import os
 import re
 import sqlite3
-import threading
+import hashlib
+import json
 import xbmc
 import xbmcvfs
+from kodi_db import DB_WRITE_LOCK, _get_or_create_actor
 
 ADDONID = 'script.ai.movie.scanner'
 
@@ -16,7 +18,7 @@ DEFAULT_DB_PATH = current_database('MyVideos')
 # Same write-serialization lock as kodi_db.py: SQLite locks the whole file
 # per write transaction, so serialize our own writers to avoid lock timeouts
 # when 12 scan workers commit concurrently.
-DB_WRITE_LOCK = threading.RLock()
+_SHOW_METADATA_CACHE = {}
 
 _CANDIDATE_TV_SCRAPERS = [
     'metadata.tvshows.tmdb.cn.optimization',
@@ -47,20 +49,28 @@ def _detect_tv_scraper():
     return _CANDIDATE_TV_SCRAPERS[0]
 
 
-def _get_or_create_actor(cur, name, art_urls=''):
-    # Refresh art_urls for existing actors too (same fix as kodi_db):
-    # without it, actors created earlier with an empty/old art_urls
-    # never get a visible thumbnail (image.tmdb.org is blocked without
-    # a VPN, so Kodi's on-demand download always fails).
-    cur.execute("SELECT actor_id, art_urls FROM actor WHERE name=?", (name,))
-    row = cur.fetchone()
-    if row:
-        if art_urls and (row[1] or '') != art_urls:
-            cur.execute("UPDATE actor SET art_urls=? WHERE actor_id=?",
-                        (art_urls, row[0]))
-        return row[0]
-    cur.execute("INSERT INTO actor (name, art_urls) VALUES (?, ?)", (name, art_urls))
-    return cur.lastrowid
+def _upsert_uniqueid(cur, media_id, media_type, kind, value):
+    # Kodi does not enforce uniqueness on (media_id,media_type,type). INSERT OR
+    # IGNORE alone created one duplicate show identifier per scanned episode.
+    cur.execute('SELECT uniqueid_id FROM uniqueid WHERE media_id=? AND media_type=? AND type=? ORDER BY uniqueid_id',
+                (media_id,media_type,kind))
+    rows = cur.fetchall()
+    if rows:
+        identity = rows[0][0]
+        cur.execute('UPDATE uniqueid SET value=? WHERE uniqueid_id=?',(str(value),identity))
+        cur.execute('DELETE FROM uniqueid WHERE media_id=? AND media_type=? AND type=? AND uniqueid_id<>?',
+                    (media_id,media_type,kind,identity))
+    else:
+        cur.execute('INSERT INTO uniqueid(media_id,media_type,type,value) VALUES(?,?,?,?)',
+                    (media_id,media_type,kind,str(value)))
+        identity = cur.lastrowid
+    return identity
+
+
+def _delete_episode(cur, episode_id):
+    for table in ('actor_link','director_link','writer_link','art','uniqueid','rating'):
+        cur.execute("DELETE FROM "+table+" WHERE media_id=? AND media_type='episode'",(episode_id,))
+    cur.execute('DELETE FROM episode WHERE idEpisode=?',(episode_id,))
 
 
 def _get_or_create_genre(cur, name):
@@ -161,13 +171,56 @@ class TvShowDatabase:
 
         Returns (show_id, episode_id) tuple or (None, None) on failure.
         """
+        show_id, episode_ids = self.save_episodes(
+            tv_details, [(season_number, episode_number, ep_details)], file_path)
+        return show_id, episode_ids[0] if episode_ids else None
+
+    def save_episodes(self, tv_details, episodes, file_path, show_root=None):
+        """One atomic file transaction, including every episode in a combined file.
+
+        Identities are scoped by file, preserving different encodes of the same
+        episode. Existing file dates, bookmarks and playback counts survive.
+        """
+        if not self.conn or not episodes:
+            return None, []
         with DB_WRITE_LOCK:
-            return self._save_tvshow_unlocked(
-                tv_details, ep_details, season_number, episode_number,
-                file_path)
+            tmdb_id = str(tv_details.get('uniqueids',{}).get('tmdb',''))
+            key = (self.db_path,tmdb_id)
+            signature = hashlib.sha256(json.dumps(tv_details,sort_keys=True,ensure_ascii=False).encode()).hexdigest()
+            existing = self.find_tvshow_by_uniqueid('tmdb',tmdb_id)
+            refresh_show = _SHOW_METADATA_CACHE.get(key) != (existing,signature)
+            try:
+                self.conn.execute('BEGIN IMMEDIATE')
+                ids = []
+                show_id = None
+                for index,(season,number,details) in enumerate(episodes):
+                    if season < 0 or number <= 0 or not details:
+                        raise ValueError('Invalid or missing episode metadata')
+                    show_id,episode_id = self._save_tvshow_unlocked(
+                        tv_details,details,season,number,file_path,commit=False,
+                        refresh_show=refresh_show and index==0,show_root=show_root,
+                        reuse_file_episode=index==0)
+                    if not show_id or not episode_id:
+                        raise RuntimeError('Episode batch failed')
+                    ids.append(episode_id)
+                # Correct previously wrong numbering for this file only.
+                id_file = self.conn.execute('SELECT idFile FROM episode WHERE idEpisode=?',(ids[0],)).fetchone()[0]
+                for (old_id,) in self.conn.execute('SELECT idEpisode FROM episode WHERE idFile=?',(id_file,)).fetchall():
+                    if old_id not in ids:
+                        _delete_episode(self.conn.cursor(),old_id)
+                self.conn.commit()
+                if len(_SHOW_METADATA_CACHE)>=128:
+                    _SHOW_METADATA_CACHE.clear()
+                _SHOW_METADATA_CACHE[key] = (show_id,signature)
+                return show_id, ids
+            except Exception as error:
+                self.conn.rollback()
+                _log(xbmc.LOGERROR,'TV episode transaction rolled back: %s' % type(error).__name__)
+                return None, []
 
     def _save_tvshow_unlocked(self, tv_details, ep_details, season_number,
-                              episode_number, file_path):
+                              episode_number, file_path, commit=True,
+                              refresh_show=True, show_root=None, reuse_file_episode=False):
         """Unlocked core of save_tvshow - call under DB_WRITE_LOCK."""
         if not self.conn:
             return None, None
@@ -187,7 +240,8 @@ class TvShowDatabase:
 
         scraper_id = _detect_tv_scraper()
 
-        show_root, ep_dir = _resolve_show_root(file_path)
+        inferred_root, ep_dir = _resolve_show_root(file_path)
+        show_root = (show_root or inferred_root).rstrip('/')+'/'
         file_name = os.path.basename(file_path)
 
         try:
@@ -224,8 +278,6 @@ class TvShowDatabase:
             row = cur.fetchone()
             if row:
                 id_file = row[0]
-                cur.execute("UPDATE files SET dateAdded=datetime('now') WHERE idFile=?",
-                            (id_file,))
             else:
                 cur.execute(
                     "INSERT INTO files (strFilename, idPath, dateAdded) VALUES (?, ?, datetime('now'))",
@@ -257,17 +309,26 @@ class TvShowDatabase:
             if row:
                 id_season = row[0]
             else:
-                season_name = 'Season %d' % season_number if season_number > 0 else ('Specials' if season_number == 0 else '')
+                season_name = ep_details.get('season_name') or 'Season %d' % season_number if season_number > 0 else ('Specials' if season_number == 0 else '')
                 cur.execute(
                     "INSERT INTO seasons (idShow, season, name) VALUES (?, ?, ?)",
                     (tv_show_id, season_number, season_name))
                 id_season = cur.lastrowid
 
+            if ep_details.get('season_name'):
+                cur.execute('UPDATE seasons SET name=? WHERE idSeason=?',(ep_details['season_name'],id_season))
+
             # 7. Find or create episode
             cur.execute(
-                "SELECT idEpisode FROM episode WHERE idShow=? AND c12=? AND c13=?",
-                (tv_show_id, str(season_number), str(episode_number)))
+                "SELECT idEpisode FROM episode WHERE idFile=? AND idShow=? AND c12=? AND c13=?",
+                (id_file, tv_show_id, str(season_number), str(episode_number)))
             row = cur.fetchone()
+            if row is None and reuse_file_episode:
+                # Reidentification/renumbering of the first episode keeps its
+                # Kodi ID. Later episodes in the same combined file cannot
+                # reuse that row again.
+                cur.execute('SELECT idEpisode FROM episode WHERE idFile=? ORDER BY idEpisode LIMIT 1',(id_file,))
+                row = cur.fetchone()
             if row:
                 id_episode = row[0]
             else:
@@ -286,7 +347,8 @@ class TvShowDatabase:
             ep_c03 = 0
             ep_c04 = ' / '.join(ep_info.get('credits', []))
             ep_c05 = ep_info.get('aired', '')
-            ep_c09 = ep_info.get('duration', 0) or 0
+            # TMDb runtime is minutes; Kodi stores runtime in seconds.
+            ep_c09 = int(ep_info.get('duration', 0) or 0) * 60
             ep_c10 = ' / '.join(ep_info.get('director', []))
             ep_c11 = ep_info.get('productioncode', '')
             ep_c14 = ''
@@ -298,11 +360,12 @@ class TvShowDatabase:
                 UPDATE episode SET
                     c00=?, c01=?, c03=?, c04=?, c05=?,
                     c09=?, c10=?, c11=?, c14=?,
-                    c18=?, c19=?, c20=?, idFile=?
+                    c18=?, c19=?, c20=?, idFile=?, idShow=?, idSeason=?, c12=?, c13=?
                 WHERE idEpisode=?
             """, (ep_c00, ep_c01, ep_c03, ep_c04, ep_c05,
                   ep_c09, ep_c10, ep_c11, ep_c14,
-                  ep_c18, ep_c19, ep_c20, id_file, id_episode))
+                  ep_c18, ep_c19, ep_c20, id_file, tv_show_id, id_season,
+                  str(season_number), str(episode_number), id_episode))
 
             # 9. Episode still image as art
             cur.execute("DELETE FROM art WHERE media_id=? AND media_type='episode'",
@@ -315,16 +378,27 @@ class TvShowDatabase:
                         (id_episode, _art_url(p['url'], 'w500')))
 
             # 10. Episode unique IDs
+            if not ep_uniqueids:
+                cur.execute("DELETE FROM uniqueid WHERE media_id=? AND media_type='episode'",(id_episode,))
+            if ep_uniqueids:
+                placeholders = ','.join('?' for _ in ep_uniqueids)
+                cur.execute("DELETE FROM uniqueid WHERE media_id=? AND media_type='episode' AND type NOT IN ("+placeholders+")",
+                            (id_episode,*ep_uniqueids))
             for id_type, id_val in ep_uniqueids.items():
-                cur.execute("""
-                    INSERT OR IGNORE INTO uniqueid (media_id, media_type, type, value)
-                    VALUES (?, 'episode', ?, ?)
-                """, (id_episode, id_type, str(id_val)))
+                ep_ident_id = _upsert_uniqueid(cur,id_episode,'episode',id_type,id_val)
                 if id_type == 'tmdb':
-                    ep_ident_id = cur.lastrowid
                     if ep_ident_id:
                         cur.execute("UPDATE episode SET c20=? WHERE idEpisode=?",
                                     (ep_ident_id, id_episode))
+
+            cur.execute("DELETE FROM rating WHERE media_id=? AND media_type='episode'",(id_episode,))
+            default_rating = next((kind for kind,data in ep_ratings.items() if data.get('default')),
+                                  'tmdb' if 'tmdb' in ep_ratings else next(iter(ep_ratings),None))
+            for kind,data in ep_ratings.items():
+                cur.execute("INSERT INTO rating(media_id,media_type,rating_type,rating,votes) VALUES(?,'episode',?,?,?)",
+                            (id_episode,kind,data.get('rating',0),data.get('votes',0)))
+                if kind==default_rating:
+                    cur.execute('UPDATE episode SET c03=? WHERE idEpisode=?',(cur.lastrowid,id_episode))
 
             # 11. Episode director links
             cur.execute("DELETE FROM director_link WHERE media_id=? AND media_type='episode'",
@@ -367,159 +441,160 @@ class TvShowDatabase:
             # TV Show level metadata
             # ========================================
 
-            # 14. Update tvshow columns
-            tv_c00 = tv_info.get('title', '')
-            tv_c01 = tv_info.get('plot', '')
-            tv_c02 = tv_info.get('status', '')
-            tv_c03 = ''
-            tv_c04 = 0
-            tv_c05 = tv_info.get('premiered', '')
-            tv_c06 = ''
-            tv_c07 = ''
-            tv_c08 = ' / '.join(tv_info.get('genre', []))
-            tv_c09 = tv_info.get('originaltitle', '')
-            tv_c10 = ''
-            tv_c11 = ''
-            tv_c12 = 0
-            tv_c13 = tv_info.get('mpaa', '')
-            tv_c14 = ' / '.join(tv_info.get('studio', []))
-            tv_c15 = ''
-            tv_c16 = ''
-            tv_c17 = ''
-            tv_c18 = ' / '.join(tv_info.get('country', []))
-            tv_c19 = tv_info.get('year', '') or (tv_info.get('premiered', '')[:4] if tv_info.get('premiered') else '')
-            tv_c20 = ''
-            tv_c21 = ''
-            tv_c22 = ''
-            tv_c23 = ''
-            tv_duration = tv_info.get('duration', 0) or 0
+            if refresh_show or is_new_show:
+                # 14. Update tvshow columns
+                tv_c00 = tv_info.get('title', '')
+                tv_c01 = tv_info.get('plot', '')
+                tv_c02 = tv_info.get('status', '')
+                tv_c03 = ''
+                tv_c04 = 0
+                tv_c05 = tv_info.get('premiered', '')
+                tv_c06 = _build_tv_thumb_xml(tv_art)
+                tv_c07 = ''
+                tv_c08 = ' / '.join(tv_info.get('genre', []))
+                tv_c09 = tv_info.get('originaltitle', '')
+                tv_c10 = ''
+                tv_c11 = _build_tv_fanart_xml(tv_art)
+                tv_c12 = 0
+                tv_c13 = tv_info.get('mpaa', '')
+                tv_c14 = ' / '.join(tv_info.get('studio', []))
+                tv_c15 = ''
+                tv_c16 = ''
+                tv_c17 = ''
+                tv_c18 = ' / '.join(tv_info.get('country', []))
+                tv_c19 = tv_info.get('year', '') or (tv_info.get('premiered', '')[:4] if tv_info.get('premiered') else '')
+                tv_c20 = ''
+                tv_c21 = ''
+                tv_c22 = ''
+                tv_c23 = ''
+                tv_duration = tv_info.get('duration', 0) or 0
 
-            cur.execute("""
-                UPDATE tvshow SET
-                    c00=?, c01=?, c02=?, c03=?, c04=?, c05=?, c06=?, c07=?,
-                    c08=?, c09=?, c10=?, c11=?, c12=?, c13=?, c14=?, c15=?,
-                    c16=?, c17=?, c18=?, c19=?, c20=?, c21=?, c22=?, c23=?,
-                    duration=?
-                WHERE idShow=?
-            """, (tv_c00, tv_c01, tv_c02, tv_c03, tv_c04, tv_c05, tv_c06, tv_c07,
-                  tv_c08, tv_c09, tv_c10, tv_c11, tv_c12, tv_c13, tv_c14, tv_c15,
-                  tv_c16, tv_c17, tv_c18, tv_c19, tv_c20, tv_c21, tv_c22, tv_c23,
-                  tv_duration, tv_show_id))
-
-            # 15. TV show unique IDs
-            for id_type, id_val in tv_uniqueids.items():
                 cur.execute("""
-                    INSERT OR IGNORE INTO uniqueid (media_id, media_type, type, value)
-                    VALUES (?, 'tvshow', ?, ?)
-                """, (tv_show_id, id_type, str(id_val)))
-                if id_type == 'tmdb':
-                    ident_id = cur.lastrowid
-                    if ident_id:
-                        cur.execute("UPDATE tvshow SET c12=? WHERE idShow=?",
-                                    (ident_id, tv_show_id))
+                    UPDATE tvshow SET
+                        c00=?, c01=?, c02=?, c03=?, c04=?, c05=?, c06=?, c07=?,
+                        c08=?, c09=?, c10=?, c11=?, c12=?, c13=?, c14=?, c15=?,
+                        c16=?, c17=?, c18=?, c19=?, c20=?, c21=?, c22=?, c23=?,
+                        duration=?
+                    WHERE idShow=?
+                """, (tv_c00, tv_c01, tv_c02, tv_c03, tv_c04, tv_c05, tv_c06, tv_c07,
+                      tv_c08, tv_c09, tv_c10, tv_c11, tv_c12, tv_c13, tv_c14, tv_c15,
+                      tv_c16, tv_c17, tv_c18, tv_c19, tv_c20, tv_c21, tv_c22, tv_c23,
+                      tv_duration, tv_show_id))
 
-            # 16. TV show ratings
-            cur.execute("DELETE FROM rating WHERE media_id=? AND media_type='tvshow'",
-                        (tv_show_id,))
-            for rating_type, rating_data in tv_ratings.items():
-                rating_val = rating_data.get('rating', 0)
-                votes = rating_data.get('votes', 0)
-                is_default = rating_data.get('default', False)
-                cur.execute("""
-                    INSERT INTO rating (media_id, media_type, rating_type, rating, votes)
-                    VALUES (?, 'tvshow', ?, ?, ?)
-                """, (tv_show_id, rating_type, rating_val, votes))
-                if is_default:
-                    cur.execute("UPDATE tvshow SET c04=? WHERE idShow=?",
-                                (cur.lastrowid, tv_show_id))
+                # 15. TV show unique IDs
+                for id_type, id_val in tv_uniqueids.items():
+                    ident_id = _upsert_uniqueid(cur,tv_show_id,'tvshow',id_type,id_val)
+                    if id_type == 'tmdb':
+                        if ident_id:
+                            cur.execute("UPDATE tvshow SET c12=? WHERE idShow=?",
+                                        (ident_id, tv_show_id))
 
-            # 17. TV show art table
-            cur.execute("DELETE FROM art WHERE media_id=? AND media_type='tvshow'",
-                        (tv_show_id,))
-            for p in tv_art.get('poster', [])[:1]:
-                if p.get('url'):
-                    cur.execute(
-                        "INSERT INTO art (media_id, media_type, type, url) "
-                        "VALUES (?, 'tvshow', 'poster', ?)",
-                        (tv_show_id, _art_url(p['url'], 'w780')))
-            for fa in tv_art.get('fanart', [])[:1]:
-                if fa.get('url'):
-                    cur.execute(
-                        "INSERT INTO art (media_id, media_type, type, url) "
-                        "VALUES (?, 'tvshow', 'fanart', ?)",
-                        (tv_show_id, _art_url(fa['url'], 'w1920')))
-            for logo in tv_art.get('clearlogo', [])[:1]:
-                if logo.get('url'):
-                    cur.execute(
-                        "INSERT INTO art (media_id, media_type, type, url) "
-                        "VALUES (?, 'tvshow', 'clearlogo', ?)",
-                        (tv_show_id, _art_url(logo['url'], 'w500')))
-
-            # 18. TV show link tables
-            for tbl, mediatype in [('actor_link', 'tvshow'), ('director_link', 'tvshow'),
-                                    ('writer_link', 'tvshow'), ('genre_link', 'tvshow'),
-                                    ('studio_link', 'tvshow'), ('country_link', 'tvshow')]:
-                cur.execute("DELETE FROM %s WHERE media_id=? AND media_type='%s'" % (tbl, mediatype),
+                # 16. TV show ratings
+                cur.execute("DELETE FROM rating WHERE media_id=? AND media_type='tvshow'",
                             (tv_show_id,))
-
-            for actor in tv_cast:
-                name = actor.get('name', '')
-                if name:
-                    id_actor = _get_or_create_actor(cur, name, actor.get('thumbnail', ''))
+                default_rating_type = next(
+                    (kind for kind, data in tv_ratings.items() if data.get('default', False)),
+                    'tmdb' if 'tmdb' in tv_ratings else next(iter(tv_ratings), None))
+                for rating_type, rating_data in tv_ratings.items():
+                    rating_val = rating_data.get('rating', 0)
+                    votes = rating_data.get('votes', 0)
+                    is_default = rating_type == default_rating_type
                     cur.execute("""
-                        INSERT OR IGNORE INTO actor_link
-                        (actor_id, media_id, media_type, role, cast_order)
-                        VALUES (?, ?, 'tvshow', ?, ?)
-                    """, (id_actor, tv_show_id, actor.get('role', ''), actor.get('order', 0)))
+                        INSERT INTO rating (media_id, media_type, rating_type, rating, votes)
+                        VALUES (?, 'tvshow', ?, ?, ?)
+                    """, (tv_show_id, rating_type, rating_val, votes))
+                    if is_default:
+                        cur.execute("UPDATE tvshow SET c04=? WHERE idShow=?",
+                                    (cur.lastrowid, tv_show_id))
 
-            for name in tv_info.get('director', []):
-                if name:
-                    id_actor = _get_or_create_actor(cur, name, '')
-                    cur.execute("""
-                        INSERT OR IGNORE INTO director_link
-                        (actor_id, media_id, media_type)
-                        VALUES (?, ?, 'tvshow')
-                    """, (id_actor, tv_show_id))
+                # 17. TV show art table
+                cur.execute("DELETE FROM art WHERE media_id=? AND media_type='tvshow'",
+                            (tv_show_id,))
+                for p in tv_art.get('poster', [])[:1]:
+                    if p.get('url'):
+                        cur.execute(
+                            "INSERT INTO art (media_id, media_type, type, url) "
+                            "VALUES (?, 'tvshow', 'poster', ?)",
+                            (tv_show_id, _art_url(p['url'], 'w780')))
+                for fa in tv_art.get('fanart', [])[:1]:
+                    if fa.get('url'):
+                        cur.execute(
+                            "INSERT INTO art (media_id, media_type, type, url) "
+                            "VALUES (?, 'tvshow', 'fanart', ?)",
+                            (tv_show_id, _art_url(fa['url'], 'w1920')))
+                for logo in tv_art.get('clearlogo', [])[:1]:
+                    if logo.get('url'):
+                        cur.execute(
+                            "INSERT INTO art (media_id, media_type, type, url) "
+                            "VALUES (?, 'tvshow', 'clearlogo', ?)",
+                            (tv_show_id, _art_url(logo['url'], 'w500')))
 
-            for name in tv_info.get('credits', []):
-                if name:
-                    id_actor = _get_or_create_actor(cur, name, '')
-                    cur.execute("""
-                        INSERT OR IGNORE INTO writer_link
-                        (actor_id, media_id, media_type)
-                        VALUES (?, ?, 'tvshow')
-                    """, (id_actor, tv_show_id))
+                # 18. TV show link tables
+                for tbl, mediatype in [('actor_link', 'tvshow'), ('director_link', 'tvshow'),
+                                        ('writer_link', 'tvshow'), ('genre_link', 'tvshow'),
+                                        ('studio_link', 'tvshow'), ('country_link', 'tvshow')]:
+                    cur.execute("DELETE FROM %s WHERE media_id=? AND media_type='%s'" % (tbl, mediatype),
+                                (tv_show_id,))
 
-            for name in tv_info.get('genre', []):
-                if name:
-                    id_genre = _get_or_create_genre(cur, name)
-                    cur.execute("""
-                        INSERT OR IGNORE INTO genre_link
-                        (genre_id, media_id, media_type)
-                        VALUES (?, ?, 'tvshow')
-                    """, (id_genre, tv_show_id))
+                for actor in tv_cast:
+                    name = actor.get('name', '')
+                    if name:
+                        id_actor = _get_or_create_actor(cur, name, actor.get('thumbnail', ''))
+                        cur.execute("""
+                            INSERT OR IGNORE INTO actor_link
+                            (actor_id, media_id, media_type, role, cast_order)
+                            VALUES (?, ?, 'tvshow', ?, ?)
+                        """, (id_actor, tv_show_id, actor.get('role', ''), actor.get('order', 0)))
 
-            for name in tv_info.get('studio', []):
-                if name:
-                    id_studio = _get_or_create_studio(cur, name)
-                    cur.execute("""
-                        INSERT OR IGNORE INTO studio_link
-                        (studio_id, media_id, media_type)
-                        VALUES (?, ?, 'tvshow')
-                    """, (id_studio, tv_show_id))
+                for name in tv_info.get('director', []):
+                    if name:
+                        id_actor = _get_or_create_actor(cur, name, '')
+                        cur.execute("""
+                            INSERT OR IGNORE INTO director_link
+                            (actor_id, media_id, media_type)
+                            VALUES (?, ?, 'tvshow')
+                        """, (id_actor, tv_show_id))
 
-            for name in tv_info.get('country', []):
-                if name:
-                    id_country = _get_or_create_country(cur, name)
-                    cur.execute("""
-                        INSERT OR IGNORE INTO country_link
-                        (country_id, media_id, media_type)
-                        VALUES (?, ?, 'tvshow')
-                    """, (id_country, tv_show_id))
+                for name in tv_info.get('credits', []):
+                    if name:
+                        id_actor = _get_or_create_actor(cur, name, '')
+                        cur.execute("""
+                            INSERT OR IGNORE INTO writer_link
+                            (actor_id, media_id, media_type)
+                            VALUES (?, ?, 'tvshow')
+                        """, (id_actor, tv_show_id))
 
-            self.conn.commit()
+                for name in tv_info.get('genre', []):
+                    if name:
+                        id_genre = _get_or_create_genre(cur, name)
+                        cur.execute("""
+                            INSERT OR IGNORE INTO genre_link
+                            (genre_id, media_id, media_type)
+                            VALUES (?, ?, 'tvshow')
+                        """, (id_genre, tv_show_id))
+
+                for name in tv_info.get('studio', []):
+                    if name:
+                        id_studio = _get_or_create_studio(cur, name)
+                        cur.execute("""
+                            INSERT OR IGNORE INTO studio_link
+                            (studio_id, media_id, media_type)
+                            VALUES (?, ?, 'tvshow')
+                        """, (id_studio, tv_show_id))
+
+                for name in tv_info.get('country', []):
+                    if name:
+                        id_country = _get_or_create_country(cur, name)
+                        cur.execute("""
+                            INSERT OR IGNORE INTO country_link
+                            (country_id, media_id, media_type)
+                            VALUES (?, ?, 'tvshow')
+                        """, (id_country, tv_show_id))
+
+            if commit:
+                self.conn.commit()
             _log(xbmc.LOGINFO, 'Saved tvshow id=%d episode id=%d: %s S%02dE%02d' %
-                 (tv_show_id, id_episode, tv_c00, season_number, episode_number))
+                 (tv_show_id, id_episode, tv_info.get('title',''), season_number, episode_number))
             return tv_show_id, id_episode
 
         except Exception as e:

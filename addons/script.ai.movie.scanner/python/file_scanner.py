@@ -2,6 +2,7 @@
 """File scanner - recursively find video files in a directory."""
 
 import os
+from path_display import redact_text
 import xbmc
 import xbmcvfs
 
@@ -22,7 +23,7 @@ VIDEO_EXTENSIONS = {
 
 
 def _log(level, msg):
-    xbmc.log(msg='%s: %s' % (ADDONID, msg), level=level)
+    xbmc.log(msg='%s: %s' % (ADDONID, redact_text(msg)), level=level)
 
 
 def find_video_files(root_path):

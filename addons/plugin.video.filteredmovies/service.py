@@ -598,7 +598,7 @@ def init_skin_properties():
     # 1. Set current skin ID as a window property for use in context menu visibility conditions
     xbmc.executebuiltin('SetProperty(MFG.SkinID,' + xbmc.getSkinDir() + ',home)')
     # 2. Follow the active skin theme for selection accents.
-    # CEBOX-NO defines button_focus as its default red; fixed blue breaks theme consistency.
+    # Embuary Mod defines button_focus as its default red; fixed blue breaks theme consistency.
     xbmc.executebuiltin('SetProperty(MFG.FocusColor,button_focus,home)')
     xbmc.executebuiltin('SetProperty(MFG.ProgressBarColor,button_focus,home)')
     if skin_name == "estuary":

@@ -188,10 +188,10 @@
             </animation>
             <scrolltime>200</scrolltime>
             
-            <itemlayout width="310" height="511">
+            <itemlayout width="310" height="490">
                 <control type="group">
                     <width>310</width>
-                    <height>511</height>
+                    <height>490</height>
                     
                     <control type="image">
                         <left>30</left>
@@ -295,7 +295,7 @@
 
                 </control>
             </itemlayout>
-            <focusedlayout width="310" height="511">
+            <focusedlayout width="310" height="490">
                 <control type="group">
                     <control type="group"><width>310</width><height>424</height><animation type="Focus">
                         <effect type="zoom" start="100" end="108" time="200" tween="sine" easing="inout" center="155,211.5"/>
@@ -393,7 +393,7 @@
 
                 </control><depth>DepthContentPopout</depth>
                     <width>310</width>
-                    <height>511</height>
+                    <height>490</height>
                     <control type="label">
                         <left>13</left>
                         <top>464</top>

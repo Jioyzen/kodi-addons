@@ -515,6 +515,10 @@ class ImageCacher:
                         u = u.replace('/original/', '/%s/' % size)
                         if u.startswith('http'):
                             buckets[idx].append(u)
+            for item in art.get('episode.thumb', []):
+                u = item.get('url','').replace('/original/', '/w500/')
+                if u.startswith('http'):
+                    buckets[2].append(u)
             for item in art.get('cast', [])[:20]:
                 u = item.get('url')
                 if u and u.startswith('http'):

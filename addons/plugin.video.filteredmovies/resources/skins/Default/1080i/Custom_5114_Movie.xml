@@ -11,228 +11,1344 @@
             <texture colordiffuse="FF202020">colors/fm_white.png</texture>
         </control>
         <include>DefaultBackground</include>
+        <control type="group" id="7300">
+            <animation type="Conditional" condition="Window.IsVisible(movieinformation) | Window.IsVisible(DialogVideoInfo.xml)" reversible="true">
+                <effect type="fade" start="100" end="0" time="200" />
+            </animation>
+            <control type="group" id="1000">
+                <left>50</left>
+                <top>100</top>
+                <width>1600</width>
+                <height>240</height>
+                <control type="group" id="7400">
+                    <top>0</top>
+                    <visible>String.IsEqual(Window.Property(MFG.AllPage),true)</visible>
+                    <control type="grouplist" id="1006">
+                        <top>0</top>
+                        <orientation>horizontal</orientation>
+                        <itemgap>-10</itemgap>
+                        <width>1600</width>
+                        <height>32</height>
+                        <align>left</align>
+                        <control type="button" id="6001">
+                            <width>100</width>
+                            <height>32</height>
+                            <onfocus>SetProperty(Return_Key6,6001,Home)</onfocus>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.6001)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$INFO[Window(Home).Property(MFG.Label.6001)]</label>
+                            <onup>7201</onup>
+                            <ondown>1002</ondown>
+                        </control>
+                        <control type="button" id="6002">
+                            <width>100</width>
+                            <height>32</height>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.6002)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$INFO[Window(Home).Property(MFG.Label.6002)]</label>
+                            <onup>7201</onup>
+                            <ondown>1002</ondown>
+                        </control>
+                        <control type="button" id="6003">
+                            <width>150</width>
+                            <height>32</height>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.6003)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$INFO[Window(Home).Property(MFG.Label.6003)]</label>
+                            <onup>7201</onup>
+                            <ondown>1002</ondown>
+                        </control>
+                        <control type="button" id="6004">
+                            <width>100</width>
+                            <height>32</height>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.6004)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$INFO[Window(Home).Property(MFG.Label.6004)]</label>
+                            <onup>7201</onup>
+                            <ondown>1002</ondown>
+                        </control>
+                        <control type="button" id="6005">
+                            <width>120</width>
+                            <height>32</height>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.6005)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$INFO[Window(Home).Property(MFG.Label.6005)]</label>
+                            <onup>7201</onup>
+                            <ondown>1002</ondown>
+                        </control>
+                        <control type="button" id="6006">
+                            <width>120</width>
+                            <height>32</height>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.6006)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$INFO[Window(Home).Property(MFG.Label.6006)]</label>
+                            <onup>7201</onup>
+                            <ondown>1002</ondown>
+                        </control>
+                        <onup>7201</onup>
+                        <ondown>1002</ondown>
+                        <onleft>Noop</onleft>
+                        <onright>Noop</onright>
+                    </control>
+                </control>
+                <control type="group" id="7401">
+                    <top>45</top>
+                    <visible>String.IsEqual(Window.Property(MFG.FacetRow.1002),true)</visible>
+                    <control type="grouplist" id="1002">
+                        <top>0</top>
+                        <orientation>horizontal</orientation>
+                        <itemgap>-10</itemgap>
+                        <width>1600</width>
+                        <height>32</height>
+                        <align>left</align>
+                        <control type="button" id="2001">
+                            <width>100</width>
+                            <height>32</height>
+                            <visible>!String.IsEqual(Window.Property(MFG.HasGenre.2001),false)</visible>
+                            <onfocus>SetProperty(Return_Key6,2001,Home)</onfocus>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.2001)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$ADDON[plugin.video.filteredmovies 32132]</label>
+                            <onup>1006</onup>
+                            <ondown>1003</ondown>
+                        </control>
+                        <control type="button" id="2002">
+                            <width>100</width>
+                            <height>32</height>
+                            <visible>!String.IsEqual(Window.Property(MFG.HasGenre.2002),false)</visible>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.2002)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$ADDON[plugin.video.filteredmovies 32133]</label>
+                            <onup>1006</onup>
+                            <ondown>1003</ondown>
+                        </control>
+                        <control type="button" id="2003">
+                            <width>110</width>
+                            <height>32</height>
+                            <visible>!String.IsEqual(Window.Property(MFG.HasGenre.2003),false)</visible>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.2003)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$ADDON[plugin.video.filteredmovies 32134]</label>
+                            <onup>1006</onup>
+                            <ondown>1003</ondown>
+                        </control>
+                        <control type="button" id="2004">
+                            <width>95</width>
+                            <height>32</height>
+                            <visible>!String.IsEqual(Window.Property(MFG.HasGenre.2004),false)</visible>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.2004)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$ADDON[plugin.video.filteredmovies 32135]</label>
+                            <onup>1006</onup>
+                            <ondown>1003</ondown>
+                        </control>
+                        <control type="button" id="2005">
+                            <width>105</width>
+                            <height>32</height>
+                            <visible>!String.IsEqual(Window.Property(MFG.HasGenre.2005),false)</visible>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.2005)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$ADDON[plugin.video.filteredmovies 32136]</label>
+                            <onup>1006</onup>
+                            <ondown>1003</ondown>
+                        </control>
+                        <control type="button" id="2006">
+                            <width>100</width>
+                            <height>32</height>
+                            <visible>!String.IsEqual(Window.Property(MFG.HasGenre.2006),false)</visible>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.2006)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$ADDON[plugin.video.filteredmovies 32137]</label>
+                            <onup>1006</onup>
+                            <ondown>1003</ondown>
+                        </control>
+                        <control type="button" id="2007">
+                            <width>100</width>
+                            <height>32</height>
+                            <visible>!String.IsEqual(Window.Property(MFG.HasGenre.2007),false)</visible>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.2007)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$ADDON[plugin.video.filteredmovies 32138]</label>
+                            <onup>1006</onup>
+                            <ondown>1003</ondown>
+                        </control>
+                        <control type="button" id="2014">
+                            <width>100</width>
+                            <height>32</height>
+                            <visible>!String.IsEqual(Window.Property(MFG.HasGenre.2014),false)</visible>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.2014)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$ADDON[plugin.video.filteredmovies 32145]</label>
+                            <onup>1006</onup>
+                            <ondown>1003</ondown>
+                        </control>
+                        <control type="button" id="2008">
+                            <width>100</width>
+                            <height>32</height>
+                            <visible>!String.IsEqual(Window.Property(MFG.HasGenre.2008),false)</visible>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.2008)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$ADDON[plugin.video.filteredmovies 32139]</label>
+                            <onup>1006</onup>
+                            <ondown>1003</ondown>
+                        </control>
+                        <control type="button" id="2009">
+                            <width>100</width>
+                            <height>32</height>
+                            <visible>!String.IsEqual(Window.Property(MFG.HasGenre.2009),false)</visible>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.2009)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$ADDON[plugin.video.filteredmovies 32140]</label>
+                            <onup>1006</onup>
+                            <ondown>1003</ondown>
+                        </control>
+                        <control type="button" id="2010">
+                            <width>100</width>
+                            <height>32</height>
+                            <visible>!String.IsEqual(Window.Property(MFG.HasGenre.2010),false)</visible>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.2010)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$ADDON[plugin.video.filteredmovies 32141]</label>
+                            <onup>1006</onup>
+                            <ondown>1003</ondown>
+                        </control>
+                        <control type="button" id="2011">
+                            <width>100</width>
+                            <height>32</height>
+                            <visible>!String.IsEqual(Window.Property(MFG.HasGenre.2011),false)</visible>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.2011)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$ADDON[plugin.video.filteredmovies 32142]</label>
+                            <onup>1006</onup>
+                            <ondown>1003</ondown>
+                        </control>
+                        <control type="button" id="2012">
+                            <width>100</width>
+                            <height>32</height>
+                            <visible>!String.IsEqual(Window.Property(MFG.HasGenre.2012),false)</visible>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.2012)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$ADDON[plugin.video.filteredmovies 32143]</label>
+                            <onup>1006</onup>
+                            <ondown>1003</ondown>
+                        </control>
+                        <control type="button" id="2013">
+                            <width>100</width>
+                            <height>32</height>
+                            <visible>!String.IsEqual(Window.Property(MFG.HasGenre.2013),false)</visible>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.2013)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$ADDON[plugin.video.filteredmovies 32144]</label>
+                            <onup>1006</onup>
+                            <ondown>1003</ondown>
+                        </control>
+                        <control type="button" id="2015">
+                            <width>100</width>
+                            <height>32</height>
+                            <visible>!String.IsEqual(Window.Property(MFG.HasGenre.2015),false)</visible>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.2015)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$ADDON[plugin.video.filteredmovies 32146]</label>
+                            <onup>1006</onup>
+                            <ondown>1003</ondown>
+                        </control>
+                        <onup>1006</onup>
+                        <ondown>1003</ondown>
+                        <onleft>Noop</onleft>
+                        <onright>Noop</onright>
+                    </control>
+                </control>
+                <control type="group" id="7402">
+                    <top>90</top>
+                    <visible>String.IsEqual(Window.Property(MFG.FacetRow.1003),true)</visible>
+                    <control type="grouplist" id="1003">
+                        <top>0</top>
+                        <orientation>horizontal</orientation>
+                        <itemgap>-10</itemgap>
+                        <width>1600</width>
+                        <height>32</height>
+                        <align>left</align>
+                        <control type="button" id="3001">
+                            <width>100</width>
+                            <height>32</height>
+                            <visible>!String.IsEqual(Window.Property(MFG.HasRegion.3001),false)</visible>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.3001)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$INFO[Window(Home).Property(MFG.Label.3001)]</label>
+                            <onup>1002</onup>
+                            <ondown>1004</ondown>
+                        </control>
+                        <control type="button" id="3002">
+                            <width>150</width>
+                            <height>32</height>
+                            <visible>!String.IsEqual(Window.Property(MFG.HasRegion.3002),false)</visible>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.3002)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$INFO[Window(Home).Property(MFG.Label.3002)]</label>
+                            <onup>1002</onup>
+                            <ondown>1004</ondown>
+                        </control>
+                        <control type="button" id="3003">
+                            <width>150</width>
+                            <height>32</height>
+                            <visible>!String.IsEqual(Window.Property(MFG.HasRegion.3003),false)</visible>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.3003)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$INFO[Window(Home).Property(MFG.Label.3003)]</label>
+                            <onup>1002</onup>
+                            <ondown>1004</ondown>
+                        </control>
+                        <control type="button" id="3004">
+                            <width>150</width>
+                            <height>32</height>
+                            <visible>!String.IsEqual(Window.Property(MFG.HasRegion.3004),false)</visible>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.3004)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$INFO[Window(Home).Property(MFG.Label.3004)]</label>
+                            <onup>1002</onup>
+                            <ondown>1004</ondown>
+                        </control>
+                        <control type="button" id="3005">
+                            <width>100</width>
+                            <height>32</height>
+                            <visible>!String.IsEqual(Window.Property(MFG.HasRegion.3005),false)</visible>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.3005)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$INFO[Window(Home).Property(MFG.Label.3005)]</label>
+                            <onup>1002</onup>
+                            <ondown>1004</ondown>
+                        </control>
+                        <control type="button" id="3006">
+                            <width>100</width>
+                            <height>32</height>
+                            <visible>!String.IsEqual(Window.Property(MFG.HasRegion.3006),false)</visible>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.3006)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$INFO[Window(Home).Property(MFG.Label.3006)]</label>
+                            <onup>1002</onup>
+                            <ondown>1004</ondown>
+                        </control>
+                        <control type="button" id="3007">
+                            <width>100</width>
+                            <height>32</height>
+                            <visible>!String.IsEqual(Window.Property(MFG.HasRegion.3007),false)</visible>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.3007)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$INFO[Window(Home).Property(MFG.Label.3007)]</label>
+                            <onup>1002</onup>
+                            <ondown>1004</ondown>
+                        </control>
+                        <control type="button" id="3008">
+                            <width>100</width>
+                            <height>32</height>
+                            <visible>!String.IsEqual(Window.Property(MFG.HasRegion.3008),false)</visible>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.3008)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$INFO[Window(Home).Property(MFG.Label.3008)]</label>
+                            <onup>1002</onup>
+                            <ondown>1004</ondown>
+                        </control>
+                        <control type="button" id="3009">
+                            <width>100</width>
+                            <height>32</height>
+                            <visible>!String.IsEqual(Window.Property(MFG.HasRegion.3009),false)</visible>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.3009)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$INFO[Window(Home).Property(MFG.Label.3009)]</label>
+                            <onup>1002</onup>
+                            <ondown>1004</ondown>
+                        </control>
+                        <control type="button" id="3010">
+                            <width>100</width>
+                            <height>32</height>
+                            <visible>!String.IsEqual(Window.Property(MFG.HasRegion.3010),false)</visible>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.3010)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$INFO[Window(Home).Property(MFG.Label.3010)]</label>
+                            <onup>1002</onup>
+                            <ondown>1004</ondown>
+                        </control>
+                        <control type="button" id="3011">
+                            <width>100</width>
+                            <height>32</height>
+                            <visible>!String.IsEqual(Window.Property(MFG.HasRegion.3011),false)</visible>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.3011)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$INFO[Window(Home).Property(MFG.Label.3011)]</label>
+                            <onup>1002</onup>
+                            <ondown>1004</ondown>
+                        </control>
+                        <control type="button" id="3012">
+                            <width>100</width>
+                            <height>32</height>
+                            <visible>!String.IsEqual(Window.Property(MFG.HasRegion.3012),false)</visible>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.3012)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$INFO[Window(Home).Property(MFG.Label.3012)]</label>
+                            <onup>1002</onup>
+                            <ondown>1004</ondown>
+                        </control>
+                        <control type="button" id="3014">
+                            <width>120</width>
+                            <height>32</height>
+                            <visible>!String.IsEqual(Window.Property(MFG.HasRegion.3014),false)</visible>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.3014)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$INFO[Window(Home).Property(MFG.Label.3014)]</label>
+                            <onup>1002</onup>
+                            <ondown>1004</ondown>
+                        </control>
+                        <control type="button" id="3015">
+                            <width>120</width>
+                            <height>32</height>
+                            <visible>!String.IsEqual(Window.Property(MFG.HasRegion.3015),false)</visible>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.3015)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$INFO[Window(Home).Property(MFG.Label.3015)]</label>
+                            <onup>1002</onup>
+                            <ondown>1004</ondown>
+                        </control>
+                        <control type="button" id="3013">
+                            <width>100</width>
+                            <height>32</height>
+                            <visible>!String.IsEqual(Window.Property(MFG.HasRegion.3013),false)</visible>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.3013)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$INFO[Window(Home).Property(MFG.Label.3013)]</label>
+                            <onup>1002</onup>
+                            <ondown>1004</ondown>
+                        </control>
+                        <onup>1002</onup>
+                        <ondown>1004</ondown>
+                        <onleft>Noop</onleft>
+                        <onright>Noop</onright>
+                    </control>
+                </control>
+                <control type="group" id="7403">
+                    <top>135</top>
+                    <visible>String.IsEqual(Window.Property(MFG.FacetRow.1004),true)</visible>
+                    <control type="grouplist" id="1004">
+                        <top>0</top>
+                        <orientation>horizontal</orientation>
+                        <itemgap>-10</itemgap>
+                        <width>1600</width>
+                        <height>32</height>
+                        <align>left</align>
+                        <control type="button" id="4001">
+                            <width>100</width>
+                            <height>32</height>
+                            <onfocus>SetProperty(Return_KeyClr,4001,Home)</onfocus>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.4001)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$INFO[Window(Home).Property(MFG.Label.4001)]</label>
+                            <onup>1003</onup>
+                            <ondown>1005</ondown>
+                        </control>
+                        <control type="button" id="4002">
+                            <width>100</width>
+                            <height>32</height>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.4002)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$INFO[Window(Home).Property(MFG.Label.4002)]</label>
+                            <onup>1003</onup>
+                            <ondown>1005</ondown>
+                            <visible>!String.IsEqual(Window.Property(MFG.HasYear.4002),false)</visible>
+                        </control>
+                        <control type="button" id="4003">
+                            <width>160</width>
+                            <height>32</height>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.4003)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$INFO[Window(Home).Property(MFG.Label.4003)]</label>
+                            <onup>1003</onup>
+                            <ondown>1005</ondown>
+                            <visible>!String.IsEqual(Window.Property(MFG.HasYear.4003),false)</visible>
+                        </control>
+                        <control type="button" id="4004">
+                            <width>160</width>
+                            <height>32</height>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.4004)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$INFO[Window(Home).Property(MFG.Label.4004)]</label>
+                            <onup>1003</onup>
+                            <ondown>1005</ondown>
+                            <visible>!String.IsEqual(Window.Property(MFG.HasYear.4004),false)</visible>
+                        </control>
+                        <control type="button" id="4005">
+                            <width>160</width>
+                            <height>32</height>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.4005)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$INFO[Window(Home).Property(MFG.Label.4005)]</label>
+                            <onup>1003</onup>
+                            <ondown>1005</ondown>
+                            <visible>!String.IsEqual(Window.Property(MFG.HasYear.4005),false)</visible>
+                        </control>
+                        <control type="button" id="4006">
+                            <width>130</width>
+                            <height>32</height>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.4006)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$INFO[Window(Home).Property(MFG.Label.4006)]</label>
+                            <onup>1003</onup>
+                            <ondown>1005</ondown>
+                            <visible>!String.IsEqual(Window.Property(MFG.HasYear.4006),false)</visible>
+                        </control>
+                        <control type="button" id="4007">
+                            <width>130</width>
+                            <height>32</height>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.4007)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$INFO[Window(Home).Property(MFG.Label.4007)]</label>
+                            <onup>1003</onup>
+                            <ondown>1005</ondown>
+                            <visible>!String.IsEqual(Window.Property(MFG.HasYear.4007),false)</visible>
+                        </control>
+                        <control type="button" id="4008">
+                            <width>130</width>
+                            <height>32</height>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.4008)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$INFO[Window(Home).Property(MFG.Label.4008)]</label>
+                            <onup>1003</onup>
+                            <ondown>1005</ondown>
+                            <visible>!String.IsEqual(Window.Property(MFG.HasYear.4008),false)</visible>
+                        </control>
+                        <control type="button" id="4009">
+                            <width>130</width>
+                            <height>32</height>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.4009)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$INFO[Window(Home).Property(MFG.Label.4009)]</label>
+                            <onup>1003</onup>
+                            <ondown>1005</ondown>
+                            <visible>!String.IsEqual(Window.Property(MFG.HasYear.4009),false)</visible>
+                        </control>
+                        <control type="button" id="4010">
+                            <width>100</width>
+                            <height>32</height>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.4010)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$INFO[Window(Home).Property(MFG.Label.4010)]</label>
+                            <onup>1003</onup>
+                            <ondown>1005</ondown>
+                            <visible>!String.IsEqual(Window.Property(MFG.HasYear.4010),false)</visible>
+                        </control>
+                        <onup>1003</onup>
+                        <ondown>1005</ondown>
+                        <onleft>Noop</onleft>
+                        <onright>Noop</onright>
+                    </control>
+                </control>
+                <control type="group" id="7404">
+                    <top>180</top>
+                    <visible>String.IsEqual(Window.Property(MFG.FacetRow.1005),true)</visible>
+                    <control type="grouplist" id="1005">
+                        <top>0</top>
+                        <orientation>horizontal</orientation>
+                        <itemgap>-10</itemgap>
+                        <width>1600</width>
+                        <height>32</height>
+                        <align>left</align>
+                        <control type="button" id="5001">
+                            <width>100</width>
+                            <height>32</height>
+                            <onfocus>SetProperty(Return_KeyClr,5001,Home)</onfocus>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.5001)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$ADDON[plugin.video.filteredmovies 32163]</label>
+                            <onup>1004</onup>
+                            <ondown>9999</ondown>
+                        </control>
+                        <control type="button" id="5002">
+                            <width>100</width>
+                            <height>32</height>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.5002)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>10-9</label>
+                            <onup>1004</onup>
+                            <ondown>9999</ondown>
+                            <visible>!String.IsEqual(Window.Property(MFG.HasRating.5002),false)</visible>
+                        </control>
+                        <control type="button" id="5003">
+                            <width>88</width>
+                            <height>32</height>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.5003)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>9-8</label>
+                            <onup>1004</onup>
+                            <ondown>9999</ondown>
+                            <visible>!String.IsEqual(Window.Property(MFG.HasRating.5003),false)</visible>
+                        </control>
+                        <control type="button" id="5004">
+                            <width>85</width>
+                            <height>32</height>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.5004)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>8-7</label>
+                            <onup>1004</onup>
+                            <ondown>9999</ondown>
+                            <visible>!String.IsEqual(Window.Property(MFG.HasRating.5004),false)</visible>
+                        </control>
+                        <control type="button" id="5005">
+                            <width>90</width>
+                            <height>32</height>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.5005)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>7-6</label>
+                            <onup>1004</onup>
+                            <ondown>9999</ondown>
+                            <visible>!String.IsEqual(Window.Property(MFG.HasRating.5005),false)</visible>
+                        </control>
+                        <control type="button" id="5006">
+                            <width>150</width>
+                            <height>32</height>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.5006)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$ADDON[plugin.video.filteredmovies 32164]</label>
+                            <onup>1004</onup>
+                            <ondown>9999</ondown>
+                            <visible>!String.IsEqual(Window.Property(MFG.HasRating.5006),false)</visible>
+                        </control>
+                        <onup>1004</onup>
+                        <ondown>9999</ondown>
+                        <onleft>Noop</onleft>
+                        <onright>Noop</onright>
+                    </control>
+                </control>
+            </control>
+            <visible>String.IsEqual(Window.Property(MFG.FiltersExpanded),true) + String.IsEqual(Window.Property(MFG.FilterSupported),true)</visible>
+            <control type="label">
+                <left>50</left>
+                <top>100</top>
+                <width>1600</width>
+                <height>45</height>
+                <font>font13</font>
+                <label>$INFO[Window.Property(MFG.FacetMessage)]</label>
+                <textcolor>FFCCCCCC</textcolor>
+            </control>
+        </control>
         <control type="group" id="700">
             <animation type="Conditional" condition="Window.IsVisible(movieinformation) | Window.IsVisible(DialogVideoInfo.xml)" reversible="true">
-                <effect type="fade" start="100" end="0" time="200"/>
+                <effect type="fade" start="100" end="0" time="200" />
             </animation>
-
-
-        <control type="panel" id="9999">
-            <enable>true</enable>
-            <left>30</left>
-            <top>50</top>
-            <width>1860</width>
-            <height>1000</height>
-            <wraparound>false</wraparound>
-            <oncontextmenu>RunScript(plugin.video.filteredmovies,?mode=delete_movie&amp;id=$INFO[ListItem.DBID]&amp;type=$INFO[ListItem.DBType])</oncontextmenu>
-            <viewtype label="Posters">panel</viewtype>
-            <scrolltime>200</scrolltime>
-            <preloaditems>1</preloaditems>
-            
-                        <onleft>SendClick(7192)</onleft>
-            <onright>SendClick(7191)</onright>
-            <onup>Noop</onup>
-            <ondown>Noop</ondown>
-            <itemlayout width="310" height="511">
-                <control type="group">
-                    <width>310</width>
-                    <height>511</height>
-                    
-                    <control type="image">
-                        <left>30</left>
-                        <top>24</top>
-                        <width>250</width>
-                        <height>375</height>
-                        <texture fallback="DefaultVideoCover.png" diffuse="rounded/mask-250x375-r16.png" background="true">$INFO[ListItem.Art(poster)]</texture>
-                        <aspectratio scalediffuse="false">scale</aspectratio>
-                        </control>
-                    <control type="label">
-                        <left>13</left>
-                        <top>464</top>
-                        <width>284</width>
-                        <height>25</height>
-                        <align>center</align>
-                        <aligny>center</aligny>
-                        <font>font10</font>
-                        <textcolor>FFCCCCCC</textcolor>
-                        <label>$INFO[ListItem.Year]</label>
-                        <visible>!String.IsEmpty(ListItem.Year)</visible>
-                    </control>
-                    <control type="image">
-                        <left>242</left>
-                        <top>36</top>
-                        <width>26</width>
-                        <height>26</height>
-                        <texture>common/watched.png</texture>
-                        <visible>Integer.IsGreater(ListItem.PlayCount,0) + !Integer.IsGreater(ListItem.Property(SkinPercentPlayed),0)</visible>
-                    </control>
-
-                    
-                    <control type="label">
-                        <left>78</left>
-                        <top>350</top>
-                        <width>190</width>
-                        <height>34</height>
-                        <align>right</align>
-                        <aligny>center</aligny>
-                        <font>font12</font>
-                        <label>$INFO[ListItem.Rating]</label>
-                        <textcolor>FFFFFFFF</textcolor>
-                        <visible>!String.IsEmpty(ListItem.Rating)</visible>
-                    <shadowcolor>FF000000</shadowcolor></control>
-                    <control type="label">
-                        <top>425</top>
-                        <width>284</width>
-                        <height>35</height>
-                        <align>center</align>
-                        <aligny>top</aligny>
-                        <wrapmultiline>false</wrapmultiline>
-                        <scroll>false</scroll>
-                        <label>$INFO[ListItem.Label]</label>
-                        <textcolor>FFFFFFFF</textcolor>
-                        <font>font13</font>
-                    <left>13</left></control>
-
-                    
-                    <control type="image">
-                        <left>42</left>
-                        <top>350</top>
-                        <width>32</width>
-                        <height>32</height>
-                        <texture>common/film.png</texture>
-                        <visible>[String.IsEqual(Window.Property(MFG.FilterColor.6001),FFEB9E17) | String.IsEqual(Window.Property(MFG.FilterColor.6006),FFEB9E17)] + [String.IsEqual(ListItem.DBType,movie) | String.IsEqual(ListItem.DBType,set)]</visible>
-                    </control>
-                    
-                    <control type="image">
-                        <left>42</left>
-                        <top>350</top>
-                        <width>32</width>
-                        <height>32</height>
-                        <texture>common/tv.png</texture>
-                        <visible>[String.IsEqual(Window.Property(MFG.FilterColor.6001),FFEB9E17) | String.IsEqual(Window.Property(MFG.FilterColor.6006),FFEB9E17)] + [String.IsEqual(ListItem.DBType,tvshow) | String.IsEqual(ListItem.DBType,season) | String.IsEqual(ListItem.DBType,episode)]</visible>
-                    </control>
-
-                </control>
-            </itemlayout>
-            <focusedlayout width="310" height="511">
-                <control type="group">
-                    <control type="group"><width>310</width><height>424</height><animation type="Focus">
-                        <effect type="zoom" start="100" end="108" time="200" tween="sine" easing="inout" center="155,211.5"/>
-                    </animation>
-                    <animation type="Unfocus">
-                        <effect type="zoom" start="108" end="100" time="200" tween="sine" easing="inout" center="155,211.5"/>
-                    </animation>
+            <control type="panel" id="9999">
+                <enable>true</enable>
+                <left>30</left>
+                <top>90</top>
+                <width>1860</width>
+                <height>990</height>
+                <wraparound>false</wraparound>
+                <oncontextmenu>RunScript(plugin.video.filteredmovies,?mode=delete_movie&amp;id=$INFO[ListItem.DBID]&amp;type=$INFO[ListItem.DBType])</oncontextmenu>
+                <viewtype label="Posters">panel</viewtype>
+                <scrolltime>200</scrolltime>
+                <preloaditems>1</preloaditems>
+                <onleft>SendClick(7192)</onleft>
+                <onright>SendClick(7191)</onright>
+                <onup>SendClick(7194)</onup>
+                <ondown>Noop</ondown>
+                <itemlayout width="310" height="490">
                     <control type="group">
-                        
-                        <control type="group">
-                            <control type="image">
-                                <animation type="Unfocus">
-                                    <effect type="fade" start="100" end="0" time="0"/>
-                                </animation>
-                                <left>26</left>
-                                <top>20</top>
-                                <width>258</width>
-                                <height>383</height>
-                                <texture colordiffuse="button_focus">rounded/mask-258x383-r20.png</texture>
-                                </control>
-                            <control type="image">
-                                <left>30</left>
-                                <top>24</top>
-                                <width>250</width>
-                                <height>375</height>
-                                <texture fallback="DefaultVideoCover.png" diffuse="rounded/mask-250x375-r16.png" background="true">$INFO[ListItem.Art(poster)]</texture>
-                                <aspectratio scalediffuse="false">scale</aspectratio>
-                                </control>
+                        <width>310</width>
+                        <height>490</height>
+                        <control type="image">
+                            <left>30</left>
+                            <top>24</top>
+                            <width>250</width>
+                            <height>375</height>
+                            <texture fallback="DefaultVideoCover.png" diffuse="rounded/mask-250x375-r16.png" background="true">$INFO[ListItem.Art(poster)]</texture>
+                            <aspectratio scalediffuse="false">scale</aspectratio>
+                        </control>
+                        <control type="label">
+                            <left>13</left>
+                            <top>464</top>
+                            <width>284</width>
+                            <height>25</height>
+                            <align>center</align>
+                            <aligny>center</aligny>
+                            <font>font10</font>
+                            <textcolor>FFCCCCCC</textcolor>
+                            <label>$INFO[ListItem.Year]</label>
+                            <visible>!String.IsEmpty(ListItem.Year)</visible>
+                        </control>
+                        <control type="image">
+                            <left>242</left>
+                            <top>36</top>
+                            <width>26</width>
+                            <height>26</height>
+                            <texture>common/watched.png</texture>
+                            <visible>Integer.IsGreater(ListItem.PlayCount,0) + !Integer.IsGreater(ListItem.Property(SkinPercentPlayed),0)</visible>
+                        </control>
+                        <control type="label">
+                            <left>78</left>
+                            <top>350</top>
+                            <width>190</width>
+                            <height>34</height>
+                            <align>right</align>
+                            <aligny>center</aligny>
+                            <font>font12</font>
+                            <label>$INFO[ListItem.Rating]</label>
+                            <textcolor>FFFFFFFF</textcolor>
+                            <visible>!String.IsEmpty(ListItem.Rating)</visible>
+                            <shadowcolor>FF000000</shadowcolor>
+                        </control>
+                        <control type="label">
+                            <top>425</top>
+                            <width>284</width>
+                            <height>35</height>
+                            <align>center</align>
+                            <aligny>top</aligny>
+                            <wrapmultiline>false</wrapmultiline>
+                            <scroll>false</scroll>
+                            <label>$INFO[ListItem.Label]</label>
+                            <textcolor>FFFFFFFF</textcolor>
+                            <font>font13</font>
+                            <left>13</left>
+                        </control>
+                        <control type="image">
+                            <left>42</left>
+                            <top>350</top>
+                            <width>32</width>
+                            <height>32</height>
+                            <texture>common/film.png</texture>
+                            <visible>[String.IsEqual(Window.Property(MFG.FilterColor.6001),FFEB9E17) | String.IsEqual(Window.Property(MFG.FilterColor.6006),FFEB9E17)] + [String.IsEqual(ListItem.DBType,movie) | String.IsEqual(ListItem.DBType,set)]</visible>
+                        </control>
+                        <control type="image">
+                            <left>42</left>
+                            <top>350</top>
+                            <width>32</width>
+                            <height>32</height>
+                            <texture>common/tv.png</texture>
+                            <visible>[String.IsEqual(Window.Property(MFG.FilterColor.6001),FFEB9E17) | String.IsEqual(Window.Property(MFG.FilterColor.6006),FFEB9E17)] + [String.IsEqual(ListItem.DBType,tvshow) | String.IsEqual(ListItem.DBType,season) | String.IsEqual(ListItem.DBType,episode)]</visible>
                         </control>
                     </control>
-                    <control type="image">
-                        <left>242</left>
-                        <top>36</top>
-                        <width>26</width>
-                        <height>26</height>
-                        <texture>common/watched.png</texture>
-                        <visible>Integer.IsGreater(ListItem.PlayCount,0) + !Integer.IsGreater(ListItem.Property(SkinPercentPlayed),0)</visible>
+                </itemlayout>
+                <focusedlayout width="310" height="490">
+                    <control type="group">
+                        <control type="group">
+                            <width>310</width>
+                            <height>424</height>
+                            <animation type="Focus">
+                                <effect type="zoom" start="100" end="108" time="200" tween="sine" easing="inout" center="155,211.5" />
+                            </animation>
+                            <animation type="Unfocus">
+                                <effect type="zoom" start="108" end="100" time="200" tween="sine" easing="inout" center="155,211.5" />
+                            </animation>
+                            <control type="group">
+                                <control type="group">
+                                    <control type="image">
+                                        <animation type="Unfocus">
+                                            <effect type="fade" start="100" end="0" time="0" />
+                                        </animation>
+                                        <left>26</left>
+                                        <top>20</top>
+                                        <width>258</width>
+                                        <height>383</height>
+                                        <texture colordiffuse="button_focus">rounded/mask-258x383-r20.png</texture>
+                                    </control>
+                                    <control type="image">
+                                        <left>30</left>
+                                        <top>24</top>
+                                        <width>250</width>
+                                        <height>375</height>
+                                        <texture fallback="DefaultVideoCover.png" diffuse="rounded/mask-250x375-r16.png" background="true">$INFO[ListItem.Art(poster)]</texture>
+                                        <aspectratio scalediffuse="false">scale</aspectratio>
+                                    </control>
+                                </control>
+                            </control>
+                            <control type="image">
+                                <left>242</left>
+                                <top>36</top>
+                                <width>26</width>
+                                <height>26</height>
+                                <texture>common/watched.png</texture>
+                                <visible>Integer.IsGreater(ListItem.PlayCount,0) + !Integer.IsGreater(ListItem.Property(SkinPercentPlayed),0)</visible>
+                            </control>
+                            <control type="label">
+                                <left>78</left>
+                                <top>350</top>
+                                <width>190</width>
+                                <height>34</height>
+                                <align>right</align>
+                                <aligny>center</aligny>
+                                <font>font12</font>
+                                <label>$INFO[ListItem.Rating]</label>
+                                <textcolor>FFFFFFFF</textcolor>
+                                <visible>!String.IsEmpty(ListItem.Rating)</visible>
+                                <shadowcolor>FF000000</shadowcolor>
+                            </control>
+                            <control type="image">
+                                <left>42</left>
+                                <top>350</top>
+                                <width>32</width>
+                                <height>32</height>
+                                <texture>common/film.png</texture>
+                                <visible>[String.IsEqual(Window.Property(MFG.FilterColor.6001),FFEB9E17) | String.IsEqual(Window.Property(MFG.FilterColor.6006),FFEB9E17)] + [String.IsEqual(ListItem.DBType,movie) | String.IsEqual(ListItem.DBType,set)]</visible>
+                            </control>
+                            <control type="image">
+                                <left>42</left>
+                                <top>350</top>
+                                <width>32</width>
+                                <height>32</height>
+                                <texture>common/tv.png</texture>
+                                <visible>[String.IsEqual(Window.Property(MFG.FilterColor.6001),FFEB9E17) | String.IsEqual(Window.Property(MFG.FilterColor.6006),FFEB9E17)] + [String.IsEqual(ListItem.DBType,tvshow) | String.IsEqual(ListItem.DBType,season) | String.IsEqual(ListItem.DBType,episode)]</visible>
+                            </control>
+                        </control>
+                        <depth>DepthContentPopout</depth>
+                        <width>310</width>
+                        <height>490</height>
+                        <control type="label">
+                            <left>13</left>
+                            <top>464</top>
+                            <width>284</width>
+                            <height>25</height>
+                            <align>center</align>
+                            <aligny>center</aligny>
+                            <font>font10</font>
+                            <textcolor>FFCCCCCC</textcolor>
+                            <label>$INFO[ListItem.Year]</label>
+                            <visible>!String.IsEmpty(ListItem.Year)</visible>
+                        </control>
+                        <control type="label">
+                            <top>425</top>
+                            <width>284</width>
+                            <height>35</height>
+                            <align>center</align>
+                            <aligny>top</aligny>
+                            <wrapmultiline>false</wrapmultiline>
+                            <scroll>true</scroll>
+                            <label>$INFO[ListItem.Label]</label>
+                            <textcolor>FFFFFFFF</textcolor>
+                            <font>font13</font>
+                            <left>13</left>
+                        </control>
                     </control>
-
-                    
-                    <control type="label">
-                        <left>78</left>
-                        <top>350</top>
-                        <width>190</width>
-                        <height>34</height>
-                        <align>right</align>
-                        <aligny>center</aligny>
-                        <font>font12</font>
-                        <label>$INFO[ListItem.Rating]</label>
-                        <textcolor>FFFFFFFF</textcolor>
-                        <visible>!String.IsEmpty(ListItem.Rating)</visible>
-                    <shadowcolor>FF000000</shadowcolor></control>
-                    <control type="image">
-                        <left>42</left>
-                        <top>350</top>
-                        <width>32</width>
-                        <height>32</height>
-                        <texture>common/film.png</texture>
-                        <visible>[String.IsEqual(Window.Property(MFG.FilterColor.6001),FFEB9E17) | String.IsEqual(Window.Property(MFG.FilterColor.6006),FFEB9E17)] + [String.IsEqual(ListItem.DBType,movie) | String.IsEqual(ListItem.DBType,set)]</visible>
-                    </control>
-                    
-                    <control type="image">
-                        <left>42</left>
-                        <top>350</top>
-                        <width>32</width>
-                        <height>32</height>
-                        <texture>common/tv.png</texture>
-                        <visible>[String.IsEqual(Window.Property(MFG.FilterColor.6001),FFEB9E17) | String.IsEqual(Window.Property(MFG.FilterColor.6006),FFEB9E17)] + [String.IsEqual(ListItem.DBType,tvshow) | String.IsEqual(ListItem.DBType,season) | String.IsEqual(ListItem.DBType,episode)]</visible>
-                    </control>
-
-                </control><depth>DepthContentPopout</depth>
-                    <width>310</width>
-                    <height>511</height>
-                    <control type="label">
-                        <left>13</left>
-                        <top>464</top>
-                        <width>284</width>
-                        <height>25</height>
-                        <align>center</align>
-                        <aligny>center</aligny>
-                        <font>font10</font>
-                        <textcolor>FFCCCCCC</textcolor>
-                        <label>$INFO[ListItem.Year]</label>
-                        <visible>!String.IsEmpty(ListItem.Year)</visible>
-                    </control>
-                    <control type="label">
-                        <top>425</top>
-                        <width>284</width>
-                        <height>35</height>
-                        <align>center</align>
-                        <aligny>top</aligny>
-                        <wrapmultiline>false</wrapmultiline>
-                        <scroll>true</scroll>
-                        <label>$INFO[ListItem.Label]</label>
-                        <textcolor>FFFFFFFF</textcolor>
-                        <font>font13</font>
-                    <left>13</left></control>
-
-                    
-                    </control>
-            </focusedlayout>
+                </focusedlayout>
+            </control>
+            <control type="label">
+                <left>30</left>
+                <top>210</top>
+                <width>2000</width>
+                <height>70</height>
+                <font>font13</font>
+                <textcolor>FFCCCCCC</textcolor>
+                <align>center</align>
+                <label>$INFO[Window.Property(MFG.Panel.9999.Message)]</label>
+                <visible>!String.IsEqual(Window.Property(MFG.Panel.9999.State),ready)</visible>
+            </control>
         </control>
-                <control type="label"><left>30</left><top>210</top><width>2000</width><height>70</height><font>font13</font><textcolor>FFCCCCCC</textcolor><align>center</align><label>$INFO[Window.Property(MFG.Panel.9999.Message)]</label><visible>!String.IsEqual(Window.Property(MFG.Panel.9999.State),ready)</visible></control>
-    </control>
-    <control type="label"><left>30</left><top>6</top><width>1400</width><height>35</height><font>font13</font><aligny>center</aligny><label>$INFO[Window.Property(MFG.PageTitle)]</label></control><control type="button" id="7191"><left>-1000</left><top>-1000</top><width>1</width><height>1</height><label/><visible>false</visible></control>
-<control type="button" id="7192"><left>-1000</left><top>-1000</top><width>1</width><height>1</height><label/><visible>false</visible></control>
-<control type="button" id="7193"><left>-1000</left><top>-1000</top><width>1</width><height>1</height><label/><visible>false</visible></control>
-<control type="label">
-        <left>1510</left><top>6</top><width>380</width><height>35</height>
-        <font>font13</font><align>right</align><aligny>center</aligny>
-        <label>$INFO[Container(9999).CurrentItem]/$INFO[Window.Property(MFG.ResultTotal)]部</label>
-        <visible>Integer.IsGreater(Container(9999).NumItems,0)</visible>
-    </control>
-<control type="label">
-        <left>1510</left><top>6</top><width>380</width><height>35</height>
-        <font>font13</font><align>right</align><aligny>center</aligny>
-        <label>0/$INFO[Window.Property(MFG.ResultTotal)]部</label>
-        <visible>!Integer.IsGreater(Container(9999).NumItems,0)</visible>
-    </control>
-</controls>
+        <control type="button" id="7191">
+            <left>-1000</left>
+            <top>-1000</top>
+            <width>1</width>
+            <height>1</height>
+            <label />
+            <visible>false</visible>
+        </control>
+        <control type="button" id="7192">
+            <left>-1000</left>
+            <top>-1000</top>
+            <width>1</width>
+            <height>1</height>
+            <label />
+            <visible>false</visible>
+        </control>
+        <control type="button" id="7193">
+            <left>-1000</left>
+            <top>-1000</top>
+            <width>1</width>
+            <height>1</height>
+            <label />
+            <visible>false</visible>
+        </control>
+        <control type="grouplist">
+            <left>30</left>
+            <top>12</top>
+            <width>1220</width>
+            <height>60</height>
+            <orientation>horizontal</orientation>
+            <align>left</align>
+            <itemgap>20</itemgap>
+            <control type="label">
+                <width min="1" max="900">auto</width>
+                <height>60</height>
+                <font>font32_title</font>
+                <aligny>center</aligny>
+                <label>$INFO[Window.Property(MFG.PageTitle)]</label>
+                <scroll>true</scroll>
+            </control>
+            <control type="label">
+                <width min="1" max="260">auto</width>
+                <height>60</height>
+                <font>font13</font>
+                <aligny>center</aligny>
+                <textcolor>FFCCCCCC</textcolor>
+                <label>$INFO[Container(9999).CurrentItem]/$INFO[Window.Property(MFG.ResultTotal)]部</label>
+                <visible>Integer.IsGreater(Container(9999).NumItems,0)</visible>
+            </control>
+            <control type="label">
+                <width min="1" max="260">auto</width>
+                <height>60</height>
+                <font>font13</font>
+                <aligny>center</aligny>
+                <textcolor>FFCCCCCC</textcolor>
+                <label>0/$INFO[Window.Property(MFG.ResultTotal)]部</label>
+                <visible>!Integer.IsGreater(Container(9999).NumItems,0)</visible>
+            </control>
+        </control>
+        <control type="button" id="7200">
+            <left>1370</left>
+            <top>14</top>
+            <width>320</width>
+            <height>56</height>
+            <label>排序：$INFO[Window.Property(MFG.SortLabel)]</label>
+            <font>font13</font>
+            <textcolor>FFFFFFFF</textcolor>
+            <focusedcolor>FFFFFFFF</focusedcolor>
+            <align>center</align>
+            <aligny>center</aligny>
+            <texturenofocus />
+            <onup>Noop</onup>
+            <texturefocus border="14" colordiffuse="button_focus">rounded/mask-244x56-r14.png</texturefocus>
+            <onleft>Noop</onleft>
+            <onright condition="String.IsEqual(Window.Property(MFG.FilterSupported),true)">7201</onright>
+            <ondown>9999</ondown>
+            <animation type="Conditional" condition="!String.IsEqual(Window.Property(MFG.FilterSupported),true)" reversible="true">
+                <effect type="slide" end="190,0" time="0" />
+            </animation>
+        </control>
+        <control type="group" id="7210">
+            <left>1370</left>
+            <top>78</top>
+            <width>370</width>
+            <height>256</height>
+            <visible>String.IsEqual(Window.Property(MFG.SortOpen),true)</visible>
+            <control type="image">
+                <left>0</left>
+                <top>0</top>
+                <width>370</width>
+                <height>256</height>
+                <texture border="14" colordiffuse="F0202020">rounded/mask-244x56-r14.png</texture>
+            </control>
+            <control type="button" id="7220">
+                <left>8</left>
+                <top>8</top>
+                <width>354</width>
+                <height>56</height>
+                <label>$INFO[Window.Property(MFG.SortOption.0)]</label>
+                <font>font13</font>
+                <textcolor>FFFFFFFF</textcolor>
+                <focusedcolor>FFFFFFFF</focusedcolor>
+                <align>left</align>
+                <aligny>center</aligny>
+                <texturenofocus />
+                <onup>7200</onup>
+                <texturefocus border="14" colordiffuse="button_focus">rounded/mask-244x56-r14.png</texturefocus>
+                <ondown>7221</ondown>
+                <onleft>7200</onleft>
+                <onright>Noop</onright>
+                <textoffsetx>18</textoffsetx>
+            </control>
+            <control type="button" id="7221">
+                <left>8</left>
+                <top>68</top>
+                <width>354</width>
+                <height>56</height>
+                <label>$INFO[Window.Property(MFG.SortOption.1)]</label>
+                <font>font13</font>
+                <textcolor>FFFFFFFF</textcolor>
+                <focusedcolor>FFFFFFFF</focusedcolor>
+                <align>left</align>
+                <aligny>center</aligny>
+                <texturenofocus />
+                <onup>7220</onup>
+                <texturefocus border="14" colordiffuse="button_focus">rounded/mask-244x56-r14.png</texturefocus>
+                <ondown>7222</ondown>
+                <onleft>7200</onleft>
+                <onright>Noop</onright>
+                <textoffsetx>18</textoffsetx>
+            </control>
+            <control type="button" id="7222">
+                <left>8</left>
+                <top>128</top>
+                <width>354</width>
+                <height>56</height>
+                <label>$INFO[Window.Property(MFG.SortOption.2)]</label>
+                <font>font13</font>
+                <textcolor>FFFFFFFF</textcolor>
+                <focusedcolor>FFFFFFFF</focusedcolor>
+                <align>left</align>
+                <aligny>center</aligny>
+                <texturenofocus />
+                <onup>7221</onup>
+                <texturefocus border="14" colordiffuse="button_focus">rounded/mask-244x56-r14.png</texturefocus>
+                <ondown>7223</ondown>
+                <onleft>7200</onleft>
+                <onright>Noop</onright>
+                <textoffsetx>18</textoffsetx>
+            </control>
+            <control type="button" id="7223">
+                <left>8</left>
+                <top>188</top>
+                <width>354</width>
+                <height>56</height>
+                <label>$INFO[Window.Property(MFG.SortOption.3)]</label>
+                <font>font13</font>
+                <textcolor>FFFFFFFF</textcolor>
+                <focusedcolor>FFFFFFFF</focusedcolor>
+                <align>left</align>
+                <aligny>center</aligny>
+                <texturenofocus />
+                <onup>7222</onup>
+                <texturefocus border="14" colordiffuse="button_focus">rounded/mask-244x56-r14.png</texturefocus>
+                <ondown>Noop</ondown>
+                <onleft>7200</onleft>
+                <onright>Noop</onright>
+                <textoffsetx>18</textoffsetx>
+            </control>
+            <control type="label">
+                <left>308</left>
+                <top>8</top>
+                <width>36</width>
+                <height>56</height>
+                <font>font13</font>
+                <align>right</align>
+                <aligny>center</aligny>
+                <textcolor>FFFFFFFF</textcolor>
+                <label>$INFO[Window.Property(MFG.SortArrow.0)]</label>
+            </control>
+            <control type="label">
+                <left>308</left>
+                <top>68</top>
+                <width>36</width>
+                <height>56</height>
+                <font>font13</font>
+                <align>right</align>
+                <aligny>center</aligny>
+                <textcolor>FFFFFFFF</textcolor>
+                <label>$INFO[Window.Property(MFG.SortArrow.1)]</label>
+            </control>
+            <control type="label">
+                <left>308</left>
+                <top>128</top>
+                <width>36</width>
+                <height>56</height>
+                <font>font13</font>
+                <align>right</align>
+                <aligny>center</aligny>
+                <textcolor>FFFFFFFF</textcolor>
+                <label>$INFO[Window.Property(MFG.SortArrow.2)]</label>
+            </control>
+            <control type="label">
+                <left>308</left>
+                <top>188</top>
+                <width>36</width>
+                <height>56</height>
+                <font>font13</font>
+                <align>right</align>
+                <aligny>center</aligny>
+                <textcolor>FFFFFFFF</textcolor>
+                <label>$INFO[Window.Property(MFG.SortArrow.3)]</label>
+            </control>
+            <animation type="Conditional" condition="!String.IsEqual(Window.Property(MFG.FilterSupported),true)" reversible="true">
+                <effect type="slide" end="140,0" time="0" />
+            </animation>
+        </control>
+        <control type="button" id="7194">
+            <left>-1000</left>
+            <top>-1000</top>
+            <width>1</width>
+            <height>1</height>
+            <label />
+            <visible>false</visible>
+        </control>
+        <control type="button" id="7201">
+            <left>1720</left>
+            <top>14</top>
+            <width>160</width>
+            <height>56</height>
+            <label>$INFO[Window.Property(MFG.FilterLabel)]</label>
+            <font>font13</font>
+            <textcolor>FFFFFFFF</textcolor>
+            <focusedcolor>FFFFFFFF</focusedcolor>
+            <align>center</align>
+            <aligny>center</aligny>
+            <texturenofocus />
+            <onup>Noop</onup>
+            <texturefocus border="14" colordiffuse="button_focus">rounded/mask-244x56-r14.png</texturefocus>
+            <onleft>7200</onleft>
+            <onright>Noop</onright>
+            <ondown condition="String.IsEqual(Window.Property(MFG.FiltersExpanded),true)">1006</ondown>
+            <ondown condition="!String.IsEqual(Window.Property(MFG.FiltersExpanded),true)">9999</ondown>
+            <visible>String.IsEqual(Window.Property(MFG.FilterSupported),true)</visible>
+        </control>
+        <control type="button" id="7195">
+            <left>-1000</left>
+            <top>-1000</top>
+            <width>1</width>
+            <height>1</height>
+            <visible>false</visible>
+            <label />
+        </control>
+    </controls>
 </window>

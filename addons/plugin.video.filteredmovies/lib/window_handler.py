@@ -444,6 +444,13 @@ for group, data in FILTER_MAP.items():
     for val, btn_id in data['mapping'].items():
         FILTER_ID_TO_INFO_MAP[btn_id] = (group, val)
 
+SORT_OPTIONS = (
+    ('dateadded', '添加日期', 'descending'),
+    ('rating', '评分', 'descending'),
+    ('title', '标题', 'ascending'),
+    ('premiered', '发行日期', 'descending'),
+)
+
 class FilterWindow(xbmcgui.WindowXML):
     def __init__(self, *args, **kwargs):
         self.xml_name = args[0] if args else ""
@@ -456,6 +463,15 @@ class FilterWindow(xbmcgui.WindowXML):
         self._grid_panel_animations = None
         self._grid_restore_animations = False
         self._grid_force_first_selection = False
+        self._has_filter_toolbar = self.xml_name == 'Custom_5112_AllMovie.xml'
+        self._filters_expanded = False
+        self._sort_open = False
+        self._sort_method = 'dateadded'
+        self._sort_order = 'descending'
+        self._facet_queue = queue.Queue()
+        self._active_filter_rows = []
+        self._facet_row_buttons = {}
+        self._filter_layout_signature = None
         self.is_search = self.xml_name == 'Custom_5113_SearchMovie.xml'
 
     def _input_window(self):
@@ -642,6 +658,9 @@ class FilterWindow(xbmcgui.WindowXML):
             # Kodi invokes onInit again after returning from a child window.
             # Reuse workers and Python state; only rebind rebuilt GUI controls.
             returning_child = self.getProperty('MFG.ChildWindow') == 'true'
+            if self._grid_page:
+                self._filter_layout_signature = None
+                self._update_toolbar()
             if returning_child and (self.poster_loader.restore_home() or self._can_restore_grid()):
                 self._restore_navigation_state()
                 log("WALL resumed from child with navigation state preserved")
@@ -663,8 +682,17 @@ class FilterWindow(xbmcgui.WindowXML):
         self.setProperty('MFG.SearchMode', 'true' if self.is_search else 'false')
         self.setProperty('MFG.InputWindowId', str(self._window_id))
         self.setProperty('MFG.PageTitle', getattr(self, 'page_title', ''))
+        if self._grid_page:
+            self._has_filter_toolbar = getattr(self, 'initial_mediatype', 'all') != 'set'
+            self.setProperty('MFG.FilterSupported', 'true' if self._has_filter_toolbar else 'false')
+            self.setProperty('MFG.AllPage', 'true' if self.xml_name == 'Custom_5112_AllMovie.xml' else 'false')
+            self.setProperty('MFG.FacetsReady', 'false')
+            self.setProperty('MFG.FacetMessage', '正在读取筛选条件…')
+            if self.xml_name == 'Custom_5112_AllMovie.xml':
+                self._active_filter_rows = [1006]
+                self._facet_row_buttons[1006] = list(range(6001, 6007))
         # 设置筛选按钮多语言 label
-        if not self.xml_name.startswith(("Custom_5111_", "Custom_5114_")):
+        if not self.xml_name.startswith("Custom_5111_"):
             _set_filter_labels()
         # Set property to indicate window is open
         # Clear T9 input
@@ -673,6 +701,8 @@ class FilterWindow(xbmcgui.WindowXML):
         self._load_state_from_skin()
         if hasattr(self,'initial_mediatype'):
             self.filter_state['filter.mediatype']={'id':{'all':6001,'movie':6002,'set':6003,'tvshow':6004,'concert':6005,'documentary':6006}.get(self.initial_mediatype,6001),'value':self.initial_mediatype}
+        if self._grid_page:
+            self._update_toolbar()
         # 立即初始化筛选高亮
         if not self.xml_name.startswith("Custom_5111_"):
             self.update_highlights()
@@ -707,6 +737,9 @@ class FilterWindow(xbmcgui.WindowXML):
         if text:
             filters = {key:value for key,value in filters.items() if key in ('filter.mediatype','filter.sort')}
             filters['filter.t9'] = '|'+text if text.isdigit() else text
+        if self._grid_page:
+            filters['filter.sort'] = self._sort_method
+            filters['filter.sortorder'] = self._sort_order
         if hasattr(self, 'collection_id'):
             filters['filter.mediatype'] = 'movie'
             filters['_collection_id'] = self.collection_id
@@ -917,6 +950,127 @@ class FilterWindow(xbmcgui.WindowXML):
             self._grid_pending_right = target
             self.poster_loader.next_page()
 
+    def _update_toolbar(self):
+        """Keep panel bounds and focusable toolbar in the same GUI callback."""
+        self.setProperty('MFG.FiltersExpanded', 'true' if self._filters_expanded else 'false')
+        self.setProperty('MFG.SortOpen', 'true' if self._sort_open else 'false')
+        for index, (method, label, _default_order) in enumerate(SORT_OPTIONS):
+            arrow = ('↑' if self._sort_order == 'ascending' else '↓') if method == self._sort_method else ''
+            self.setProperty('MFG.SortOption.%d' % index, label)
+            self.setProperty('MFG.SortArrow.%d' % index, arrow)
+            if method == self._sort_method:
+                self.setProperty('MFG.SortLabel', label + ' ' + arrow)
+        self.setProperty('MFG.FilterLabel', '筛选 ▴' if self._filters_expanded else '筛选 ▾')
+        panel = self.getControl(9999)
+        top = 125 + len(self._active_filter_rows) * 45 if self._has_filter_toolbar and self._filters_expanded else 90
+        panel.setPosition(30, top)
+        panel.setHeight(1080 - top)
+        if self._has_filter_toolbar:
+            signature = tuple(self._active_filter_rows)
+            if signature != self._filter_layout_signature:
+                wrappers = {1006:7400, 1002:7401, 1003:7402, 1004:7403, 1005:7404}
+                for index, cid in enumerate(self._active_filter_rows):
+                    self.getControl(wrappers[cid]).setPosition(0, index * 45)
+                    previous = self._facet_row_buttons[self._active_filter_rows[index-1]][0] if index else 7201
+                    following = self._facet_row_buttons[self._active_filter_rows[index+1]][0] if index+1 < len(signature) else 9999
+                    # grouplists have no Python wrapper; their button controls do.
+                    for button_id in self._facet_row_buttons[cid]:
+                        button = self.getControl(button_id)
+                        button.controlUp(self.getControl(previous))
+                        button.controlDown(self.getControl(following))
+                self._filter_layout_signature = signature
+            first = self._facet_row_buttons[self._active_filter_rows[0]][0] if self._filters_expanded and self._active_filter_rows else 9999
+            for button_id in (7200, 7201):
+                self.getControl(button_id).controlDown(self.getControl(first))
+
+    def bind_filter_facets(self, facets, generation):
+        """Post primitive metadata; native layout/focus changes stay on the GUI thread."""
+        self._facet_queue.put((generation, facets))
+        xbmc.executebuiltin('SendClick(%d,7195)' % self._window_id)
+
+    def _apply_filter_facets(self):
+        while True:
+            try:
+                generation, facets = self._facet_queue.get_nowait()
+            except queue.Empty:
+                return
+            if not self._is_active() or not self.poster_loader.valid(generation):
+                continue
+            aliases = {'科幻': ('科幻','Sci-Fi & Fantasy'), '战争': ('战争','War & Politics'),
+                       '音乐': ('音乐','Music','音樂')}
+            known_genres = set(FILTER_MAP['filter.genre']['mapping']) - {'其他'}
+            known_genres.update(value for values in aliases.values() for value in values)
+            known_regions = set(FILTER_MAP['filter.region']['mapping']) - {'__other__'}
+            rows = [1006] if self.xml_name == 'Custom_5112_AllMovie.xml' else []
+            row_buttons = {1006:list(range(6001,6007))} if rows else {}
+            groups = [('genre',1002,'HasGenre'), ('region',1003,'HasRegion'),
+                      ('year',1004,'HasYear'), ('rating',1005,'HasRating')]
+            for field, cid, prefix in groups:
+                data = FILTER_MAP['filter.'+field]
+                available = []
+                for value, button_id in data['mapping'].items():
+                    if field == 'genre':
+                        visible = bool(facets[field]-known_genres) if value == '其他' else bool(facets[field].intersection(aliases.get(value,(value,))))
+                    elif field == 'region':
+                        visible = bool(facets[field]-known_regions) if value == '__other__' else value in facets[field]
+                    elif field == 'year':
+                        if value == 'this_year':
+                            visible = int(time.strftime('%Y')) in facets[field]
+                        elif value == 'older':
+                            visible = any(year < 1960 for year in facets[field])
+                        else:
+                            start = int(value[:4]);visible = any(start <= year <= start+9 for year in facets[field])
+                    else:
+                        bounds = {'10-9':(9,10),'9-8':(8,9),'8-7':(7,8),'7-6':(6,7),'6分以下':(0,6)}
+                        low,high = bounds[value]
+                        visible = any(low <= rating <= high if value != '6分以下' else 0 < rating < 6 for rating in facets[field])
+                    self.setProperty('MFG.%s.%d' % (prefix,button_id), 'true' if visible else 'false')
+                    if visible:
+                        available.append(button_id)
+                # A single usable option cannot narrow the category.
+                state = self.filter_state.get('filter.'+field, {})
+                selected_entries = state if isinstance(state, list) else [state]
+                has_selection = any(entry.get('value') for entry in selected_entries)
+                # Keep a reset button accessible if a category change leaves
+                # an active constraint with no matching/alternative options.
+                meaningful = (len(available) > 1 and len(facets[field]) > 1) or has_selection
+                self.setProperty('MFG.FacetRow.%d' % cid, 'true' if meaningful else 'false')
+                if meaningful:
+                    rows.append(cid)
+                    row_buttons[cid] = [data['default']] + available
+            self._active_filter_rows, self._facet_row_buttons = rows, row_buttons
+            self._filter_layout_signature = None
+            self.setProperty('MFG.FacetsReady','true')
+            self.setProperty('MFG.FacetMessage','' if rows else '当前分类暂无可用的筛选条件。')
+            self._update_toolbar()
+
+    def _toggle_sort(self):
+        self._sort_open = not self._sort_open
+        self._update_toolbar()
+        if self._sort_open:
+            selected = next(i for i, option in enumerate(SORT_OPTIONS) if option[0] == self._sort_method)
+            self.setFocusId(7220 + selected)
+        else:
+            self.setFocusId(7200)
+
+    def _select_sort(self, index):
+        method, _label, default_order = SORT_OPTIONS[index]
+        if method == self._sort_method:
+            self._sort_order = 'ascending' if self._sort_order == 'descending' else 'descending'
+        else:
+            self._sort_method, self._sort_order = method, default_order
+        self._sort_open = False
+        self._grid_pending_right = None
+        self._grid_force_first_selection = True
+        self._update_toolbar()
+        self.setFocusId(7200)
+        self.refresh_container()
+
+    def _grid_up(self):
+        # This bridge is called only at the native panel's top boundary.
+        self.setFocusId(self._facet_row_buttons[self._active_filter_rows[-1]][0]
+                       if self._has_filter_toolbar and self._filters_expanded and self._active_filter_rows else 7200)
+
     def _grid_back(self):
         if (not self._grid_page or not self._is_active()
                 or not xbmc.getCondVisibility('Container(9999).HasPrevious')):
@@ -938,6 +1092,21 @@ class FilterWindow(xbmcgui.WindowXML):
     def onAction(self, action):
         action_id = action.getId()
         button_code = action.getButtonCode()
+        if self._grid_page and action_id in (10, 92):
+            if self._sort_open:
+                self._sort_open = False
+                self._update_toolbar()
+                self.setFocusId(7200)
+                return
+            if self._filters_expanded and self.getFocusId() != 9999:
+                self._filters_expanded = False
+                self._update_toolbar()
+                self.setFocusId(7201)
+                return
+        if self._grid_page and self._sort_open and action_id in (1, 2, 3, 4):
+            if self.getFocusId() not in range(7220, 7224):
+                self._sort_open = False
+                self._update_toolbar()
         if self._grid_restore_animations:
             self.getControl(9999).setAnimations(self._grid_panel_animations[0])
             self._grid_restore_animations = False
@@ -1233,6 +1402,24 @@ class FilterWindow(xbmcgui.WindowXML):
             self._opening_child = False
 
     def onClick(self, controlId):
+        if self._grid_page:
+            if controlId == 7195:
+                self._apply_filter_facets()
+                return
+            if controlId == 7200:
+                self._toggle_sort()
+                return
+            if 7220 <= controlId <= 7223:
+                self._select_sort(controlId - 7220)
+                return
+            if controlId == 7201 and self._has_filter_toolbar:
+                self._filters_expanded = not self._filters_expanded
+                self._sort_open = False
+                self._update_toolbar()
+                return
+            if controlId == 7194:
+                self._grid_up()
+                return
         if controlId == 7193:
             self._apply_grid_binds()
             return

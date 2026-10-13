@@ -535,8 +535,8 @@ msgid "Genre Filter"
 msgstr "類型篩選"
 
 msgctxt "#32149"
-msgid "Match Management"
-msgstr "匹配管理"
+msgid "Library"
+msgstr "媒體庫"
 
 msgctxt "#32150"
 msgid "Settings"

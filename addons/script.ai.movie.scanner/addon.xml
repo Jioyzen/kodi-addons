@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<addon id="script.ai.movie.scanner" name="AI 海报刮削" version="1.8.15" provider-name="cebox">
+<addon id="script.ai.movie.scanner" name="AI 刮削入库" version="1.9.8" provider-name="Jioyzen">
   <requires>
     <import addon="xbmc.python" version="3.0.0" />
     <import addon="script.module.requests" version="2.25.0" />
@@ -10,9 +10,9 @@
   <extension point="xbmc.service" library="python/service.py" />
 
   <extension point="xbmc.addon.metadata">
-    <summary lang="zh_CN">AI 海报刮削 - 用OpenAI兼容AI从文件名提取电影名+年份，通过TMDB获取元数据直接写入Kodi数据库</summary>
-    <summary lang="zh_TW">AI 海報刮削 - 用OpenAI相容AI從檔名提取電影名稱+年份，透過TMDB獲取元數據直接寫入Kodi資料庫</summary>
-    <summary lang="en_GB">AI Movie Scraper - Extracts movie title + year from filenames using an OpenAI-compatible AI, fetches metadata via TMDB, and writes directly to the Kodi database</summary>
+    <summary lang="zh_CN">AI 刮削入库 - 电影身份核验、电视剧目录与季集匹配，TMDb 元数据与图片缓存</summary>
+    <summary lang="zh_TW">AI 刮削入庫 - 電影身分核驗、電視劇目錄與季集匹配，TMDb 元數據與圖片快取</summary>
+    <summary lang="en_GB">AI Media Scraper - Verified movie identities, directory-aware TV episode matching, TMDb metadata and artwork caching</summary>
     <description lang="en_GB">Uses an OpenAI-compatible AI to analyze video filenames and extract the correct movie title and year, then fetches full movie metadata (poster, plot, rating, cast, etc.) via the TMDB API to write directly into the Kodi database. This completely bypasses Kodi's built-in filename parsing process, resolving scraping failures caused by Chinese filenames and special tags. Multi-threaded scanning (configurable 1-24 workers), DoH-based DNS override for reliable no-VPN access from China, in-memory TMDB request caching, batched history persistence, and background poster pre-fetching.</description>
     <description lang="zh_CN">使用OpenAI兼容AI分析视频文件名，提取正确的电影名和年份，然后通过TMDB API获取完整的电影元数据（海报、简介、评分、演员等），直接写入Kodi数据库。完全绕过Kodi自带的文件名解析流程，解决中文文件名、特殊标签导致刮削失败的问题。多线程扫描（可配置1-24并发）、DoH免科学上网DNS解析、TMDB请求内存缓存、历史批量落盘、海报后台预取，大幅提升刮削速度。</description>
     <description lang="zh_TW">使用OpenAI相容AI分析影片檔名，提取正確的電影名稱和年份，然後透過TMDB API獲取完整的電影元數據（海報、簡介、評分、演員等），直接寫入Kodi資料庫。完全繞過Kodi內建的檔名解析流程，解決中文檔名、特殊標籤導致刮削失敗的問題。多執行緒掃描（可配置1-24並發）、DoH免科學上網DNS解析、TMDB請求記憶體快取、歷史批次寫入、海報背景預取，大幅提升刮削速度。</description>
@@ -20,5 +20,5 @@
     <assets>
       <icon>resources/icon.png</icon>
     </assets>
-  <news>Jioyzen 维护版：适配 Kodi 22 / CoreELEC Amlogic-no，包含本分支已验证的修复；移除 script.module.cebox 依赖。</news></extension>
+  <news>Jioyzen 维护版：适配 Kodi 22 / CoreELEC Amlogic-no，包含本分支已验证的修复；独立运行，不依赖外部系统定制模块。</news></extension>
 </addon>

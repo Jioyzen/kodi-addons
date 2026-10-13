@@ -5,6 +5,7 @@ import json
 import os
 import threading
 import time
+from task_state import task_lock, TaskBusy
 
 import dns_override  # DoH bypass GFW DNS pollution for TMDB (incl. image CDN)
 
@@ -42,9 +43,21 @@ def _is_enabled():
 
 
 def _do_scan():
+    if os.path.exists(os.path.join(DATA_PATH, 'reset-pending.json')):
+        log('Pending library reset; auto-scan paused.')
+        return 0, 0, 0, 0
+    try:
+        with task_lock(DATA_PATH):
+            return _do_scan_unlocked()
+    except TaskBusy:
+        log('Another scanner/cache/reset task is running; auto-scan skipped.')
+        return 0, 0, 0, 0
+
+
+def _do_scan_unlocked():
     """Refresh all directories, scan if new files found.
     Returns (success, merged, failed, new_count)."""
-    from main import refresh_directory_files, _run_scan
+    from main import refresh_directory_files, _run_scan, _needs_scan
 
     history = _load_history()
     dirs = list(history.get('directories', {}).keys())
@@ -90,7 +103,7 @@ def _do_scan():
         dir_files = history.get('directories', {}).get(dirpath, {}).get('files', {})
         dir_has_work = False
         for filepath, info in dir_files.items():
-            if info.get('status') in ('pending', 'failed'):
+            if _needs_scan(info):
                 pending_count += 1
                 if not xbmcvfs.exists(filepath):
                     continue

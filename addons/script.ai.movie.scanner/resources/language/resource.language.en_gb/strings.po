@@ -12,7 +12,7 @@ msgstr ""
 # ==========================================
 msgctxt "#600"
 msgid "AI Movie Scanner"
-msgstr "AI Poster Scraper"
+msgstr "AI Media Scraper"
 
 msgctxt "#32001"
 msgid "AI Settings"
@@ -113,16 +113,16 @@ msgid "[COLOR=FFFF4444][B]Stop Scan[/B][/COLOR]"
 msgstr "[COLOR=FFFF4444][B]Stop Scan[/B][/COLOR]"
 
 msgctxt "#32023"
-msgid "[B]Cache Images[/B]"
-msgstr "[B]Cache Images[/B]"
+msgid "[B]Cache Poster Images[/B]"
+msgstr "[B]Cache Poster Images[/B]"
 
 msgctxt "#32024"
 msgid "Settings"
 msgstr "Settings"
 
 msgctxt "#32025"
-msgid "[B]Refresh All Directories[/B]"
-msgstr "[B]Refresh All Directories[/B]"
+msgid "[B]Scan Library Files[/B]"
+msgstr "[B]Scan Library Files[/B]"
 
 msgctxt "#32026"
 msgid "[COLOR=FFFF4444][B]Clear All Data[/B][/COLOR]"
@@ -232,7 +232,7 @@ msgstr "Remove directory and all associated database records?"
 
 msgctxt "#32052"
 msgid "Clear all poster data? This cannot be undone!"
-msgstr "Clear all poster data? This cannot be undone!"
+msgstr "Delete all Kodi video-library entries, associated artwork cache and this add-on’s scan history? Media files, API keys and settings are kept. This cannot be undone."
 
 msgctxt "#32053"
 msgid "Please add a directory first"
@@ -655,3 +655,75 @@ msgstr ""
 msgctxt "#32168"
 msgid "The candidate identity could not be verified against the original title and year (%s). Please match manually."
 msgstr "The candidate identity could not be verified against the original title and year (%s). Please match manually."
+
+msgctxt "#32300"
+msgid "Clearing video-library entries and artwork cache…"
+msgstr "Clearing video-library entries and artwork cache…"
+
+msgctxt "#32301"
+msgid "Stop playback, scanning and caching first. Run Clear All Poster Data again to resume an interrupted reset."
+msgstr "Stop playback, scanning and caching first. Run Clear All Poster Data again to resume an interrupted reset."
+
+msgctxt "#32302"
+msgid "Reset incomplete. Completed deletions cannot be undone; run reset again to continue. See the Kodi log."
+msgstr "Reset incomplete. Completed deletions cannot be undone; run reset again to continue. See the Kodi log."
+
+msgctxt "#32400"
+msgid "Content type in this directory"
+msgstr "Content type in this directory"
+
+msgctxt "#32401"
+msgid "Auto-detect"
+msgstr "Auto-detect"
+
+msgctxt "#32402"
+msgid "Apply the selected TV show"
+msgstr "Apply the selected TV show"
+
+msgctxt "#32403"
+msgid "All %d video files in this show directory"
+msgstr "All %d video files in this show directory"
+
+msgctxt "#32404"
+msgid "Skipped"
+msgstr "Skipped"
+
+msgctxt "#32405"
+msgid "This is extra content and will not be scraped automatically as a main episode."
+msgstr "This is extra content and will not be scraped automatically as a main episode."
+
+msgctxt "#32406"
+msgid "Only this file"
+msgstr "Only this file"
+
+msgctxt "#32407"
+msgid "Independent numbering of an edited version"
+msgstr "Independent numbering of an edited version"
+
+msgctxt "#32408"
+msgid "Enter show title or TMDb ID"
+msgstr "Enter show title or TMDb ID"
+
+msgctxt "#32409"
+msgid "Unknown episodes"
+msgstr "Unknown episodes"
+
+msgctxt "#32411"
+msgid "Previous page"
+msgstr "Previous page"
+
+msgctxt "#32412"
+msgid "Next page"
+msgstr "Next page"
+
+msgctxt "#32413"
+msgid "Scan Library Files"
+msgstr "Scan Library Files"
+
+msgctxt "#32414"
+msgid "The file is no longer in this add-on library. Scan the directory again."
+msgstr "The file is no longer in this add-on library. Scan the directory again."
+
+msgctxt "#32415"
+msgid "This directory contains different shows. Organize them into separate show directories before matching."
+msgstr "This directory contains different shows. Organize them into separate show directories before matching."

@@ -23,7 +23,7 @@ def get_skin_name():
         skin_name = "horizon"
     elif "fuse" in current_skin_id:
         skin_name = "fuse"
-    elif "estuary" in current_skin_id or current_skin_id == "skin.cebox":
+    elif "estuary" in current_skin_id or current_skin_id == "skin.embuary.mod.jioyzen":
         skin_name = "estuary"
     elif "zephyr" in current_skin_id:
         skin_name = "zephyr"

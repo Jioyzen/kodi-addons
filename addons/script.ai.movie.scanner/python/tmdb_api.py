@@ -860,7 +860,7 @@ def _parse_movie_data(data):
     vote_avg = data.get('vote_average', 0) or 0
     vote_count = data.get('vote_count', 0) or 0
     if vote_avg and vote_count:
-        ratings['tmdb'] = {'rating': float(vote_avg), 'votes': int(vote_count)}
+        ratings['tmdb'] = {'rating': float(vote_avg), 'votes': int(vote_count), 'default': True}
 
     # Images - use full TMDB images arrays (sorted by vote_average)
     images = data.get('images', {})
@@ -979,7 +979,7 @@ def _parse_tv_data(data):
     vote_avg = data.get('vote_average', 0) or 0
     vote_count = data.get('vote_count', 0) or 0
     if vote_avg and vote_count:
-        ratings['tmdb'] = {'rating': float(vote_avg), 'votes': int(vote_count)}
+        ratings['tmdb'] = {'rating': float(vote_avg), 'votes': int(vote_count), 'default': True}
 
     # Images - use full TMDB images arrays
     images = data.get('images', {})
@@ -1004,11 +1004,12 @@ def _parse_tv_data(data):
     seasons = []
     for s in (data.get('seasons') or []):
         sn = s.get('season_number', 0)
-        if sn > 0:
+        if sn >= 0:
             seasons.append({
                 'season_number': sn,
                 'name': s.get('name', 'Season %d' % sn),
                 'episode_count': s.get('episode_count', 0),
+                'air_date': s.get('air_date', ''),
             })
 
     return {
@@ -1019,6 +1020,48 @@ def _parse_tv_data(data):
         'cast': cast,
         'seasons': seasons,
     }
+
+
+def get_tv_season_details(tmdb_id, season_number, api_key, language='zh-CN'):
+    """Fetch complete episode metadata once per season, not once per video.
+
+    A missing season/episode remains an explicit matching failure. Never turn
+    a 404 into a fabricated episode with the requested number.
+    """
+    cache_key = ('season_detail', tmdb_id, season_number, language)
+    cached = _cache_get(_details_cache, cache_key)
+    if cached is not None:
+        return cached
+    url = TMDB_TV_URL.format(tmdb_id) + '/season/%d' % season_number
+    params = {'api_key':api_key, 'language':language, 'append_to_response':'credits'}
+    for attempt in (1,2):
+        try:
+            response = _tmdb_get(url, params=params, timeout=(4,15))
+            if response.status_code == 404:
+                return None
+            if response.status_code != 200:
+                if attempt == 2:
+                    _log(xbmc.LOGERROR, 'TMDB season %s/%s HTTP %s' % (tmdb_id,season_number,response.status_code))
+                continue
+            data = response.json()
+            episodes = {}
+            regular_cast = (data.get('credits') or {}).get('cast', [])
+            for raw in data.get('episodes') or []:
+                number = int(raw.get('episode_number',0))
+                if number <= 0:
+                    continue
+                raw = dict(raw)
+                raw['credits'] = {'cast':regular_cast, 'crew':raw.get('crew') or []}
+                episodes[number] = _parse_episode_data(raw, season_number, number)
+            result = {'season_number':season_number, 'name':data.get('name',''),
+                      'episodes':episodes}
+            _cache_put(_details_cache,cache_key,result)
+            return result
+        except Exception as error:
+            if attempt == 2:
+                # Requests exceptions may contain API-key-bearing URLs.
+                _log(xbmc.LOGERROR,'TMDB season metadata request failed: %s' % type(error).__name__)
+    return None
 
 
 def get_tv_season_episodes(tmdb_id, season_number, api_key, language='zh-CN'):
@@ -1112,6 +1155,8 @@ def _parse_episode_data(data, season_number, episode_number):
 
     # External IDs from episode
     uniqueids = {}
+    if data.get('id'):
+        uniqueids['tmdb'] = str(data['id'])
     ext_ids = data.get('external_ids', {})
     for id_type in ('imdb', 'tmdb', 'tvdb'):
         val = ext_ids.get(id_type, '')
@@ -1123,7 +1168,7 @@ def _parse_episode_data(data, season_number, episode_number):
     vote_avg = data.get('vote_average', 0) or 0
     vote_count = data.get('vote_count', 0) or 0
     if vote_avg and vote_count:
-        ratings['tmdb'] = {'rating': float(vote_avg), 'votes': int(vote_count)}
+        ratings['tmdb'] = {'rating': float(vote_avg), 'votes': int(vote_count), 'default': True}
 
     # Episode still image
     posters = []

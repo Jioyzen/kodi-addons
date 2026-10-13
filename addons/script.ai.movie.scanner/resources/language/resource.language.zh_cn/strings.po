@@ -12,7 +12,7 @@ msgstr ""
 # ==========================================
 msgctxt "#600"
 msgid "AI Movie Scanner"
-msgstr "AI 海报刮削"
+msgstr "AI 刮削入库"
 
 msgctxt "#32001"
 msgid "AI Settings"
@@ -113,16 +113,16 @@ msgid "[COLOR=FFFF4444][B]Stop Scan[/B][/COLOR]"
 msgstr "[COLOR=FFFF4444][B]■ 停止扫描[/B][/COLOR]"
 
 msgctxt "#32023"
-msgid "[B]Cache Images[/B]"
-msgstr "[B]缓存图片[/B]"
+msgid "[B]Cache Poster Images[/B]"
+msgstr "[B]缓存海报图片[/B]"
 
 msgctxt "#32024"
 msgid "Settings"
 msgstr "设置"
 
 msgctxt "#32025"
-msgid "[B]Refresh All Directories[/B]"
-msgstr "[B]↻ 刷新全部目录[/B]"
+msgid "[B]Scan Library Files[/B]"
+msgstr "[B]扫描媒体库文件[/B]"
 
 msgctxt "#32026"
 msgid "[COLOR=FFFF4444][B]Clear All Data[/B][/COLOR]"
@@ -232,7 +232,7 @@ msgstr "确定要移除该目录吗？这将同时删除该目录下所有影片
 
 msgctxt "#32052"
 msgid "Clear all poster data? This cannot be undone!"
-msgstr "确定要清除所有海报数据吗？操作不可恢复！"
+msgstr "将删除整个 Kodi 视频媒体库的入库记录、关联的海报及演员图片缓存，以及本插件的扫描记录。保留片源文件、API 密钥和设置。操作不可恢复，确定继续吗？"
 
 msgctxt "#32053"
 msgid "Please add a directory first"
@@ -654,3 +654,75 @@ msgstr "同名同年存在多个候选：%s (%s)：%s。请手动匹配确认。
 msgctxt "#32168"
 msgid "The candidate identity could not be verified against the original title and year (%s). Please match manually."
 msgstr "原始片名、年份与候选身份无法充分核实（%s），请手动匹配确认。"
+
+msgctxt "#32300"
+msgid "Clearing video-library entries and artwork cache…"
+msgstr "正在清理视频入库记录及海报、演员图片缓存…"
+
+msgctxt "#32301"
+msgid "Stop playback, scanning and caching first. Run Clear All Poster Data again to resume an interrupted reset."
+msgstr "请先停止播放、扫描或图片缓存任务。若上次清理中断，请再次执行“清除所有海报数据”。"
+
+msgctxt "#32302"
+msgid "Reset incomplete. Completed deletions cannot be undone; run reset again to continue. See the Kodi log."
+msgstr "清理未完成。已完成的删除无法撤销；再次执行可继续清理。详情见 Kodi 日志。"
+
+msgctxt "#32400"
+msgid "Content type in this directory"
+msgstr "目录中的内容类型"
+
+msgctxt "#32401"
+msgid "Auto-detect"
+msgstr "自动识别"
+
+msgctxt "#32402"
+msgid "Apply the selected TV show"
+msgstr "应用本次剧集匹配"
+
+msgctxt "#32403"
+msgid "All %d video files in this show directory"
+msgstr "同目录的全部 %d 个视频文件"
+
+msgctxt "#32404"
+msgid "Skipped"
+msgstr "已略过"
+
+msgctxt "#32405"
+msgid "This is extra content and will not be scraped automatically as a main episode."
+msgstr "这是附加内容，不会自动当作电视剧正片刮削。"
+
+msgctxt "#32406"
+msgid "Only this file"
+msgstr "仅当前文件"
+
+msgctxt "#32407"
+msgid "Independent numbering of an edited version"
+msgstr "精编版独立编号"
+
+msgctxt "#32408"
+msgid "Enter show title or TMDb ID"
+msgstr "输入剧名或 TMDb ID"
+
+msgctxt "#32409"
+msgid "Unknown episodes"
+msgstr "未知集"
+
+msgctxt "#32411"
+msgid "Previous page"
+msgstr "上一页"
+
+msgctxt "#32412"
+msgid "Next page"
+msgstr "下一页"
+
+msgctxt "#32413"
+msgid "Scan Library Files"
+msgstr "扫描媒体库文件"
+
+msgctxt "#32414"
+msgid "The file is no longer in this add-on library. Scan the directory again."
+msgstr "文件已不在插件媒体库中，请重新扫描目录。"
+
+msgctxt "#32415"
+msgid "This directory contains different shows. Organize them into separate show directories before matching."
+msgstr "该目录包含多部不同的剧，请按独立剧目录管理后再匹配。"

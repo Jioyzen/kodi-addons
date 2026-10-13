@@ -33,21 +33,45 @@
         </setting>
         <setting id="ai_api_base" type="string" label="32002" help="">
           <level>0</level>
-          <default>https://api.deepseek.com/v1</default>
+          <default>https://api.deepseek.com</default>
+          <constraints>
+            <allowempty>true</allowempty>
+          </constraints>
+          <dependencies>
+            <dependency type="enable">
+              <condition operator="is" setting="ai_enabled">true</condition>
+            </dependency>
+          </dependencies>
           <control type="edit" format="string">
             <heading>$ADDON[script.ai.movie.scanner 32002]</heading>
           </control>
         </setting>
         <setting id="ai_api_key" type="string" label="32003" help="">
           <level>0</level>
-		  <default></default>
+          <default></default>
+          <constraints>
+            <allowempty>true</allowempty>
+          </constraints>
+          <dependencies>
+            <dependency type="enable">
+              <condition operator="is" setting="ai_enabled">true</condition>
+            </dependency>
+          </dependencies>
           <control type="edit" format="string">
             <heading>$ADDON[script.ai.movie.scanner 32003]</heading>
           </control>
         </setting>
         <setting id="ai_model" type="string" label="32170" help="">
           <level>0</level>
-          <default>deepseek-v4-flash</default>
+          <default>deepseek-flash</default>
+          <constraints>
+            <allowempty>true</allowempty>
+          </constraints>
+          <dependencies>
+            <dependency type="enable">
+              <condition operator="is" setting="ai_enabled">true</condition>
+            </dependency>
+          </dependencies>
           <control type="edit" format="string">
             <heading>$ADDON[script.ai.movie.scanner 32170]</heading>
           </control>

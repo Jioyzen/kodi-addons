@@ -535,8 +535,8 @@ msgid "Genre Filter"
 msgstr "Genre Filter"
 
 msgctxt "#32149"
-msgid "Match Management"
-msgstr "Match Management"
+msgid "Library"
+msgstr "Library"
 
 msgctxt "#32150"
 msgid "Settings"
