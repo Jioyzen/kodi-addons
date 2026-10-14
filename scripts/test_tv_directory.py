@@ -33,13 +33,13 @@ class UnknownTests(unittest.TestCase):
         c=build_tv_contexts([p])[p]
         self.assertEqual((c['title'],c['kind'],c['show_root']),('示例剧','extra','/shows/示例剧.2020/'))
         plan=self.session([p]).prepare_file(p)['plan']
-        self.assertEqual((plan['mode'],plan['season']),('local_unmatched',2))
+        self.assertEqual((plan['mode'],plan['season']),('local_unmatched',1))
 
     def test_numbered_interview_is_not_assigned_official_plot(self):
         p='/shows/示例剧.2020/01 访谈.mkv'
         prepared=self.session([p]).prepare_file(p)
         ep=prepared['episodes'][0][2]
-        self.assertEqual(ep['season_name'],'未知集')
+        self.assertEqual(ep['season_name'],'')
         self.assertEqual(ep['uniqueids'],{})
         self.assertIn('01 访谈',ep['info']['title'])
 

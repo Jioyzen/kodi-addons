@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon id="weather.jioyzen" name="天气卡片" version="0.5.3" provider-name="Jioyzen">
+  <requires><import addon="xbmc.python" version="3.0.0"/></requires>
+  <extension point="xbmc.python.weather" library="default.py"/>
+  <extension point="xbmc.python.script" library="configure.py"><provides>executable</provides></extension>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="zh_CN">国内出口 IP 定位与轻量天气数据</summary>
+    <summary lang="en_GB">Domestic IP location and lightweight weather data</summary>
+    <description lang="zh_CN">国内出口 IP 定位到城市，提供 中国天气网 天气和桌面卡片数据。由 Kodi 更新，支持离线缓存、本地天气图标，无后台常驻服务。</description>
+    <description lang="en_GB">City weather and home card data with domestic IP lookup, China Weather, local icons and offline cache. Updated by Kodi without a background service.</description>
+    <news>首个仓库发布：直接读取中国天气网，无需账户和密钥；国内 IP 市级定位，中文、拼音首字母及全拼搜索城市／区县；保存手动位置，自动模式清除旧选择；离线缓存与缺失字段隐藏。</news>
+    <platform>all</platform><license>GPL-2.0-or-later</license>
+    <assets><icon>resources/icon.png</icon></assets>
+  </extension>
+</addon>

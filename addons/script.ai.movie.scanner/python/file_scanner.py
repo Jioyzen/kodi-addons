@@ -26,7 +26,11 @@ def _log(level, msg):
     xbmc.log(msg='%s: %s' % (ADDONID, redact_text(msg)), level=level)
 
 
-def find_video_files(root_path):
+class ScanIncomplete(RuntimeError):
+    pass
+
+
+def find_video_files(root_path,cancelled=lambda:False):
     """Recursively find all video files under root_path using xbmcvfs.
     Detects BDMV structures and returns parent folder path (like Kodi).
     Returns a list of full paths.
@@ -45,12 +49,18 @@ def find_video_files(root_path):
             pass
         return False
 
-    def _scan(path):
+    def _scan(path,depth=0):
+        if cancelled():
+            raise ScanIncomplete('Directory traversal cancelled')
+        if depth>128:
+            raise ScanIncomplete('Directory depth exceeded')
         try:
             dirs, files = xbmcvfs.listdir(path)
         except Exception as e:
             _log(xbmc.LOGERROR, 'Error listing %s: %s' % (path, e))
-            return
+            raise ScanIncomplete('Directory listing failed') from e
+        if not dirs and not files and not xbmcvfs.exists(path):
+            raise ScanIncomplete('Directory unavailable')
 
         # Check for BDMV structure in this directory
         if any(d.lower() == 'bdmv' for d in dirs) and _is_bdmv(path):
@@ -75,7 +85,7 @@ def find_video_files(root_path):
             if d.lower() in ('bdmv', 'certificate', 'auxdata', 'backup'):
                 continue
             sub_path = path.rstrip('/') + '/' + d + '/'
-            _scan(sub_path)
+            _scan(sub_path,depth+1)
 
     # Ensure directory has trailing slash for xbmcvfs
     if not root_path.endswith('/'):

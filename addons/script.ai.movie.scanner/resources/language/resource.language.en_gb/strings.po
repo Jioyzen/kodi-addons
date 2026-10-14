@@ -548,8 +548,8 @@ msgid "Pending matches (%d)"
 msgstr "Pending matches (%d)"
 
 msgctxt "#32162"
-msgid "Pending files (%d) - pick one to match manually"
-msgstr "Pending files (%d) - pick one to match manually"
+msgid "Pending movies / show directories (%d) - pick one to match manually"
+msgstr "Pending movies / show directories (%d) - pick one to match manually"
 
 msgctxt "#32163"
 msgid "No matches need manual confirmation"
@@ -727,3 +727,7 @@ msgstr "The file is no longer in this add-on library. Scan the directory again."
 msgctxt "#32415"
 msgid "This directory contains different shows. Organize them into separate show directories before matching."
 msgstr "This directory contains different shows. Organize them into separate show directories before matching."
+
+msgctxt "#32416"
+msgid "The operation could not finish. Check local storage and scan history. Existing records will not be cleared automatically."
+msgstr "The operation could not finish. Check local storage and scan history. Existing records will not be cleared automatically."

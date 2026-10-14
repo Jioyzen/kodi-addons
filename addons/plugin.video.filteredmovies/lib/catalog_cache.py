@@ -17,7 +17,7 @@ def revision():
     return json.dumps(values, separators=(',', ':'))
 
 def key(filters, limit, offset):
-    return hashlib.sha256(json.dumps(['catalog-sort-v5', filters or {}, limit, offset], sort_keys=True,
+    return hashlib.sha256(json.dumps(['catalog-genre-v8', filters or {}, limit, offset], sort_keys=True,
                                     ensure_ascii=False).encode()).hexdigest()
 
 def _connect():
@@ -25,9 +25,13 @@ def _connect():
     conn = sqlite3.connect(os.path.join(ADDON_DATA_PATH, 'catalog-v3.sqlite'), timeout=.15)
     # Disposable cache: never delay the UI for durable fsync writes.
     # Kodi's library remains read-only; a failed cache is simply bypassed.
-    conn.execute('PRAGMA synchronous=OFF')
-    conn.execute('PRAGMA journal_mode=MEMORY')
-    conn.execute('CREATE TABLE IF NOT EXISTS cache (key TEXT PRIMARY KEY, rev TEXT, ts REAL, data TEXT)')
+    try:
+        conn.execute('PRAGMA synchronous=OFF')
+        conn.execute('PRAGMA journal_mode=MEMORY')
+        conn.execute('CREATE TABLE IF NOT EXISTS cache (key TEXT PRIMARY KEY, rev TEXT, ts REAL, data TEXT)')
+    except Exception:
+        conn.close()
+        raise
     return conn
 
 def get(cache_key, rev):
@@ -36,7 +40,10 @@ def get(cache_key, rev):
         conn = _connect()
         row = conn.execute('SELECT data FROM cache WHERE key=? AND rev=? AND ts>?',
                            (cache_key, rev, time.time()-60)).fetchone()
-        return json.loads(row[0]) if row else None
+        if not row:
+            return None
+        data = json.loads(row[0])
+        return data if isinstance(data,list) and len(data)<=240 and all(isinstance(r,dict) for r in data) else None
     except (OSError, sqlite3.Error, ValueError):
         return None
     finally:

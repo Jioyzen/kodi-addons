@@ -5,6 +5,7 @@ from ai_database import current_database
 import os
 import re
 import sqlite3
+from path_display import redact_text
 import hashlib
 import json
 import xbmc
@@ -33,7 +34,7 @@ _SEASON_DIR_RE = re.compile(
 
 
 def _log(level, msg):
-    xbmc.log(msg='%s: %s' % (ADDONID, msg), level=level)
+    xbmc.log(msg='%s: %s' % (ADDONID, redact_text(msg)), level=level)
 
 
 def _art_url(url, size):
@@ -144,9 +145,11 @@ class TvShowDatabase:
 
     def close(self):
         if self.conn:
-            self.conn.commit()
-            self.conn.close()
-            self.conn = None
+            try:
+                if self.conn.in_transaction:self.conn.rollback()
+            finally:
+                self.conn.close()
+                self.conn = None
 
     def commit(self):
         if self.conn:
@@ -208,6 +211,15 @@ class TvShowDatabase:
                 for (old_id,) in self.conn.execute('SELECT idEpisode FROM episode WHERE idFile=?',(id_file,)).fetchall():
                     if old_id not in ids:
                         _delete_episode(self.conn.cursor(),old_id)
+                # Remove the earlier artificial supplement season only when
+                # its final episode has moved. Keep every populated season.
+                empty = self.conn.execute(
+                    "SELECT idSeason FROM seasons s WHERE idShow=? AND name='未知集' "
+                    "AND NOT EXISTS(SELECT 1 FROM episode e WHERE e.idSeason=s.idSeason)",
+                    (show_id,)).fetchall()
+                for (season_id,) in empty:
+                    self.conn.execute("DELETE FROM art WHERE media_type='season' AND media_id=?",(season_id,))
+                    self.conn.execute('DELETE FROM seasons WHERE idSeason=?',(season_id,))
                 self.conn.commit()
                 if len(_SHOW_METADATA_CACHE)>=128:
                     _SHOW_METADATA_CACHE.clear()

@@ -10,13 +10,16 @@ import sqlite3
 import threading
 import time
 import urllib.parse
-from concurrent.futures import ThreadPoolExecutor, as_completed
+import tempfile
+from contextlib import closing
+from concurrent.futures import ThreadPoolExecutor, as_completed, wait, FIRST_COMPLETED
 
 import requests
 import xbmc
 import xbmcaddon
 import xbmcgui
 import xbmcvfs
+from path_display import redact_text
 
 ADDON = xbmcaddon.Addon()
 ADDONID = ADDON.getAddonInfo('id')
@@ -27,7 +30,7 @@ def L(string_id):
 
 
 def _log(msg, level=xbmc.LOGINFO):
-    xbmc.log('[%s] ImageCacher: %s' % (ADDONID, msg), level)
+    xbmc.log('[%s] ImageCacher: %s' % (ADDONID, redact_text(msg)), level)
 
 
 def _get_kodi_texture_hash(url):
@@ -120,6 +123,7 @@ class ImageCacher:
         })
         self.db_path = current_database('Textures')
         self.db_lock = threading.Lock()
+        self.cancel = threading.Event()
 
     def _get_video_items(self):
         movies = []
@@ -130,22 +134,22 @@ class ImageCacher:
             req = {"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies",
                    "params": {"properties": ["art"]}, "id": 1}
             res = json.loads(xbmc.executeJSONRPC(json.dumps(req)))
-            movies = res.get("result", {}).get("movies", [])
+            movies = res.get("result", {}).get("movies") or []
 
             req = {"jsonrpc": "2.0", "method": "VideoLibrary.GetTVShows",
                    "params": {"properties": ["art"]}, "id": 2}
             res = json.loads(xbmc.executeJSONRPC(json.dumps(req)))
-            tvshows = res.get("result", {}).get("tvshows", [])
+            tvshows = res.get("result", {}).get("tvshows") or []
 
             req = {"jsonrpc": "2.0", "method": "VideoLibrary.GetEpisodes",
                    "params": {"properties": ["art"]}, "id": 3}
             res = json.loads(xbmc.executeJSONRPC(json.dumps(req)))
-            episodes = res.get("result", {}).get("episodes", [])
+            episodes = res.get("result", {}).get("episodes") or []
 
             req = {"jsonrpc": "2.0", "method": "VideoLibrary.GetMovieSets",
                    "params": {"properties": ["art"]}, "id": 4}
             res = json.loads(xbmc.executeJSONRPC(json.dumps(req)))
-            movie_sets = res.get("result", {}).get("sets", [])
+            movie_sets = res.get("result", {}).get("sets") or []
         except Exception:
             pass
         return movies + tvshows + episodes + movie_sets
@@ -153,11 +157,8 @@ class ImageCacher:
     def _check_exists(self, kodi_url):
         try:
             with self.db_lock:
-                conn = sqlite3.connect(self.db_path, timeout=5.0)
-                c = conn.cursor()
-                c.execute("SELECT cachedurl FROM texture WHERE url=?", (kodi_url,))
-                row = c.fetchone()
-                conn.close()
+                with closing(sqlite3.connect(self.db_path, timeout=5.0)) as conn:
+                    row=conn.execute("SELECT cachedurl FROM texture WHERE url=?",(kodi_url,)).fetchone()
                 if row:
                     physical_path = xbmcvfs.translatePath(
                         "special://thumbnails/%s" % row[0])
@@ -172,26 +173,21 @@ class ImageCacher:
             # Compute URL-based hash so Kodi doesn't treat image as "unverified"
             img_hash = _get_kodi_texture_hash(kodi_url)
             with self.db_lock:
-                conn = sqlite3.connect(self.db_path, timeout=10.0)
-                c = conn.cursor()
-                # INSERT OR REPLACE avoids breaking Kodi's existing texture tracking
-                c.execute(
-                    "INSERT OR REPLACE INTO texture (url, cachedurl, imagehash, "
-                    "lasthashcheck) VALUES (?, ?, ?, datetime('now', 'localtime'))",
-                    (kodi_url, cachedurl, img_hash))
-                texture_id = c.lastrowid
-                # Only insert sizes if texture_id is new (not a replace)
-                c.execute(
-                    "SELECT idtexture FROM sizes WHERE idtexture=? AND size=1",
-                    (texture_id,))
-                if not c.fetchone():
-                    c.execute(
-                        "INSERT INTO sizes (idtexture, size, width, height, "
-                        "usecount, lastusetime) "
-                        "VALUES (?, 1, ?, ?, 1, datetime('now', 'localtime'))",
-                        (texture_id, width, height))
-                conn.commit()
-                conn.close()
+                with closing(sqlite3.connect(self.db_path,timeout=10.0)) as conn,conn:
+                    conn.execute('BEGIN IMMEDIATE')
+                    old=conn.execute('SELECT id FROM texture WHERE url=?',(kodi_url,)).fetchone()
+                    if old:
+                        texture_id=old[0]
+                        conn.execute("UPDATE texture SET cachedurl=?,imagehash=?,lasthashcheck=datetime('now','localtime') WHERE id=?",
+                            (cachedurl,img_hash,texture_id))
+                    else:
+                        texture_id=conn.execute("INSERT INTO texture(url,cachedurl,imagehash,lasthashcheck) VALUES(?,?,?,datetime('now','localtime'))",
+                            (kodi_url,cachedurl,img_hash)).lastrowid
+                    changed=conn.execute('UPDATE sizes SET width=?,height=? WHERE idtexture=? AND size=1',
+                        (width,height,texture_id))
+                    if not changed.rowcount:
+                        conn.execute("INSERT INTO sizes(idtexture,size,width,height,usecount,lastusetime) VALUES(?,1,?,?,1,datetime('now','localtime'))",
+                            (texture_id,width,height))
             return True
         except Exception as e:
             _log("DB write failed for %s: %s" % (kodi_url, e), xbmc.LOGERROR)
@@ -250,13 +246,15 @@ class ImageCacher:
     def _fetch_bytes(self, url, timeout=(4, 12)):
         """Single HTTP GET into memory. Returns (ok, status_or_error, data)."""
         try:
-            r = self.session.get(url, timeout=timeout, verify=False)
-            if r.status_code != 200:
-                return False, 'HTTP %d' % r.status_code, b''
-            data = r.content
-            if not data:
-                return False, 'empty response', b''
-            return True, '200', data
+            if self.cancel.is_set():return False,'canceled',b''
+            with self.session.get(url,timeout=timeout,verify=False,stream=True) as r:
+                if r.status_code!=200:return False,'HTTP %d'%r.status_code,b''
+                data=bytearray()
+                for chunk in r.iter_content(65536):
+                    if self.cancel.is_set():return False,'canceled',b''
+                    if len(data)+len(chunk)>20*1024*1024:return False,'image too large',b''
+                    data.extend(chunk)
+                return (True,'200',bytes(data)) if data else (False,'empty response',b'')
         except Exception as e:
             return False, str(e)[:80], b''
 
@@ -288,6 +286,7 @@ class ImageCacher:
                 return name, data
             return None, '%s: %s' % (name, status)
 
+        if not jobs or self.cancel.is_set():return None,None
         winner = None
         errors = []
         with ThreadPoolExecutor(max_workers=len(jobs)) as ex:
@@ -349,12 +348,19 @@ class ImageCacher:
 
     def _save_image(self, img_data, physical_path, unwrapped_url, cached_url,
                     route_name):
+        if self.cancel.is_set():return False
+        width,height=_get_image_metadata(img_data)
+        if not self._valid_image(img_data) or width<=0 or height<=0:return False
         out_dir = os.path.dirname(physical_path)
         if not os.path.exists(out_dir):
             os.makedirs(out_dir, exist_ok=True)
-        with open(physical_path, "wb") as f:
-            f.write(img_data)
-        width, height = _get_image_metadata(img_data)
+        temporary=None
+        try:
+            with tempfile.NamedTemporaryFile(dir=out_dir,prefix='.poster-cache-',delete=False) as f:
+                temporary=f.name;f.write(img_data)
+            os.replace(temporary,physical_path);temporary=None
+        finally:
+            if temporary:os.unlink(temporary)
         if self._write_to_db(unwrapped_url, cached_url, width, height):
             _log("Download OK via %s %s (%dx%d, %d bytes)"
                  % (route_name, unwrapped_url, width, height, len(img_data)))
@@ -364,6 +370,7 @@ class ImageCacher:
         return False
 
     def _download_image(self, kodi_url):
+        if self.cancel.is_set():return 'canceled'
         if not kodi_url:
             return "skipped"
 
@@ -455,6 +462,7 @@ class ImageCacher:
             url = self._build_route_url(name, templates[name], download_url)
             attempts = 1 if name == 'direct' else 2
             for attempt in range(1, attempts + 1):
+                if self.cancel.is_set():return 'canceled'
                 ok, status, img_data = self._fetch_bytes(url)
                 if ok and self._valid_image(img_data):
                     self._note_route_result(host, name, True)
@@ -473,9 +481,9 @@ class ImageCacher:
                     # Rate-limited / server error: back off longer so the
                     # proxy can recover - hammering it makes things worse.
                     if str(status).startswith(('HTTP 429', 'HTTP 5')):
-                        time.sleep(5)
+                        self.cancel.wait(5)
                     else:
-                        time.sleep(1)
+                        self.cancel.wait(1)
             # If the preferred route just tripped the fail limit, its
             # preference was dropped - continue with the remaining routes.
 
@@ -532,20 +540,17 @@ class ImageCacher:
                     urls.append(u)
         if not urls:
             _log('prefetch_art: no HTTP URLs to cache')
+            self.session.close()
             return
         _log('Background prefetch of %d art URLs (threads=%d)'
              % (len(urls), self.thread_count), xbmc.LOGINFO)
 
         def _run():
             ok = skip = fail = 0
-            with ThreadPoolExecutor(max_workers=self.thread_count) as executor:
-                for res in executor.map(self._download_image, urls):
-                    if res == "success":
-                        ok += 1
-                    elif res == "skipped":
-                        skip += 1
-                    else:
-                        fail += 1
+            for res in self._bounded_results(urls):
+                if res == "success":ok += 1
+                elif res == "skipped":skip += 1
+                elif res != 'canceled':fail += 1
             with self._STATE_LOCK:
                 stats = dict(self._SOURCE_STATS)
             _log('Prefetch done: %d OK, %d skipped, %d failed (total %d, '
@@ -555,10 +560,58 @@ class ImageCacher:
                     or 'none'),
                  xbmc.LOGINFO if fail == 0 else xbmc.LOGWARNING)
 
-        t = threading.Thread(target=_run, name='ImagePrefetch', daemon=True)
+        def _guarded_run():
+            from task_state import task_lock,TaskBusy
+            profile=xbmcvfs.translatePath(ADDON.getAddonInfo('profile'))
+            # The parent scan still holds this lock when starting the thread.
+            # Keep it for the complete cache job once the scan releases it.
+            try:
+                for _ in range(50):
+                    if self.cancel.is_set() or xbmc.Monitor().abortRequested():return
+                    try:
+                        with task_lock(profile):
+                            _run()
+                        return
+                    except TaskBusy:
+                        self.cancel.wait(.2)
+                _log('Prefetch deferred: another scanner/cache/reset task is active',xbmc.LOGWARNING)
+            finally:
+                self.session.close()
+        t = threading.Thread(target=_guarded_run, name='ImagePrefetch', daemon=True)
         t.start()
 
+    def _bounded_results(self,urls,cancelled=lambda:False):
+        """Only one live future per worker; poll cancellation between jobs."""
+        iterator=iter(urls)
+        monitor=xbmc.Monitor()
+        with ThreadPoolExecutor(max_workers=self.thread_count) as pool:
+            pending=set()
+            while True:
+                if cancelled() or monitor.abortRequested():self.cancel.set()
+                if self.cancel.is_set():
+                    for future in pending:future.cancel()
+                else:
+                    while len(pending)<self.thread_count:
+                        url=next(iterator,None)
+                        if url is None:break
+                        pending.add(pool.submit(self._download_image,url))
+                if not pending:return
+                done,pending=wait(pending,timeout=.1,return_when=FIRST_COMPLETED)
+                for future in done:
+                    if future.cancelled():continue
+                    try:yield future.result()
+                    except Exception as exc:
+                        _log('Image cache worker failed: '+type(exc).__name__,xbmc.LOGWARNING)
+                        yield 'failed'
+
     def start(self):
+        try:
+            return self._start()
+        finally:
+            self.cancel.set()
+            self.session.close()
+
+    def _start(self):
         dp = xbmcgui.DialogProgress()
         dp.create(L(32120), L(32121))
 
@@ -573,7 +626,7 @@ class ImageCacher:
             if dp.iscanceled():
                 dp.close()
                 return
-            art = m.get("art", {})
+            art = m.get("art") or {}
             for k in ["poster", "fanart", "clearlogo", "set.poster", "set.fanart"]:
                 v = art.get(k)
                 if v and isinstance(v, str) and any(
@@ -597,35 +650,23 @@ class ImageCacher:
         fail_count = 0
         canceled = False
 
-        with ThreadPoolExecutor(max_workers=self.thread_count) as executor:
-            future_to_url = {
-                executor.submit(self._download_image, url): url
-                for url in urls_to_cache}
-            for i, future in enumerate(as_completed(future_to_url)):
+        try:
+            for i,res in enumerate(self._bounded_results(urls_to_cache,dp.iscanceled)):
                 if dp.iscanceled():
                     _log("Canceled by user")
-                    for f in future_to_url:
-                        f.cancel()
+                    self.cancel.set()
                     canceled = True
-                    break
-                try:
-                    res = future.result()
-                    if res == "success":
-                        success_count += 1
-                    elif res == "skipped":
-                        skip_count += 1
-                    else:
-                        fail_count += 1
-                except Exception as exc:
-                    _log("Thread error: %s" % exc, xbmc.LOGERROR)
-                    fail_count += 1
+                if res=='success':success_count+=1
+                elif res=='skipped':skip_count+=1
+                elif res!='canceled':fail_count+=1
 
                 pct = int((i + 1) * 100 / total)
                 msg = L(32126) % (
                     total, success_count, skip_count, fail_count)
                 dp.update(pct, L(32127) + msg)
-
-        dp.close()
+        finally:
+            canceled=canceled or self.cancel.is_set() or dp.iscanceled()
+            dp.close()
         if canceled:
             xbmcgui.Dialog().ok(L(32128),
                                 L(32129) %

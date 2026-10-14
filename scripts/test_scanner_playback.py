@@ -34,9 +34,10 @@ def namespace(history,handle=-1):
        'xbmcplugin':types.SimpleNamespace(setResolvedUrl=lambda *args:resolved.append(args),addDirectoryItems=lambda handle,rows,*args:listed.extend(rows),setPluginCategory=lambda *args:None,endOfDirectory=lambda *args,**kwargs:None),
        'os':__import__('os'),'_needs_scan':lambda _:False,
        'build_url':lambda query:'plugin://script.ai.movie.scanner/?'+urlencode(private_query(query)),
-       'run_plugin_url':lambda query:'RunPlugin(plugin://script.ai.movie.scanner/?'+urlencode(private_query(query))+')','directory_label':lambda _: 'Movies[SMB]','STATUS_LABELS':{'pending':'Pending','success':'Matched'}}
+       'run_plugin_url':lambda query:'RunScript(script.ai.movie.scanner,?'+urlencode(private_query(query))+')','directory_label':lambda _: 'Movies[SMB]','STATUS_LABELS':{'pending':'Pending','success':'Matched'},
+       'json':json,'UI_LISTING':lambda rows,title:listed.extend(rows)}
     tree=ast.parse((SOURCE/'main.py').read_text())
-    nodes=[node for node in tree.body if isinstance(node,ast.FunctionDef) and node.name in ('play_media_file','view_directory')]
+    nodes=[node for node in tree.body if isinstance(node,ast.FunctionDef) and node.name in ('play_media_file','view_directory','context_menu','emit_listing')]
     exec(compile(ast.Module(body=nodes,type_ignores=[]),'playback','exec'),n)
     n.update(played=played,resolved=resolved,listed=listed)
     return n

@@ -322,7 +322,8 @@ def toggle_favourite():
         "id": 1
     }
     fav_resp = json.loads(xbmc.executeJSONRPC(json.dumps(get_fav_query)))
-    favourites = fav_resp.get("result", {}).get("favourites") or []
+    from lib.tv_catalog import favourite_entries
+    favourites = favourite_entries(fav_resp.get('result'))
     log(f"Current favourites: {favourites}")
     is_favourite = False
     if path.startswith("favourites://"):
@@ -376,6 +377,16 @@ def router(paramstring):
 
     params = dict(urllib.parse.parse_qsl(paramstring.lstrip('?')))
     mode = params.get("mode")
+
+    if mode == 'movie_details':
+        from lib.movie_details import open_movie
+        open_movie(int(params.get('movieid',0)))
+        return
+
+    if mode == 'tvshow_details':
+        from lib.tv_details import open_tvshow
+        open_tvshow(int(params.get('tvshowid', 0)))
+        return
     
     if mode == "launch_t9":
         launch_t9()

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window id="1120">
+  <defaultcontrol>9000</defaultcontrol>
+  <backgroundcolor>background</backgroundcolor>
+  <controls>
+    <!-- Only the selected skin wallpaper/pattern; app fanart is intentionally excluded. -->
+    <include>ColoredBackgroundImages</include>
+    <control type="label">
+      <left>52</left><top>44</top><width>1200</width><height>64</height>
+      <label>应用</label><font>font37</font><aligny>center</aligny>
+      <textcolor>FFFFFFFF</textcolor><shadowcolor>90000000</shadowcolor>
+    </control>
+    <control type="label">
+      <left>1540</left><top>58</top><width>328</width><height>44</height>
+      <label>$INFO[Container(9000).NumItems,, 个应用]</label><font>font25_narrow</font>
+      <align>right</align><aligny>center</aligny><textcolor>FFCDD5DF</textcolor>
+      <visible>!Container(9000).IsUpdating</visible>
+    </control>
+    <control type="panel" id="9000">
+      <left>40</left><top>148</top><width>1840</width><height>846</height>
+      <orientation>vertical</orientation>
+      <scrolltime>120</scrolltime><preloaditems>3</preloaditems>
+      <onleft>noop</onleft><onright>noop</onright><onup>noop</onup><ondown>noop</ondown>
+      <pagecontrol>9010</pagecontrol>
+      <itemlayout width="368" height="282">
+        <control type="image">
+          <left>20</left><top>18</top><width>328</width><height>185</height>
+          <texture colordiffuse="$VAR[ApplicationsCardColor]">applications/card.png</texture>
+        </control>
+        <control type="image">
+          <left>20</left><top>18</top><width>328</width><height>185</height>
+          <texture background="true" diffuse="applications/card.png" fallback="DefaultAddon.png">$VAR[ApplicationsCardArt]</texture>
+          <aspectratio>keep</aspectratio>
+        </control>
+        <control type="label">
+          <left>12</left><top>220</top><width>344</width><height>46</height>
+          <label>$INFO[ListItem.Label]</label><font>font27</font>
+          <align>center</align><aligny>center</aligny>
+          <textcolor>FFFFFFFF</textcolor><shadowcolor>90000000</shadowcolor>
+        </control>
+      </itemlayout>
+      <focusedlayout width="368" height="282">
+        <control type="group">
+          <depth>DepthContentPopout</depth>
+          <!-- Focus-only zoom: outgoing items immediately use the normal layout,
+               avoiding an overlapping reverse animation during navigation. -->
+          <animation effect="zoom" start="100" end="110" center="184,110.5" time="130" tween="sine" easing="out" reversible="false">Focus</animation>
+          <control type="image">
+            <left>20</left><top>18</top><width>328</width><height>185</height>
+            <texture colordiffuse="$VAR[ApplicationsCardColor]">applications/card.png</texture>
+          </control>
+          <control type="image">
+            <left>20</left><top>18</top><width>328</width><height>185</height>
+            <texture background="true" diffuse="applications/card.png" fallback="DefaultAddon.png">$VAR[ApplicationsCardArt]</texture>
+            <aspectratio>keep</aspectratio>
+          </control>
+          <control type="image">
+            <left>17</left><top>15</top><width>334</width><height>191</height>
+            <texture colordiffuse="button_focus">applications/outline.png</texture>
+            <visible>Control.HasFocus(9000)</visible>
+          </control>
+        </control>
+        <control type="label">
+          <left>12</left><top>220</top><width>344</width><height>46</height>
+          <label>$INFO[ListItem.Label]</label><font>font27</font>
+          <align>center</align><aligny>center</aligny>
+          <textcolor>FFFFFFFF</textcolor><shadowcolor>90000000</shadowcolor>
+        </control>
+      </focusedlayout>
+      <!-- Native directory provider handles enabled executable scripts and plugins,
+           launching them by their original Kodi paths; no hardcoded application list. -->
+      <content target="programs" sortby="label" sortorder="ascending">addons://sources/executable/</content>
+    </control>
+    <control type="scrollbar" id="9010">
+      <left>1908</left><top>160</top><width>6</width><height>820</height>
+      <texturesliderbackground colordiffuse="18FFFFFF">colors/white.png</texturesliderbackground>
+      <texturesliderbar colordiffuse="70FFFFFF">colors/white.png</texturesliderbar>
+      <texturesliderbarfocus colordiffuse="button_focus">colors/white.png</texturesliderbarfocus>
+      <textureslidernib/><textureslidernibfocus/>
+      <orientation>vertical</orientation><showonepage>false</showonepage>
+    </control>
+    <control type="label">
+      <left>400</left><top>460</top><width>1120</width><height>80</height>
+      <font>font27</font><align>center</align><aligny>center</aligny>
+      <label>暂无已启用的程序插件</label>
+      <visible>!Container(9000).IsUpdating + Integer.IsEqual(Container(9000).NumItems,0)</visible>
+    </control>
+  </controls>
+</window>

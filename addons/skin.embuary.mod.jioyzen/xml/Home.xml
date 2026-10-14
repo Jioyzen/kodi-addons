@@ -1,0 +1,221 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<window>
+  <defaultcontrol>9000</defaultcontrol>
+  <include>JioyzenSkinDefaults</include>
+  <backgroundcolor>FF16191D</backgroundcolor>
+  <controls>
+    <include>ColoredBackgroundImages</include>
+    <control type="image">
+      <left>0</left>
+      <top>0</top>
+      <width>100%</width>
+      <height>100%</height>
+      <texture>home/shade.png</texture>
+    </control>
+    <control type="label">
+      <left>80</left>
+      <top>40</top>
+      <width>500</width>
+      <height>32</height>
+      <label>CoreELEC 22.0-Piers</label>
+      <font>font12</font>
+      <textcolor>FFCDD5DF</textcolor>
+      <aligny>center</aligny>
+    </control>
+    <include>JioyzenHomeWeather</include>
+    <control type="label">
+      <right>84</right>
+      <top>38</top>
+      <width>420</width>
+      <height>85</height>
+      <label>$INFO[System.Time]</label>
+      <font>font_clock</font>
+      <textcolor>FFFFFFFF</textcolor>
+      <align>right</align>
+    </control>
+    <control type="label">
+      <right>88</right>
+      <top>128</top>
+      <width>600</width>
+      <height>50</height>
+      <label>$INFO[System.Date]</label>
+      <font>font25_narrow</font>
+      <textcolor>FFDDDDDD</textcolor>
+      <align>right</align>
+    </control>
+    <control type="button" id="9200">
+      <left>80</left>
+      <top>575</top>
+      <width>700</width>
+      <height>75</height>
+      <font>font27</font>
+      <label>正在播放：$INFO[Player.Title]</label>
+      <textoffsetx>20</textoffsetx>
+      <align>left</align>
+      <texturefocus>lists/focus.png</texturefocus>
+      <texturenofocus>lists/black.png</texturenofocus>
+      <onleft>9200</onleft>
+      <onright>9201</onright>
+      <onup>9000</onup>
+      <ondown>9000</ondown>
+      <onclick>Fullscreen</onclick>
+      <visible>Player.HasMedia</visible>
+    </control>
+    <control type="button" id="9201">
+      <right>80</right>
+      <top>575</top>
+      <width>180</width>
+      <height>75</height>
+      <font>font27</font>
+      <label>停止播放</label>
+      <texturefocus>lists/focus.png</texturefocus>
+      <texturenofocus>lists/black.png</texturenofocus>
+      <onleft>9200</onleft>
+      <onright>9200</onright>
+      <onup>9000</onup>
+      <ondown>9000</ondown>
+      <onclick>PlayerControl(Stop)</onclick>
+      <visible>Player.HasMedia</visible>
+    </control>
+    <include>JioyzenHomeGlassDock</include>
+    <control type="label">
+      <left>240</left>
+      <top>765</top>
+      <width>500</width>
+      <height>50</height>
+      <font>font37</font>
+      <label>$INFO[Container(9000).ListItem.Label]</label>
+      <textcolor>FFFFFFFF</textcolor>
+      <shadowcolor>80000000</shadowcolor>
+      <aligny>center</aligny>
+    </control>
+    <control type="list" id="9000">
+      <left>240</left>
+      <top>790</top>
+      <width>1440</width>
+      <height>216</height>
+      <orientation>horizontal</orientation>
+      <scrolltime>80</scrolltime>
+      <onleft>noop</onleft>
+      <onright>noop</onright>
+      <ondown>9000</ondown>
+      <onup condition="Player.HasMedia">9200</onup>
+      <onup condition="!Player.HasMedia">9000</onup>
+      <itemlayout width="180" height="216">
+        <control type="group">
+          <control type="image">
+            <left>38</left>
+            <top>172</top>
+            <width>104</width>
+            <height>25</height>
+            <texture>$INFO[ListItem.Property(reflection)]</texture>
+          </control>
+          <control type="image">
+            <left>38</left>
+            <top>68</top>
+            <width>104</width>
+            <height>104</height>
+            <texture>$INFO[ListItem.Icon]</texture>
+            <aspectratio>keep</aspectratio>
+          </control>
+        </control>
+      </itemlayout>
+      <focusedlayout width="180" height="216">
+        <control type="group">
+          <control type="image">
+            <left>38</left>
+            <top>172</top>
+            <width>104</width>
+            <height>25</height>
+            <texture>$INFO[ListItem.Property(reflection)]</texture>
+          </control>
+          <control type="image">
+            <left>38</left>
+            <top>68</top>
+            <width>104</width>
+            <height>104</height>
+            <texture>$INFO[ListItem.Icon]</texture>
+            <aspectratio>keep</aspectratio>
+            <animation effect="zoom" start="100" end="125" center="90,172" time="150" tween="sine" easing="out">Focus</animation>
+            <animation effect="zoom" start="125" end="100" center="90,172" time="120" tween="sine" easing="out">UnFocus</animation>
+          </control>
+          <control type="image">
+            <left>87</left>
+            <top>199</top>
+            <width>6</width>
+            <height>6</height>
+            <texture colordiffuse="button_focus">home/glass-dock/indicator.png</texture>
+            <visible>Control.HasFocus(9000)</visible>
+          </control>
+        </control>
+      </focusedlayout>
+      <content>
+        <item id="1">
+          <label>收藏</label>
+          <icon>home/glass-dock/heart.png</icon>
+          <onclick>ActivateWindow(FavouritesBrowser)</onclick>
+          <visible>!Skin.HasSetting(HomeMenuNoFavButton)</visible>
+          <property name="reflection">home/glass-dock/heart-reflection.png</property>
+        </item>
+        <item id="2">
+          <label>媒体库</label>
+          <icon>home/glass-dock/folder-open.png</icon>
+          <onclick condition="System.AddonIsEnabled(script.ai.movie.scanner)">RunAddon(script.ai.movie.scanner)</onclick>
+          <visible>!Skin.HasSetting(HomeMenuNoVideosButton)</visible>
+          <property name="reflection">home/glass-dock/folder-open-reflection.png</property>
+          <onclick condition="!System.AddonIsEnabled(script.ai.movie.scanner)">Notification(AI 刮削入库,请安装或启用 AI 刮削入库插件)</onclick>
+        </item>
+        <item id="3">
+          <label>电影</label>
+          <icon>home/glass-dock/film.png</icon>
+          <onclick condition="System.AddonIsEnabled(plugin.video.filteredmovies)">RunAddon(plugin.video.filteredmovies)</onclick>
+          <onclick condition="!System.AddonIsEnabled(plugin.video.filteredmovies)">ActivateWindow(Videos,videodb://movies/titles/,return)</onclick>
+          <visible>!Skin.HasSetting(HomeMenuNoMovieButton)</visible>
+          <property name="reflection">home/glass-dock/film-reflection.png</property>
+        </item>
+        <item id="4">
+          <label>剧集</label>
+          <icon>home/glass-dock/clapperboard.png</icon>
+          <onclick condition="System.AddonIsEnabled(plugin.video.filteredmovies)">RunScript(plugin.video.filteredmovies,?mode=launch_mediatype_view&amp;mediatype=tvshow)</onclick>
+          <visible>!Skin.HasSetting(HomeMenuNoTVShowButton)</visible>
+          <property name="reflection">home/glass-dock/clapperboard-reflection.png</property>
+          <onclick condition="!System.AddonIsEnabled(plugin.video.filteredmovies)">ActivateWindow(Videos,videodb://tvshows/titles/,return)</onclick>
+        </item>
+        <item id="5">
+          <label>应用</label>
+          <icon>home/glass-dock/layout-grid.png</icon>
+          <onclick>ActivateWindow(1120)</onclick>
+          <visible>!Skin.HasSetting(HomeMenuNoProgramsButton)</visible>
+          <property name="reflection">home/glass-dock/layout-grid-reflection.png</property>
+        </item>
+        <item id="6">
+          <label>电视</label>
+          <icon>home/glass-dock/tv.png</icon>
+          <onclick condition="PVR.HasTVChannels">ActivateWindow(TVChannels)</onclick>
+          <onclick condition="!PVR.HasTVChannels">ActivateWindow(PVRSettings)</onclick>
+          <visible>!Skin.HasSetting(HomeMenuNoTVButton)</visible>
+          <property name="reflection">home/glass-dock/tv-reflection.png</property>
+        </item>
+        <item id="7">
+          <label>设置</label>
+          <icon>home/glass-dock/settings.png</icon>
+          <onclick>ActivateWindow(Settings)</onclick>
+          <property name="reflection">home/glass-dock/settings-reflection.png</property>
+        </item>
+        <item id="8">
+          <label>电源</label>
+          <icon>home/glass-dock/power.png</icon>
+          <onclick>ActivateWindow(ShutdownMenu)</onclick>
+          <property name="reflection">home/glass-dock/power-reflection.png</property>
+        </item>
+      </content>
+      <animation effect="slide" start="0,0" end="630,0" time="0" condition="Integer.IsEqual(Container(9000).NumItems,1)">Conditional</animation>
+      <animation effect="slide" start="0,0" end="540,0" time="0" condition="Integer.IsEqual(Container(9000).NumItems,2)">Conditional</animation>
+      <animation effect="slide" start="0,0" end="450,0" time="0" condition="Integer.IsEqual(Container(9000).NumItems,3)">Conditional</animation>
+      <animation effect="slide" start="0,0" end="360,0" time="0" condition="Integer.IsEqual(Container(9000).NumItems,4)">Conditional</animation>
+      <animation effect="slide" start="0,0" end="270,0" time="0" condition="Integer.IsEqual(Container(9000).NumItems,5)">Conditional</animation>
+      <animation effect="slide" start="0,0" end="180,0" time="0" condition="Integer.IsEqual(Container(9000).NumItems,6)">Conditional</animation>
+      <animation effect="slide" start="0,0" end="90,0" time="0" condition="Integer.IsEqual(Container(9000).NumItems,7)">Conditional</animation>
+    </control>
+  </controls>
+</window>

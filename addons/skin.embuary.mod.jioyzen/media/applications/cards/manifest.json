@@ -1,0 +1,50 @@
+{
+  "metadata.tmdb.cn.optimization": {
+    "file": "metadata.tmdb.cn.optimization.png",
+    "source_sha256": "2a4dbd3a21ec14e9a74b0d4588473b1c9828660cf4272bb8ac31fd191f049697"
+  },
+  "plugin.video.embycon": {
+    "file": "plugin.video.embycon.png",
+    "source_sha256": "ff63f6d9f0d4801b64bce55ead669db94048d7c2f878daba8cfe247e42887ca5"
+  },
+  "plugin.video.filteredmovies": {
+    "file": "plugin.video.filteredmovies.png",
+    "source_sha256": "e171163cb38a8fd805b80766ebeb58a56f9f27374a903e430261431be072e912"
+  },
+  "script.ai.movie.scanner": {
+    "file": "script.ai.movie.scanner-v2.png",
+    "source_sha256": "4b2a82ef2cf6d7adc456bda2e87507d614c19809b5dfabfb4c911248b47a597f"
+  },
+  "script.alist": {
+    "file": "script.alist.png",
+    "source_sha256": "84ed8832bc7fc6c2403ad9fd4a149b5e4b1511c8bcfddc50823a4c77977030ed"
+  },
+  "script.clouddrive2": {
+    "file": "script.clouddrive2.png",
+    "source_sha256": "3c614e22f07578ff6254252f904c47d1c7001fa00bfd16b0cc74b5490f144704"
+  },
+  "script.embuary.info": {
+    "file": "script.embuary.info.png",
+    "source_sha256": "0c3da37107eac9b6f0b2a51f02b35a71180b7cfbb28f12ca58ef4619da1c1c93"
+  },
+  "script.openlist": {
+    "file": "script.openlist.png",
+    "source_sha256": "34b35831d88ba48203e4bc20d9ad09f63049e58eec132fb6b265a9b49b8d4154"
+  },
+  "script.video.disc": {
+    "file": "script.video.disc.png",
+    "source_sha256": "b90451de26bb605a7d19c5975ca03d5982282ca644d8b3dcd1f36c093b193d44"
+  },
+  "service.coreelec.settings": {
+    "file": "service.coreelec.settings.png",
+    "source_sha256": "510a21618e01e8c4d769709adaa604de58eab72eead346f60edd57a6641656fb"
+  },
+  "tools.jre.zulu": {
+    "file": "tools.jre.zulu.png",
+    "source_sha256": "80a59a6db75fad1f4a764e0580e1803a8f3393ff2ebf3c87450f74569f06b525"
+  },
+  "weather.jioyzen": {
+    "file": "weather.jioyzen.png",
+    "source_sha256": "3a6c44410a8a2d724d79d28e336881e2c109809b94b1d947d8fe586368fbb649"
+  }
+}

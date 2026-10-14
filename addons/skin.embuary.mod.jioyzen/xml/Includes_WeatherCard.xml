@@ -1,0 +1,185 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<includes>
+  <include name="JioyzenHomeWeather">
+    <control type="group">
+      <left>80</left>
+      <top>125</top>
+      <width>680</width>
+      <height>400</height>
+      <visible>System.AddonIsEnabled(weather.jioyzen) + String.IsEqual(Weather.Plugin,weather.jioyzen) + String.IsEqual(Window(Home).Property(Jioyzen.Card.Ready),true)</visible>
+      <control type="image">
+        <left>0</left>
+        <top>0</top>
+        <width>680</width>
+        <height>400</height>
+        <texture border="28" colordiffuse="A61E2836">weather-card/rounded.png</texture>
+      </control>
+      <control type="image">
+        <left>28</left>
+        <top>33</top>
+        <width>28</width>
+        <height>34</height>
+        <texture colordiffuse="FF90BDEE">weather-card/location.png</texture>
+        <aspectratio>keep</aspectratio>
+      </control>
+      <control type="label">
+        <left>71</left>
+        <top>17</top>
+        <width>354</width>
+        <height>62</height>
+        <font>WeatherCardCity</font>
+        <textcolor>FFE9EEF5</textcolor>
+        <aligny>center</aligny>
+        <label>$INFO[Window(Home).Property(Jioyzen.Card.City)]</label>
+      </control>
+      <control type="label">
+        <left>427</left>
+        <top>21</top>
+        <width>195</width>
+        <height>54</height>
+        <font>WeatherCardSmall</font>
+        <textcolor>FFB6C4D5</textcolor>
+        <align>right</align>
+        <aligny>center</aligny>
+        <label>$INFO[Window(Home).Property(Jioyzen.Card.Updated)]</label>
+      </control>
+      <control type="image">
+        <left>34</left>
+        <top>92</top>
+        <width>136</width>
+        <height>136</height>
+        <texture>$INFO[Window(Home).Property(Jioyzen.Card.Icon)]</texture>
+        <aspectratio>keep</aspectratio>
+        <visible>!String.IsEmpty(Window(Home).Property(Jioyzen.Card.Icon))</visible>
+      </control>
+      <control type="label">
+        <left>190</left>
+        <top>91</top>
+        <width>181</width>
+        <height>57</height>
+        <font>WeatherCardCity</font>
+        <textcolor>FFB8C0CD</textcolor>
+        <aligny>center</aligny>
+        <label>$INFO[Window(Home).Property(Jioyzen.Card.Condition)]</label>
+      </control>
+      <control type="label">
+        <left>385</left>
+        <top>85</top>
+        <width>238</width>
+        <height>124</height>
+        <font>WeatherCardTemperature</font>
+        <textcolor>FFC7B89D</textcolor>
+        <align>right</align>
+        <aligny>center</aligny>
+        <label>$INFO[Window(Home).Property(Jioyzen.Card.Temperature)]</label>
+      </control>
+      <control type="label">
+        <left>346</left>
+        <top>194</top>
+        <width>276</width>
+        <height>48</height>
+        <font>WeatherCardText</font>
+        <textcolor>FFB6BFCD</textcolor>
+        <align>right</align>
+        <aligny>center</aligny>
+        <label>体感 [COLOR FFFFBA21]$INFO[Window(Home).Property(Jioyzen.Card.FeelsLike)][/COLOR]</label>
+        <visible>!String.IsEmpty(Window(Home).Property(Jioyzen.Card.FeelsLike))</visible>
+      </control>
+      <control type="group">
+        <left>28</left>
+        <top>324</top>
+        <visible>!String.IsEmpty(Window(Home).Property(Jioyzen.Card.Humidity))</visible>
+        <control type="image">
+          <left>0</left>
+          <top>0</top>
+          <width>212</width>
+          <height>55</height>
+          <texture border="16" colordiffuse="C0263143">weather-card/pill.png</texture>
+        </control>
+        <control type="image">
+          <left>18</left>
+          <top>14</top>
+          <width>25</width>
+          <height>28</height>
+          <texture>weather-card/humidity.png</texture>
+          <aspectratio>keep</aspectratio>
+        </control>
+        <control type="label">
+          <left>59</left>
+          <top>0</top>
+          <width>140</width>
+          <height>55</height>
+          <font>WeatherCardText</font>
+          <textcolor>FFE9EEF5</textcolor>
+          <aligny>center</aligny>
+          <label>湿度 [COLOR FF40B8ED]$INFO[Window(Home).Property(Jioyzen.Card.Humidity)][/COLOR]</label>
+        </control>
+      </control>
+      <control type="group">
+        <left>256</left>
+        <top>324</top>
+        <visible>!String.IsEmpty(Window(Home).Property(Jioyzen.Card.Wind))</visible>
+        <control type="image">
+          <left>0</left>
+          <top>0</top>
+          <width>255</width>
+          <height>55</height>
+          <texture border="16" colordiffuse="C0263143">weather-card/pill.png</texture>
+        </control>
+        <control type="image">
+          <left>17</left>
+          <top>14</top>
+          <width>31</width>
+          <height>28</height>
+          <texture>weather-card/wind.png</texture>
+          <aspectratio>keep</aspectratio>
+        </control>
+        <control type="label">
+          <left>61</left>
+          <top>0</top>
+          <width>180</width>
+          <height>55</height>
+          <font>WeatherCardText</font>
+          <textcolor>FFE9EEF5</textcolor>
+          <aligny>center</aligny>
+          <label>$INFO[Window(Home).Property(Jioyzen.Card.Wind)]</label>
+        </control>
+      </control>
+      <control type="label">
+        <left>28</left>
+        <top>256</top>
+        <width>320</width>
+        <height>40</height>
+        <font>WeatherCardText</font>
+        <textcolor>FFE9EEF5</textcolor>
+        <aligny>center</aligny>
+        <label>高温 [COLOR FFFFB243]$INFO[Window(Home).Property(Jioyzen.Card.High)][/COLOR] · 低温 [COLOR FF40B8ED]$INFO[Window(Home).Property(Jioyzen.Card.Low)][/COLOR]</label>
+        <visible>!String.IsEmpty(Window(Home).Property(Jioyzen.Card.High)) + !String.IsEmpty(Window(Home).Property(Jioyzen.Card.Low))</visible>
+      </control>
+      <control type="label">
+        <left>363</left>
+        <top>256</top>
+        <width>259</width>
+        <height>40</height>
+        <font>WeatherCardSmall</font>
+        <textcolor>FF8FC3ED</textcolor>
+        <align>right</align>
+        <aligny>center</aligny>
+        <label>今日降水概率 $INFO[Window(Home).Property(Jioyzen.Card.Rain)]</label>
+        <visible>!String.IsEmpty(Window(Home).Property(Jioyzen.Card.Rain))</visible>
+      </control>
+    </control>
+    <control type="label">
+      <left>0</left>
+      <top>0</top>
+      <width>1</width>
+      <height>1</height>
+      <font>font10</font>
+      <textcolor>00FFFFFF</textcolor>
+      <label>$INFO[Weather.Data(Current.Location)]</label>
+      <!-- Evaluating this condition starts the native refresh timer even
+           before the first location label exists; it never gates the card. -->
+      <visible>System.AddonIsEnabled(weather.jioyzen) + String.IsEqual(Weather.Plugin,weather.jioyzen) + Weather.IsFetched</visible>
+    </control>
+  </include>
+</includes>

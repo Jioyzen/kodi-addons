@@ -8,6 +8,7 @@ SOURCE=Path(__file__).resolve().parents[1]/'addons/script.ai.movie.scanner/pytho
 
 
 def functions(names,namespace):
+    namespace.setdefault('refresh_menu', lambda: None)
     tree=ast.parse(SOURCE.read_text())
     nodes=[n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name in names]
     for node in nodes:node.decorator_list=[]

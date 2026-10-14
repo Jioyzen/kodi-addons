@@ -46,4 +46,24 @@ class Tests(unittest.TestCase):
  def test_actual_episode_still_tv(self):
   p=ai_parser._normalize_ai_result({'type':'movie','title':'Show'},'Show.S02E03.mkv','','auto')
   self.assertEqual((p['type'],p['season_number'],p['episode_number']),('tvshow',2,3))
+
+ def test_stop_during_metadata_request_prevents_database_write(self):
+  abort=threading.Event();jobs=queue.Queue();out=queue.Queue();jobs.put(('Correct.2020.mkv',''))
+  class Database:
+   def __init__(self):raise AssertionError('Cancelled metadata must not open writer')
+  def details(*args):abort.set();return {'info':{'title':'Correct','year':2020}}
+  mods={'kodi_db':types.SimpleNamespace(KodiDatabase=Database),'tvshow_db':types.SimpleNamespace(TvShowDatabase=Database)}
+  with patch.dict(sys.modules,mods),patch.object(movie_matcher,'resolve_movie',return_value={'status':'accepted','candidate':{'id':1,'title':'Correct'},'reason':'source_title_year'}),patch.object(tmdb_api,'get_movie_details',side_effect=details):
+   namespace['scan_worker'](jobs,out,False,'dummy','dummy','dummy','dummy','zh-CN',0,abort)
+  self.assertTrue(out.empty());self.assertEqual(jobs.unfinished_tasks,0)
+
+ def test_external_stop_is_seen_before_controller_sets_abort_event(self):
+  abort=threading.Event();state={'stop':False};jobs=queue.Queue();out=queue.Queue();jobs.put(('Correct.2020.mkv',''))
+  class Database:
+   def __init__(self):raise AssertionError('External stop must prevent opening writer')
+  def details(*args):state['stop']=True;return {'info':{'title':'Correct','year':2020}}
+  mods={'kodi_db':types.SimpleNamespace(KodiDatabase=Database),'tvshow_db':types.SimpleNamespace(TvShowDatabase=Database)}
+  with patch.dict(sys.modules,mods),patch.object(movie_matcher,'resolve_movie',return_value={'status':'accepted','candidate':{'id':1,'title':'Correct'},'reason':'source_title_year'}),patch.object(tmdb_api,'get_movie_details',side_effect=details):
+   namespace['scan_worker'](jobs,out,False,'dummy','dummy','dummy','dummy','zh-CN',0,abort,stopped=lambda:state['stop'])
+  self.assertFalse(abort.is_set());self.assertTrue(out.empty());self.assertEqual(jobs.unfinished_tasks,0)
 if __name__=='__main__':unittest.main(verbosity=2)

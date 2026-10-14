@@ -6,6 +6,8 @@ import os
 import threading
 import time
 from task_state import task_lock, TaskBusy
+from history_store import load_history_file
+from path_display import redact_text,directory_label
 
 import dns_override  # DoH bypass GFW DNS pollution for TMDB (incl. image CDN)
 
@@ -25,17 +27,11 @@ INITIAL_DELAY = 60  # seconds after Kodi starts before first scan
 
 
 def log(msg, level=xbmc.LOGINFO):
-    xbmc.log('[%s] AutoScan: %s' % (ADDON_NAME, msg), level)
+    xbmc.log('[%s] AutoScan: %s' % (ADDON_NAME, redact_text(msg)), level)
 
 
 def _load_history():
-    if not xbmcvfs.exists(HISTORY_FILE):
-        return {'directories': {}}
-    try:
-        with open(HISTORY_FILE, 'r', encoding='utf-8') as f:
-            return json.load(f)
-    except Exception:
-        return {'directories': {}}
+    return load_history_file(HISTORY_FILE)
 
 
 def _is_enabled():
@@ -57,7 +53,7 @@ def _do_scan():
 def _do_scan_unlocked():
     """Refresh all directories, scan if new files found.
     Returns (success, merged, failed, new_count)."""
-    from main import refresh_directory_files, _run_scan, _needs_scan
+    from main import refresh_directory_files, _run_scan, _needs_scan, _is_stop_requested, _clear_stop
 
     history = _load_history()
     dirs = list(history.get('directories', {}).keys())
@@ -66,6 +62,8 @@ def _do_scan_unlocked():
         return 0, 0, 0, 0
 
     # Refresh: discover new/deleted files (with progress)
+    _clear_stop()
+    pDialog = None
     with open(REFRESHING_FILE, 'w') as f:
         f.write('1')
     try:
@@ -77,7 +75,8 @@ def _do_scan_unlocked():
             pDialog.create(ADDON_NAME, ADDON.getLocalizedString(32033))
 
         for i, dirpath in enumerate(dirs):
-            ndir = os.path.basename(dirpath.rstrip('/'))
+            if _is_stop_requested():break
+            ndir = directory_label(dirpath)
             if pDialog:
                 pDialog.update(int((i + 1) * 100 / len(dirs)),
                               ADDON.getLocalizedString(32034) % ndir,
@@ -85,14 +84,18 @@ def _do_scan_unlocked():
             nc, dc = refresh_directory_files(dirpath)
             total_new += nc
             total_del += dc
-        if pDialog:
-            pDialog.close()
     finally:
+        if pDialog:pDialog.close()
         if xbmcvfs.exists(REFRESHING_FILE):
             try:
                 os.remove(REFRESHING_FILE)
             except Exception:
                 pass
+
+    if _is_stop_requested():
+        _clear_stop()
+        log('Auto-scan stopped during file discovery; matching was not started.')
+        return 0,0,0,total_new
 
     # Build work items: check both new and existing pending/failed
     history = _load_history()
@@ -146,13 +149,16 @@ def _do_scan_unlocked():
 def _run_once():
     """First run: wait for Kodi to settle, then scan."""
     # Clear residual markers from previous session
-    for f in (SCANNING_FILE, REFRESHING_FILE):
-        if xbmcvfs.exists(f):
-            try:
-                os.remove(f)
-                log('Cleared residual marker: %s' % os.path.basename(f))
-            except Exception:
-                pass
+    try:
+        with task_lock(DATA_PATH):
+            for f in (SCANNING_FILE, REFRESHING_FILE):
+                if xbmcvfs.exists(f):
+                    try:
+                        os.remove(f)
+                        log('Cleared residual marker: %s' % os.path.basename(f))
+                    except OSError:pass
+    except TaskBusy:
+        log('Active task owns markers; startup cleanup skipped.')
 
     log('Waiting %ds for Kodi to be ready...' % INITIAL_DELAY)
     if xbmc.Monitor().waitForAbort(INITIAL_DELAY):

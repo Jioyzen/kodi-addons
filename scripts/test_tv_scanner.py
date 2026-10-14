@@ -250,6 +250,23 @@ class WriterTests(unittest.TestCase):
         self.db.save_episodes(show(),[(1,1,episode(1))],self.file)
         self.assertEqual(self.db.conn.execute("SELECT COUNT(*) FROM uniqueid WHERE media_type='episode' AND type='imdb'").fetchone()[0],0)
 
+    def test_supplement_migration_preserves_playback_and_removes_empty_artificial_season(self):
+        original=episode(1);original['season_name']='未知集'
+        sid,ids=self.db.save_episodes(show(),[(2,10,original)],self.file)
+        fid=self.db.conn.execute('SELECT idFile FROM episode').fetchone()[0]
+        self.db.conn.execute('UPDATE files SET playCount=1 WHERE idFile=?',(fid,))
+        self.db.conn.execute('INSERT INTO bookmark(idFile,timeInSeconds,totalTimeInSeconds,type) VALUES(?,10,100,1)',(fid,))
+        self.db.conn.commit()
+        normal='/shows/Test Show.2020/Regular.mkv'
+        self.db.save_episodes(show(),[(1,1,episode(1))],normal)
+        replacement=episode(2);replacement['uniqueids']={}
+        moved=self.db.save_episodes(show(),[(1,2,replacement)],self.file)
+        self.assertEqual(moved,(sid,ids))
+        self.assertEqual(self.db.conn.execute('SELECT season FROM seasons ORDER BY season').fetchall()[0][0],1)
+        self.assertEqual(self.db.conn.execute('SELECT COUNT(*) FROM seasons').fetchone()[0],1)
+        self.assertEqual(self.db.conn.execute('SELECT playCount FROM files WHERE idFile=?',(fid,)).fetchone()[0],1)
+        self.assertEqual(self.db.conn.execute('SELECT timeInSeconds FROM bookmark WHERE idFile=?',(fid,)).fetchone()[0],10)
+
 
 class ApiTests(unittest.TestCase):
     def test_whole_season_preserves_primary_ids_regular_cast_and_guest_cast(self):

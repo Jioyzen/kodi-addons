@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version='1.0' encoding='utf-8'?>
 <window id="5112">
     <defaultcontrol>9999</defaultcontrol>
     <allowoverlay>yes</allowoverlay>
@@ -143,10 +143,14 @@
                             <texturenofocus />
                             <textoffsetx>5</textoffsetx>
                             <align>left</align>
-                            <label>$ADDON[plugin.video.filteredmovies 32132]</label>
+                            <label>$INFO[Window(Home).Property(MFG.Label.2001)]</label>
                             <onup>1006</onup>
                             <ondown>1003</ondown>
                         </control>
+                        <onup>1006</onup>
+                        <ondown>1003</ondown>
+                        <onleft>Noop</onleft>
+                        <onright>Noop</onright>
                         <control type="button" id="2002">
                             <width>100</width>
                             <height>32</height>
@@ -158,12 +162,12 @@
                             <texturenofocus />
                             <textoffsetx>5</textoffsetx>
                             <align>left</align>
-                            <label>$ADDON[plugin.video.filteredmovies 32133]</label>
+                            <label>$INFO[Window(Home).Property(MFG.Label.2002)]</label>
                             <onup>1006</onup>
                             <ondown>1003</ondown>
                         </control>
                         <control type="button" id="2003">
-                            <width>110</width>
+                            <width>100</width>
                             <height>32</height>
                             <visible>!String.IsEqual(Window.Property(MFG.HasGenre.2003),false)</visible>
                             <font>font13</font>
@@ -173,12 +177,12 @@
                             <texturenofocus />
                             <textoffsetx>5</textoffsetx>
                             <align>left</align>
-                            <label>$ADDON[plugin.video.filteredmovies 32134]</label>
+                            <label>$INFO[Window(Home).Property(MFG.Label.2003)]</label>
                             <onup>1006</onup>
                             <ondown>1003</ondown>
                         </control>
                         <control type="button" id="2004">
-                            <width>95</width>
+                            <width>100</width>
                             <height>32</height>
                             <visible>!String.IsEqual(Window.Property(MFG.HasGenre.2004),false)</visible>
                             <font>font13</font>
@@ -188,12 +192,12 @@
                             <texturenofocus />
                             <textoffsetx>5</textoffsetx>
                             <align>left</align>
-                            <label>$ADDON[plugin.video.filteredmovies 32135]</label>
+                            <label>$INFO[Window(Home).Property(MFG.Label.2004)]</label>
                             <onup>1006</onup>
                             <ondown>1003</ondown>
                         </control>
                         <control type="button" id="2005">
-                            <width>105</width>
+                            <width>100</width>
                             <height>32</height>
                             <visible>!String.IsEqual(Window.Property(MFG.HasGenre.2005),false)</visible>
                             <font>font13</font>
@@ -203,7 +207,22 @@
                             <texturenofocus />
                             <textoffsetx>5</textoffsetx>
                             <align>left</align>
-                            <label>$ADDON[plugin.video.filteredmovies 32136]</label>
+                            <label>$INFO[Window(Home).Property(MFG.Label.2005)]</label>
+                            <onup>1006</onup>
+                            <ondown>1003</ondown>
+                        </control>
+                        <control type="button" id="2017">
+                            <width>100</width>
+                            <height>32</height>
+                            <visible>!String.IsEqual(Window.Property(MFG.HasGenre.2017),false)</visible>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.2017)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$INFO[Window(Home).Property(MFG.Label.2017)]</label>
                             <onup>1006</onup>
                             <ondown>1003</ondown>
                         </control>
@@ -218,7 +237,7 @@
                             <texturenofocus />
                             <textoffsetx>5</textoffsetx>
                             <align>left</align>
-                            <label>$ADDON[plugin.video.filteredmovies 32137]</label>
+                            <label>$INFO[Window(Home).Property(MFG.Label.2006)]</label>
                             <onup>1006</onup>
                             <ondown>1003</ondown>
                         </control>
@@ -233,7 +252,7 @@
                             <texturenofocus />
                             <textoffsetx>5</textoffsetx>
                             <align>left</align>
-                            <label>$ADDON[plugin.video.filteredmovies 32138]</label>
+                            <label>$INFO[Window(Home).Property(MFG.Label.2007)]</label>
                             <onup>1006</onup>
                             <ondown>1003</ondown>
                         </control>
@@ -248,7 +267,22 @@
                             <texturenofocus />
                             <textoffsetx>5</textoffsetx>
                             <align>left</align>
-                            <label>$ADDON[plugin.video.filteredmovies 32145]</label>
+                            <label>$INFO[Window(Home).Property(MFG.Label.2014)]</label>
+                            <onup>1006</onup>
+                            <ondown>1003</ondown>
+                        </control>
+                        <control type="button" id="2016">
+                            <width>100</width>
+                            <height>32</height>
+                            <visible>!String.IsEqual(Window.Property(MFG.HasGenre.2016),false)</visible>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.2016)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$INFO[Window(Home).Property(MFG.Label.2016)]</label>
                             <onup>1006</onup>
                             <ondown>1003</ondown>
                         </control>
@@ -263,7 +297,7 @@
                             <texturenofocus />
                             <textoffsetx>5</textoffsetx>
                             <align>left</align>
-                            <label>$ADDON[plugin.video.filteredmovies 32139]</label>
+                            <label>$INFO[Window(Home).Property(MFG.Label.2008)]</label>
                             <onup>1006</onup>
                             <ondown>1003</ondown>
                         </control>
@@ -278,7 +312,37 @@
                             <texturenofocus />
                             <textoffsetx>5</textoffsetx>
                             <align>left</align>
-                            <label>$ADDON[plugin.video.filteredmovies 32140]</label>
+                            <label>$INFO[Window(Home).Property(MFG.Label.2009)]</label>
+                            <onup>1006</onup>
+                            <ondown>1003</ondown>
+                        </control>
+                        <control type="button" id="2018">
+                            <width>100</width>
+                            <height>32</height>
+                            <visible>!String.IsEqual(Window.Property(MFG.HasGenre.2018),false)</visible>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.2018)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$INFO[Window(Home).Property(MFG.Label.2018)]</label>
+                            <onup>1006</onup>
+                            <ondown>1003</ondown>
+                        </control>
+                        <control type="button" id="2024">
+                            <width>100</width>
+                            <height>32</height>
+                            <visible>!String.IsEqual(Window.Property(MFG.HasGenre.2024),false)</visible>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.2024)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$INFO[Window(Home).Property(MFG.Label.2024)]</label>
                             <onup>1006</onup>
                             <ondown>1003</ondown>
                         </control>
@@ -293,7 +357,22 @@
                             <texturenofocus />
                             <textoffsetx>5</textoffsetx>
                             <align>left</align>
-                            <label>$ADDON[plugin.video.filteredmovies 32141]</label>
+                            <label>$INFO[Window(Home).Property(MFG.Label.2010)]</label>
+                            <onup>1006</onup>
+                            <ondown>1003</ondown>
+                        </control>
+                        <control type="button" id="2023">
+                            <width>100</width>
+                            <height>32</height>
+                            <visible>!String.IsEqual(Window.Property(MFG.HasGenre.2023),false)</visible>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.2023)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$INFO[Window(Home).Property(MFG.Label.2023)]</label>
                             <onup>1006</onup>
                             <ondown>1003</ondown>
                         </control>
@@ -308,7 +387,7 @@
                             <texturenofocus />
                             <textoffsetx>5</textoffsetx>
                             <align>left</align>
-                            <label>$ADDON[plugin.video.filteredmovies 32142]</label>
+                            <label>$INFO[Window(Home).Property(MFG.Label.2011)]</label>
                             <onup>1006</onup>
                             <ondown>1003</ondown>
                         </control>
@@ -323,7 +402,7 @@
                             <texturenofocus />
                             <textoffsetx>5</textoffsetx>
                             <align>left</align>
-                            <label>$ADDON[plugin.video.filteredmovies 32143]</label>
+                            <label>$INFO[Window(Home).Property(MFG.Label.2012)]</label>
                             <onup>1006</onup>
                             <ondown>1003</ondown>
                         </control>
@@ -338,7 +417,112 @@
                             <texturenofocus />
                             <textoffsetx>5</textoffsetx>
                             <align>left</align>
-                            <label>$ADDON[plugin.video.filteredmovies 32144]</label>
+                            <label>$INFO[Window(Home).Property(MFG.Label.2013)]</label>
+                            <onup>1006</onup>
+                            <ondown>1003</ondown>
+                        </control>
+                        <control type="button" id="2019">
+                            <width>100</width>
+                            <height>32</height>
+                            <visible>!String.IsEqual(Window.Property(MFG.HasGenre.2019),false)</visible>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.2019)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$INFO[Window(Home).Property(MFG.Label.2019)]</label>
+                            <onup>1006</onup>
+                            <ondown>1003</ondown>
+                        </control>
+                        <control type="button" id="2020">
+                            <width>100</width>
+                            <height>32</height>
+                            <visible>!String.IsEqual(Window.Property(MFG.HasGenre.2020),false)</visible>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.2020)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$INFO[Window(Home).Property(MFG.Label.2020)]</label>
+                            <onup>1006</onup>
+                            <ondown>1003</ondown>
+                        </control>
+                        <control type="button" id="2025">
+                            <width>100</width>
+                            <height>32</height>
+                            <visible>!String.IsEqual(Window.Property(MFG.HasGenre.2025),false)</visible>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.2025)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$INFO[Window(Home).Property(MFG.Label.2025)]</label>
+                            <onup>1006</onup>
+                            <ondown>1003</ondown>
+                        </control>
+                        <control type="button" id="2026">
+                            <width>100</width>
+                            <height>32</height>
+                            <visible>!String.IsEqual(Window.Property(MFG.HasGenre.2026),false)</visible>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.2026)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$INFO[Window(Home).Property(MFG.Label.2026)]</label>
+                            <onup>1006</onup>
+                            <ondown>1003</ondown>
+                        </control>
+                        <control type="button" id="2027">
+                            <width>100</width>
+                            <height>32</height>
+                            <visible>!String.IsEqual(Window.Property(MFG.HasGenre.2027),false)</visible>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.2027)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$INFO[Window(Home).Property(MFG.Label.2027)]</label>
+                            <onup>1006</onup>
+                            <ondown>1003</ondown>
+                        </control>
+                        <control type="button" id="2028">
+                            <width>100</width>
+                            <height>32</height>
+                            <visible>!String.IsEqual(Window.Property(MFG.HasGenre.2028),false)</visible>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.2028)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$INFO[Window(Home).Property(MFG.Label.2028)]</label>
+                            <onup>1006</onup>
+                            <ondown>1003</ondown>
+                        </control>
+                        <control type="button" id="2029">
+                            <width>100</width>
+                            <height>32</height>
+                            <visible>!String.IsEqual(Window.Property(MFG.HasGenre.2029),false)</visible>
+                            <font>font13</font>
+                            <textcolor>$INFO[Window.Property(MFG.FilterColor.2029)]</textcolor>
+                            <focusedcolor>button_focus</focusedcolor>
+                            <texturefocus />
+                            <texturenofocus />
+                            <textoffsetx>5</textoffsetx>
+                            <align>left</align>
+                            <label>$INFO[Window(Home).Property(MFG.Label.2029)]</label>
                             <onup>1006</onup>
                             <ondown>1003</ondown>
                         </control>
@@ -353,14 +537,10 @@
                             <texturenofocus />
                             <textoffsetx>5</textoffsetx>
                             <align>left</align>
-                            <label>$ADDON[plugin.video.filteredmovies 32146]</label>
+                            <label>$INFO[Window(Home).Property(MFG.Label.2015)]</label>
                             <onup>1006</onup>
                             <ondown>1003</ondown>
                         </control>
-                        <onup>1006</onup>
-                        <ondown>1003</ondown>
-                        <onleft>Noop</onleft>
-                        <onright>Noop</onright>
                     </control>
                 </control>
                 <control type="group" id="7402">
@@ -990,8 +1170,11 @@
                     <control type="group">
                         <width>310</width>
                         <height>424</height>
-                        <animation type="Focus">
+                        <animation type="Focus" condition="!String.IsEqual(Window.Property(MFG.ReturnFocus),true)">
                             <effect type="zoom" start="100" end="108" time="200" tween="sine" easing="inout" center="155,211.5" />
+                        </animation>
+                        <animation type="Focus" condition="String.IsEqual(Window.Property(MFG.ReturnFocus),true)" reversible="false">
+                            <effect type="zoom" start="108" end="108" time="0" center="155,211.5" />
                         </animation>
                         <animation type="Unfocus">
                             <effect type="zoom" start="108" end="100" time="200" tween="sine" easing="inout" center="155,211.5" />
@@ -1087,16 +1270,17 @@
                 </control>
             </focusedlayout>
         </control>
-        <control type="label">
+        <control type="label" id="7290">
             <left>30</left>
-            <top>580</top>
-            <width>2000</width>
-            <height>70</height>
+            <top>540</top>
+            <width>1860</width>
+            <height>90</height>
             <font>font13</font>
             <textcolor>FFCCCCCC</textcolor>
             <align>center</align>
             <label>$INFO[Window.Property(MFG.Panel.9999.Message)]</label>
             <visible>!String.IsEqual(Window.Property(MFG.Panel.9999.State),ready)</visible>
+            <aligny>center</aligny>
         </control>
         <control type="button" id="7191">
             <left>-1000</left>

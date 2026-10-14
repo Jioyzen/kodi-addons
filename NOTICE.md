@@ -9,6 +9,8 @@
 - Alist / CloudDrive2 管理：保留原管理插件元数据与资产；独立管理代码为本次维护改写。此仓库不包含 Alist / CloudDrive2 后台程序。
 - OpenList 管理：基于本仓库独立 Alist 管理代码适配，使用独立服务、程序路径、配置与端口；不包含 OpenList 后台程序，安装时从 OpenListTeam 官方发布源下载。图标来自 <https://res.oplist.org/logo/logo.svg>，SVG 原图保留于 `resources/logo.svg`，PNG 为同一图标的兼容显示版本。
 - 管理插件内置 segno 二维码库，保留 `resources/lib/vendor/LICENSE.segno` 中的 BSD 许可证与版权声明。
+- Embuary Mod（Jioyzen）：基于 Kodi 22 Estuary 皮肤保留原作者 phil65、Ichabod Fletchman 及原有许可信息，重写首页与应用页并扩展默认配置。内置壁纸由用户提供，图片资产不适用本仓库发布脚本的 MIT 许可。
+- 天气卡片：本仓库独立实现的 Kodi 天气与配置插件，元数据标注 GPL-2.0-or-later。程序图标由代码绘制；天气状态 PNG 来自 <https://www.tianqi.com/wulumuqi/>，具体 URL 在插件的 `resources/icons/sources.json` 中保留。数据来自中国天气网，天气图标与数据来源不同。
 - `repository.jioyzen` 与 `scripts/` 中新编写的发布基础设施使用 MIT，见 `scripts/LICENSE`。该许可不覆盖其他插件的原作者代码、图片或第三方库。
 
 各组件遵循各自已有的许可证。作者或许可来源尚不明确的组件，不应将本仓库的发布行为解释为已获得原作者对任意用途的授权。

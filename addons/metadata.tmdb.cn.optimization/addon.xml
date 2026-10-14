@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<addon id="metadata.tmdb.cn.optimization" name="TMDB CN Optimization" version="3.4.3" provider-name="Team Kodi+forbxy">
+<addon id="metadata.tmdb.cn.optimization" name="TMDB CN Optimization" version="3.4.4" provider-name="Team Kodi+forbxy">
   <requires>
     <import addon="xbmc.metadata" version="2.1.0" />
     <import addon="xbmc.python" version="3.0.0" />
@@ -13,7 +13,7 @@
   
   <extension point="xbmc.addon.metadata">
     <reuselanguageinvoker>true</reuselanguageinvoker>
-    <news>Jioyzen 维护版：适配 Kodi 22 / CoreELEC Amlogic-no，包含本分支已验证的修复；移除 script.module.cebox 依赖。</news>
+    <news>Jioyzen 维护版：适配 Kodi 22 / CoreELEC Amlogic-no，包含本分支已验证的修复；独立运行，不依赖外部系统定制模块。</news>
     <platform>all</platform>
     <license>GPL-2.0-or-later</license>
     <forum>https://forum.kodi.tv/showthread.php?tid=344580</forum>

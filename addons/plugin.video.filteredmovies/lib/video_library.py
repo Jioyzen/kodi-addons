@@ -5,12 +5,15 @@ import xbmcgui
 import xbmcaddon
 import json
 import time
+import threading
 import urllib.parse
 from pathlib import Path
 
 # TTL-based query result cache
 _QUERY_CACHE = {}
 _CACHE_TTL = 30
+_QUERY_LOCK = threading.RLock()
+_TEXTURE_LOCK = threading.RLock()
 
 def _cache_key(filters, limit, offset=0):
     if filters:
@@ -20,21 +23,23 @@ def _cache_key(filters, limit, offset=0):
     return (items, limit, offset)
 
 def _cache_get(key):
-    entry = _QUERY_CACHE.get(key)
-    if entry is not None:
-        ts, data = entry
-        if time.time() - ts < _CACHE_TTL:
-            return data
-        del _QUERY_CACHE[key]
+    with _QUERY_LOCK:
+        entry = _QUERY_CACHE.get(key)
+        if entry is not None:
+            ts, data = entry
+            if time.monotonic() - ts < _CACHE_TTL:
+                return data
+            _QUERY_CACHE.pop(key, None)
     return None
 
 def _cache_set(key, data):
     if len(data) > 240:
         return
-    _QUERY_CACHE[key] = (time.time(), data)
-    if len(_QUERY_CACHE) > 16:
-        oldest = min(_QUERY_CACHE.items(), key=lambda x: x[1][0])
-        del _QUERY_CACHE[oldest[0]]
+    with _QUERY_LOCK:
+        _QUERY_CACHE[key] = (time.monotonic(), data)
+        if len(_QUERY_CACHE) > 16:
+            oldest = min(_QUERY_CACHE.items(), key=lambda x: x[1][0])
+            _QUERY_CACHE.pop(oldest[0], None)
 
 _PROGRESS_CACHE = {}
 
@@ -181,8 +186,9 @@ def _sqlite_get_items(media_type, filters, limit, offset=0):
 def clear_query_cache():
     """Clear all cached query results and progress maps."""
     global _QUERY_CACHE, _PROGRESS_CACHE
-    _QUERY_CACHE.clear()
-    _PROGRESS_CACHE.clear()
+    with _QUERY_LOCK:
+        _QUERY_CACHE.clear()
+        _PROGRESS_CACHE.clear()
     log("Query caches cleared")
 
 
@@ -307,6 +313,10 @@ def create_list_item(m):
         else:
             url = f"videodb://movies/titles/{item_id}"
         is_folder = False
+    elif media_type == "episode":
+        item_id = m.get("episodeid")
+        url = m.get('file') or 'videodb://tvshows/titles/%s/%s/%s' % (m.get('tvshowid',0),m.get('season',0),item_id)
+        is_folder = False
     elif media_type == "tvshow":
         item_id = m.get("tvshowid")
         url = f"videodb://tvshows/titles/{item_id}/"
@@ -333,6 +343,15 @@ def create_list_item(m):
 
     info_tag = li.getVideoInfoTag()
     info_tag.setTitle(m["title"])
+    if media_type == 'episode':
+        info_tag.setSeason(int(m.get('season',0)))
+        info_tag.setEpisode(int(m.get('episode',0)))
+        info_tag.setTvShowTitle(m.get('showtitle',''))
+        li.setProperty('MFG.TvshowId',str(m.get('tvshowid',0)))
+        li.setProperty('MFG.Season',str(m.get('season',0)))
+        li.setProperty('MFG.ShowTitle',m.get('showtitle',''))
+        li.setLabel('%s · S%02dE%02d · %s' % (m.get('showtitle') or '电视剧',
+                    int(m.get('season',0)),int(m.get('episode',0)),m['title']))
     info_tag.setYear(m.get("year", 0))
     info_tag.setRating(m.get("rating", 0.0))
     if "dateadded" in m:
@@ -480,7 +499,7 @@ def create_list_item(m):
     info_tag.setDbId(int(item_id))
 
     li.setPath(url)
-    dbtype_map = {"movie": "movie", "tvshow": "tvshow", "set": "set", "concert": "movie", "documentary": "movie"}
+    dbtype_map = {"movie": "movie", "tvshow": "tvshow", "set": "set", "concert": "movie", "documentary": "movie", "episode": "episode"}
     li.setProperty("DBTYPE", dbtype_map.get(media_type, "movie"))
     li.setProperty("targetwindow", "videos")
     li.setProperty("FilteredMovies", "true")
@@ -498,7 +517,7 @@ def _is_video_thumbnail(url):
     value = urllib.parse.unquote(str(url)).lower()
     return value.startswith(("image://video@", "video@"))
 
-def prime_textures(items):
+def prime_textures(items, force=False):
     """Read only artwork needed by this page, with small bound-variable batches."""
     import sqlite3
     import os
@@ -508,7 +527,7 @@ def prime_textures(items):
         urls.update(url for url in (item.get('art') or {}).values() if isinstance(url,str))
         for key in ('poster_fallbacks', 'fanart_fallbacks'):
             urls.update(url for url in item.get(key, []) if isinstance(url, str))
-        urls.update(c.get('thumbnail','') for c in item.get('cast',[]) if isinstance(c,dict) and isinstance(c.get('thumbnail',''),str))
+        urls.update(c.get('thumbnail','') for c in (item.get('cast') or []) if isinstance(c,dict) and isinstance(c.get('thumbnail',''),str))
     sources={}
     for url in urls:
         if url.startswith(('http','image://')):
@@ -517,10 +536,11 @@ def prime_textures(items):
     now = time.monotonic()
     # Downloads may complete while a window is still alive. Do not retain
     # negative lookups for the entire interpreter lifetime.
-    missing = {url for url in sources
-               if url not in _TEXTURE_PATH_CACHE or
-               now - _TEXTURE_CHECKED_AT.get(url, 0) >=
-               (5 if _TEXTURE_PATH_CACHE[url] == url else 60)}
+    with _TEXTURE_LOCK:
+        missing = {url for url in sources
+                   if force or url not in _TEXTURE_PATH_CACHE or
+                   now - _TEXTURE_CHECKED_AT.get(url, 0) >=
+                   (5 if _TEXTURE_PATH_CACHE[url] == url else 60)}
     if not missing:return
     conn=None
     try:
@@ -531,17 +551,26 @@ def prime_textures(items):
             part=candidates[start:start+200]
             for source,cached in conn.execute('SELECT url,cachedurl FROM texture WHERE url IN ('+','.join('?' for _ in part)+')',part):
                 found[source]=cached
+        updates = {}
         for url in missing:
             cached=found.get(url) or found.get(sources[url])
             path=os.path.join(THUMBNAILS_PATH,cached) if cached else ''
-            _TEXTURE_PATH_CACHE[url]=path if path and os.path.isfile(path) else url
-            _TEXTURE_CHECKED_AT[url] = now
+            updates[url]=path if path and os.path.isfile(path) else url
         # Page-scoped cache, not an ever-growing mirror of Textures.db.
-        if len(_TEXTURE_PATH_CACHE)>4096:
-            keep={url:_TEXTURE_PATH_CACHE[url] for url in sources if url in _TEXTURE_PATH_CACHE}
-            _TEXTURE_PATH_CACHE.clear();_TEXTURE_PATH_CACHE.update(keep)
-            stamps = {url: _TEXTURE_CHECKED_AT[url] for url in keep}
-            _TEXTURE_CHECKED_AT.clear(); _TEXTURE_CHECKED_AT.update(stamps)
+        with _TEXTURE_LOCK:
+            _TEXTURE_PATH_CACHE.update(updates)
+            _TEXTURE_CHECKED_AT.update({url: now for url in updates})
+            if len(_TEXTURE_PATH_CACHE)>4096:
+                # Prefer this page's covers before actor thumbnails, then
+                # retain recently checked entries up to a strict upper bound.
+                covers = {url for item in items for url in (item.get('art') or {}).values()
+                          if isinstance(url,str)}
+                keys = sorted(_TEXTURE_PATH_CACHE, key=lambda url:
+                    (url in covers, _TEXTURE_CHECKED_AT.get(url,0)), reverse=True)[:4096]
+                keep={url:_TEXTURE_PATH_CACHE[url] for url in keys}
+                stamps={url:_TEXTURE_CHECKED_AT.get(url,0) for url in keys}
+                _TEXTURE_PATH_CACHE.clear();_TEXTURE_PATH_CACHE.update(keep)
+                _TEXTURE_CHECKED_AT.clear();_TEXTURE_CHECKED_AT.update(stamps)
     except (sqlite3.Error,OSError):
         # Let Kodi handle uncached URLs; a texture DB lock must not blank a wall.
         pass
@@ -551,7 +580,8 @@ def prime_textures(items):
 
 def _get_cached_texture_path(url):
     if not url:return url
-    resolved = _TEXTURE_PATH_CACHE.get(url, url)
+    with _TEXTURE_LOCK:
+        resolved = _TEXTURE_PATH_CACHE.get(url, url)
     if _CACHED_ARTWORK_ONLY:
         # Never ask Kodi texture workers to download remote art while browsing.
         scheme = urllib.parse.urlsplit(str(resolved)).scheme.lower()
@@ -599,7 +629,7 @@ def _load_art_batch(conn, media_ids, media_type, items, id_key):
 
 def _read_continue_watching_items(limit=20):
     """
-    获取所有类型的"继续观看"内容（电影、剧集、电影集）- 纯 SQLite 实现。
+    读取具体电影和单集的续播书签，不汇总电视剧或电影合集。
     混合显示，按最近播放时间排序。
     """
     import sqlite3
@@ -612,8 +642,6 @@ def _read_continue_watching_items(limit=20):
         conn = db._conn()
 
         # ==================== 0. 预加载进度映射（共用连接） ====================
-        partial_map = _get_inprogress_episodes_map(conn)
-        set_progress_map = _get_movieset_progress_map(conn)
 
         # ==================== 1. 进行中的电影 (SQLite) ====================
         try:
@@ -642,103 +670,36 @@ def _read_continue_watching_items(limit=20):
         except Exception as e:
             log(f"Error fetching in-progress movies (SQLite): {e}", xbmc.LOGERROR)
 
-        # ==================== 2. 进行中的剧集 (SQLite) ====================
+        # Concrete episodes keep their own title, numbering and resume point.
         try:
-            # 查询有续播点的剧集 -> 对应 tvshow
-            cur = conn.execute(
-                "SELECT DISTINCT e.idShow, e.lastPlayed "
-                "FROM episode_view e "
-                "WHERE e.resumeTimeInSeconds>0 AND (e.playCount IS NULL OR e.playCount=0) "
-                "ORDER BY e.lastPlayed DESC"
-            )
-            tvshow_lastplayed = {}
-            for row in cur:
-                tid, lp = row[0], row[1] or ""
-                if tid not in tvshow_lastplayed or lp > tvshow_lastplayed[tid]:
-                    tvshow_lastplayed[tid] = lp
-
-            # 进度映射已在函数开头预加载
-
-            if tvshow_lastplayed:
-                tvshow_before = len(all_items)
-                for tvshow_id, lastplayed in list(tvshow_lastplayed.items())[:limit]:
-                    try:
-                        props = db._build_props('tvshow')
-                        selects = ', '.join(f'{column} AS {key}' for key,column in props.items())
-                        cur2 = conn.execute('SELECT '+selects+' FROM tvshow_view WHERE idShow=?', (tvshow_id,))
-                        cols2 = [d[0] for d in cur2.description]
-                        row2 = cur2.fetchone()
-                        if row2:
-                            tvshow = dict(zip(cols2, row2))
-                            db._format_item(tvshow)
-                            tvshow["media_type"] = "tvshow"
-                            tvshow["sort_time"] = lastplayed
-                            tvshow["partial_progress"] = partial_map.get(tvshow_id, 0.0)
-                            all_items.append(tvshow)
-                    except Exception as e:
-                        log(f"Error fetching tvshow {tvshow_id}: {e}", xbmc.LOGERROR)
-
-                # Batch load art / cast for tvshows
-                tvshow_items = all_items[tvshow_before:]
-                tvshow_ids = [str(x.get('tvshowid', 0)) for x in tvshow_items]
-                if tvshow_ids:
-                    _load_art_batch(conn, tvshow_ids, 'tvshow', tvshow_items, 'tvshowid')
-                    db._load_cast(conn, tvshow_items, 'tvshow')
-
-            log(f"Found {len(tvshow_lastplayed)} in-progress TV shows (SQLite)")
+            cur=conn.execute(
+                'SELECT idEpisode AS episodeid,idShow AS tvshowid,c00 AS title,c01 AS plot,'
+                'c05 AS premiered,CAST(substr(c05,1,4) AS INTEGER) AS year,'
+                'c09 AS runtime,CAST(c12 AS INTEGER) AS season,CAST(c13 AS INTEGER) AS episode,'
+                'strTitle AS showtitle,genre,studio,mpaa,rating,playCount AS playcount,'
+                'lastPlayed AS lastplayed,dateAdded AS dateadded,strPath AS file,strFileName AS _fname,'
+                'resumeTimeInSeconds AS resume,totalTimeInSeconds AS _resume_total '
+                'FROM episode_view WHERE resumeTimeInSeconds>0 AND (playCount IS NULL OR playCount=0) '
+                'ORDER BY lastPlayed DESC,idEpisode DESC LIMIT ?', (limit,))
+            names=[column[0] for column in cur.description]
+            episodes=[dict(zip(names,row)) for row in cur]
+            for episode in episodes:
+                db._format_item(episode)
+                episode['media_type']='episode'
+                episode['sort_time']=episode.get('lastplayed','')
+            _load_art_batch(conn,[str(e['episodeid']) for e in episodes],'episode',episodes,'episodeid')
+            shows=[{'tvshowid':sid} for sid in dict.fromkeys(e['tvshowid'] for e in episodes)]
+            _load_art_batch(conn,[str(show['tvshowid']) for show in shows],'tvshow',shows,'tvshowid')
+            show_art={show['tvshowid']:show.get('art',{}) for show in shows}
+            for episode in episodes:
+                own=episode.get('art',{});parent=show_art.get(episode['tvshowid'],{})
+                episode['art']=dict(parent,**own)
+                episode['art']['poster']=parent.get('poster') or own.get('poster','')
+                episode['art']['fanart']=parent.get('fanart') or own.get('fanart','')
+                episode['art']['landscape']=own.get('thumb') or parent.get('landscape') or parent.get('fanart','')
+            all_items.extend(episodes)
         except Exception as e:
-            log(f"Error fetching in-progress TV shows (SQLite): {e}", xbmc.LOGERROR)
-
-        # ==================== 3. 进行中的电影集 (SQLite) ====================
-        try:
-            # 进度映射已在函数开头预加载
-
-            inprogress_set_ids = []
-            for set_id, progress in set_progress_map.items():
-                total = progress.get("total", 0)
-                watched = progress.get("watched", 0)
-                partial = progress.get("partial", 0.0)
-                if total > 0 and (watched > 0 or partial > 0) and (watched + partial < total):
-                    inprogress_set_ids.append(set_id)
-
-            if inprogress_set_ids:
-                id_list = ",".join(str(s) for s in inprogress_set_ids)
-                cur = conn.execute(
-                    f"SELECT idSet, strSet, strOverview FROM sets WHERE idSet IN ({id_list})"
-                )
-                cols = [d[0] for d in cur.description]
-                for row in cur:
-                    movie_set = dict(zip(cols, row))
-                    sid = movie_set.get("idSet")
-                    movie_set["setid"] = sid
-                    movie_set["title"] = movie_set.get("strSet", "")
-                    movie_set["plot"] = movie_set.get("strOverview", "")
-                    movie_set["media_type"] = "set"
-
-                    progress = set_progress_map.get(sid, {})
-                    movie_set["total"] = progress.get("total", 0)
-                    movie_set["watched"] = progress.get("watched", 0)
-                    movie_set["partial_progress"] = progress.get("partial", 0.0)
-                    r_sum = progress.get("rating_sum", 0.0)
-                    r_count = progress.get("rating_count", 0)
-                    if r_count > 0:
-                        movie_set["rating"] = round(r_sum / r_count, 1)
-
-                    # 最后播放时间
-                    cur_lp = conn.execute(
-                        "SELECT MAX(lastPlayed) FROM movie_view WHERE idSet=?", (sid,)
-                    )
-                    lp_row = cur_lp.fetchone()
-                    movie_set["sort_time"] = lp_row[0] or ""
-                    movie_set["lastplayed"] = movie_set["sort_time"]
-
-                    all_items.append(movie_set)
-
-            db.load_set_art(conn, [item for item in all_items if item.get('media_type') == 'set'])
-
-            log(f"Found {len(inprogress_set_ids)} in-progress movie sets (SQLite)")
-        except Exception as e:
-            log(f"Error fetching in-progress movie sets (SQLite): {e}", xbmc.LOGERROR)
+            log(f"Error fetching in-progress episodes (SQLite): {e}",xbmc.LOGERROR)
 
         conn.close()
 
@@ -756,11 +717,13 @@ def _read_continue_watching_items(limit=20):
     all_items.sort(key=sort_key, reverse=True)
 
     # ==================== 5. 限制数量 ====================
-    result = all_items[:limit]
-
-    log(f"Continue watching: returning {len(result)} items (movies: {sum(1 for x in result if x.get('media_type')=='movie')}, "
-        f"tvshows: {sum(1 for x in result if x.get('media_type')=='tvshow')}, "
-        f"sets: {sum(1 for x in result if x.get('media_type')=='set')})")
+    result=[];seen=set()
+    for item in all_items:
+        identity=(item['media_type'],item.get('episodeid') if item['media_type']=='episode' else item.get('movieid'))
+        if identity in seen:continue
+        seen.add(identity);result.append(item)
+        if len(result)>=limit:break
+    log('Continue watching: returning %d movies/episodes'%len(result))
 
     return result
 
@@ -769,7 +732,10 @@ def _read_continue_watching_items(limit=20):
 
 def get_continue_watching_items(limit=20):
     from . import catalog_cache
-    rev=catalog_cache.revision();key=catalog_cache.key({'widget':'continue'},limit,0)
+    try:limit=max(0,min(30,int(limit)))
+    except (TypeError,ValueError):limit=20
+    if not limit:return []
+    rev=catalog_cache.revision();key=catalog_cache.key({'widget':'continue-movie-episode-v2'},limit,0)
     cached=catalog_cache.get(key,rev)
     if cached is not None:return cached
     items=_read_continue_watching_items(limit)

@@ -12,6 +12,7 @@ import re
 import difflib
 import functools
 from task_state import task_lock, TaskBusy
+from history_store import load_history_file,save_history_file
 
 import xbmc
 
@@ -87,6 +88,34 @@ STATUS_LABELS = {
     'skipped': L(32404) or '已略过',
 }
 
+# The standalone window installs these per-interpreter callbacks. Background
+# service operations still run without a UI and never refresh Kodi Videos.
+UI_LISTING = None
+UI_REFRESH = None
+
+
+def refresh_menu():
+    if UI_REFRESH is not None:
+        UI_REFRESH()
+
+
+def context_menu(item, commands):
+    item.setProperty('AIS.Context', json.dumps(commands, ensure_ascii=False))
+    item.addContextMenuItems(commands)
+
+
+def emit_listing(listing, category):
+    for url, item, folder in listing:
+        item.setProperty('AIS.Url', url)
+        item.setProperty('AIS.Folder', 'true' if folder else 'false')
+    if UI_LISTING is not None:
+        UI_LISTING(listing, category)
+    elif addon_handle >= 0:
+        xbmcplugin.addDirectoryItems(addon_handle, listing, len(listing))
+        xbmcplugin.setPluginCategory(addon_handle, category)
+        xbmcplugin.endOfDirectory(addon_handle, cacheToDisc=False)
+    return listing
+
 
 def log(msg, level=xbmc.LOGINFO):
     xbmc.log('[%s] %s' % (ADDON_NAME, redact_text(msg)), level)
@@ -122,29 +151,12 @@ def ensure_data_dir():
 
 def load_history():
     ensure_data_dir()
-    file_exists = xbmcvfs.exists(HISTORY_FILE)
-    log('load_history: file=%s exists=%s' % (HISTORY_FILE, file_exists))
-    if file_exists:
-        try:
-            with open(HISTORY_FILE, 'r', encoding='utf-8') as f:
-                data = json.load(f)
-            dirs = data.get('directories', {})
-            log('load_history: OK, %d directories' % len(dirs))
-            return data
-        except Exception as e:
-            log('load_history: JSON ERROR: %s' % e, xbmc.LOGERROR)
-    return {'directories': {}}
+    return load_history_file(HISTORY_FILE)
 
 
 def save_history(data):
     ensure_data_dir()
-    try:
-        tmp = HISTORY_FILE + '.tmp'
-        with open(tmp, 'w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False, indent=2)
-        os.replace(tmp, HISTORY_FILE)
-    except Exception as e:
-        xbmc.log('[%s] Failed to save history: %s' % (ADDON_NAME, e), xbmc.LOGERROR)
+    save_history_file(HISTORY_FILE,data)
 
 
 # Cross-process scan state files (Kodi plugins run as separate processes)
@@ -175,7 +187,7 @@ def _request_stop():
 
 
 def _is_stop_requested():
-    return xbmcvfs.exists(STOP_FILE)
+    return xbmcvfs.exists(STOP_FILE) or xbmc.Monitor().abortRequested()
 
 
 def _clear_stop():
@@ -237,19 +249,19 @@ def get_params():
 
 
 def build_url(query):
-    return sys.argv[0] + '?' + urllib.parse.urlencode(private_query(query))
+    return 'plugin://%s/?%s' % (ADDONID, urllib.parse.urlencode(private_query(query)))
 
 
 def run_plugin_url(query):
     """Build a RunPlugin(...) URL for context menu items."""
-    return 'RunPlugin(%s)' % build_url(query)
+    return 'RunScript(%s,?%s)' % (ADDONID, urllib.parse.urlencode(private_query(query)))
 
 
 # ==========================================
 # Router
 # ==========================================
-def router(paramstring=''):
-    params = get_params()
+def router(paramstring='', params=None):
+    params = get_params() if params is None else params
     action = params.get('action', None)
 
     if action is None:
@@ -269,7 +281,7 @@ def router(paramstring=''):
     elif action == 'refresh_directory':
         action_refresh_directory(params.get('dirpath',''))
     elif action == 'manual_match':
-        manual_match()
+        manual_match(params.get('filepath'), params.get('dirpath'))
     elif action == 'manual_match_show':
         manual_match_show(params.get('dirpath',''),params.get('group',''))
     elif action == 'play_file':
@@ -282,12 +294,12 @@ def router(paramstring=''):
         cache_actor_images()
     elif action == 'stop_scan':
         stop_scan()
-        xbmc.executebuiltin('Container.Refresh')
+        refresh_menu()
     elif action == 'clear_all_data':
         clear_all_data()
     elif action == 'open_settings':
         ADDON.openSettings()
-        xbmc.executebuiltin('Container.Refresh')
+        refresh_menu()
     else:
         xbmc.log('[%s] Unknown action: %s' % (ADDON_NAME, action), xbmc.LOGERROR)
 
@@ -302,8 +314,8 @@ def _needs_scan(info):
            (info.get('is_tvshow') or info.get('match_evidence',{}).get('type')=='tvshow'))
 
 
-def show_main_menu():
-    history = load_history()
+def show_main_menu(history=None):
+    history = load_history() if history is None else history
     dirs = history.get('directories', {})
     log('show_main_menu: loaded %d directories, %d total keys in history'
         % (len(dirs), len(history)))
@@ -345,7 +357,7 @@ def show_main_menu():
             listing.append((url, li, False))
 
             # --- [Review Pending Matches] ---
-            li = xbmcgui.ListItem(L(32161) % pending, offscreen=True)
+            li = xbmcgui.ListItem(L(32161) % len(_collect_pending(history)), offscreen=True)
             li.setArt({'icon': 'DefaultAddonSearch.png'})
             url = build_url({'action': 'review_pending'})
             listing.append((url, li, False))
@@ -380,11 +392,10 @@ def show_main_menu():
 
             # Context menu
             cm = [(L(32413),run_plugin_url({'action':'refresh_directory','dirpath':dirpath}))]
-            from directory_listing import group_inventory
+            from directory_listing import single_show_root
             from path_display import path_token
-            show_groups,plain = group_inventory(files,data.get('content_type','auto'))
-            if len(show_groups)==1 and not plain:
-                root = next(iter(show_groups))
+            root = single_show_root(files, data.get('content_type', 'auto'))
+            if root:
                 cm.append((L(32029),run_plugin_url({'action':'manual_match_show','dirpath':dirpath,'group':path_token(root)})))
             if pn > 0 or fl > 0:
                 cm.append((L(32027), run_plugin_url({
@@ -395,7 +406,7 @@ def show_main_menu():
                 'action': 'remove_directory',
                 'dirpath': dirpath,
             })))
-            li.addContextMenuItems(cm)
+            context_menu(li, cm)
 
             url = build_url({'action': 'view_directory', 'dirpath': dirpath})
             listing.append((url, li, True))
@@ -430,9 +441,7 @@ def show_main_menu():
     url = build_url({'action': 'open_settings'})
     listing.append((url, li, False))
 
-    xbmcplugin.addDirectoryItems(addon_handle, listing, len(listing))
-    xbmcplugin.setPluginCategory(addon_handle, ADDON_NAME)
-    xbmcplugin.endOfDirectory(addon_handle, cacheToDisc=False)
+    emit_listing(listing, ADDON_NAME)
 
 
 # ==========================================
@@ -490,7 +499,7 @@ def _refresh_library_files(dir_list):
             pDialog.close()
         _clear_refreshing()
         _clear_stop()
-        xbmc.executebuiltin('Container.Refresh')
+        refresh_menu()
     if stopped:
         msg = L(32030)
     elif total_new or total_del:
@@ -535,9 +544,9 @@ def add_directory():
 
         def _scan_worker():
             try:
-                scan_result[0] = find_video_files(dirpath)
+                scan_result[0] = find_video_files(dirpath,cancelled=_is_stop_requested)
             except Exception as e:
-                xbmc.log('[%s] find_video_files error: %s' % (ADDON_NAME, e), xbmc.LOGERROR)
+                log('File discovery incomplete: '+type(e).__name__,xbmc.LOGWARNING)
                 scan_result[0] = []
             scan_done.set()
 
@@ -569,7 +578,7 @@ def add_directory():
             'files': files_dict,
         }
         save_history(history)
-        xbmc.executebuiltin('Container.Refresh')
+        refresh_menu()
 
         # Auto-scan immediately
         work_items = [(f, os.path.dirname(f)) for f in sorted(video_files)]
@@ -588,14 +597,14 @@ def add_directory():
 @guarded_task
 def cache_images():
     ImageCacher().start()
-    xbmc.executebuiltin('Container.Refresh')
+    refresh_menu()
 
 
 @guarded_task
 def cache_actor_images():
     from actor_cache import ActorImageCacher
     ActorImageCacher().start_actors()
-    xbmc.executebuiltin('Container.Refresh')
+    refresh_menu()
 
 
 # ==========================================
@@ -634,7 +643,7 @@ def clear_all_data():
                 int(done * 100 / max(1, total)), ADDON_NAME, L(32300)),
             aborted=xbmc.Monitor().abortRequested)
         log('Independent library reset complete: %s' % report)
-        xbmc.executebuiltin('Container.Refresh')
+        refresh_menu()
         dialog.ok(ADDON_NAME, L(32046))
     except Exception as exc:
         log('Independent library reset failed: %s' % exc, xbmc.LOGERROR)
@@ -799,9 +808,9 @@ def _manual_tv_apply(filepath, dirpath, tv_id, context, apply_all=False):
     key = ADDON.getSetting('tmdb_api_key') or ''
     language = ADDON.getSetting('tmdb_language') or 'zh-CN'
     if apply_all:
-        from tv_context import _show_directory
-        files = {path:info for path,info in files.items()
-                 if (info.get('match_evidence',{}).get('show_root') or _show_directory(path)[0])==context['show_root']}
+        from directory_listing import group_inventory
+        groups,_ = group_inventory(files,source.get('content_type','auto'))
+        files = dict(groups.get(context['show_root'],[]))
     session = TvMatchSession(files or [filepath],key,language,'tvshow' if apply_all else source.get('content_type','auto'),
                              forced_ids={context['show_root']:tv_id},previous_results=files)
     session.contexts[filepath] = context
@@ -841,7 +850,7 @@ def _manual_tv_apply(filepath, dirpath, tv_id, context, apply_all=False):
         source.setdefault('tv_matches',{})[path_token(context['show_root'])] = {'tmdb_id':int(tv_id),'title':confirmed_title}
         save_history(history)
     _run_scan([(path,os.path.dirname(path)) for path in targets],[dirpath],session)
-    xbmc.executebuiltin('Container.Refresh')
+    refresh_menu()
 
 
 def _tv_directory_files(source, group):
@@ -852,8 +861,7 @@ def _tv_directory_files(source, group):
     root = next((root for root in groups if path_token(root)==group),None)
     if root is None:
         return None,{}
-    files = {path:info for path,info in source.get('files',{}).items()
-             if (info.get('match_evidence',{}).get('show_root') or _show_directory(path)[0])==root}
+    files = dict(groups[root])
     return root,files
 
 
@@ -1093,7 +1101,8 @@ def manual_match(filepath=None, dirpath=None, show_root=None):
                 # to explicit season/episode selection instead of a dead end.
                 dialog.ok(ADDON_NAME,str(error))
             else:
-                _manual_tv_apply(filepath,dirpath,tv_id,confirmed_context,apply_all=True)
+                _manual_tv_apply(filepath,dirpath,tv_id,confirmed_context,
+                                 apply_all=bool(show_root or confirmed_context.get('directory_identity')))
                 return
         tv_title = tv_details.get('info', {}).get('title', '')
         seasons = tv_details.get('seasons', [])
@@ -1155,20 +1164,20 @@ def manual_match(filepath=None, dirpath=None, show_root=None):
         _manual_tv_apply(filepath,dirpath,tv_id,context)
         return
 
-    xbmc.executebuiltin('Container.Refresh')
+    refresh_menu()
 
 
 # ==========================================
 # Review pending (low-confidence / failed) matches
 # ==========================================
-def _collect_pending():
-    """Return a list of (dirpath, filepath, info) for pending/failed files."""
-    history = load_history()
+def _collect_pending(history=None):
+    """Collect movie files and TV show-directory confirmations separately."""
+    from directory_listing import pending_reviews
+    history = load_history() if history is None else history
     items = []
     for dirpath, data in history.get('directories', {}).items():
-        for filepath, info in data.get('files', {}).items():
-            if _needs_scan(info):
-                items.append((dirpath, filepath, info))
+        for filepath, info in pending_reviews(data.get('files',{}),data.get('content_type','auto'),_needs_scan):
+            items.append((dirpath,filepath,info))
     return items
 
 
@@ -1185,7 +1194,7 @@ def _count_pending(dirpaths):
 def review_pending():
     """Dialog-driven manual matching for all pending/failed files.
 
-    Shows a select dialog listing every low-confidence / failed file from the
+    Shows one item per TV show directory, plus individual movie files from the
     scan history. Picking one launches the standard manual-match flow, after
     which the list is rebuilt so the user can keep matching until none remain.
     """
@@ -1211,7 +1220,12 @@ def review_pending():
             status = info.get('status', '')
             st_label = STATUS_LABELS.get(status, status)
             guessed = info.get('tmdb_title', '') or ''
-            line = '[COLOR=FFDD4444]%s[/COLOR]  %s' % (st_label, os.path.basename(filepath))
+            root = info.get('_review_show_root')
+            from path_display import directory_label
+            name = directory_label(root).rsplit('[',1)[0] if root else os.path.basename(filepath)
+            line = '[COLOR=FFDD4444]%s[/COLOR]  %s' % (st_label, name)
+            if root:
+                line += ' · %d 个待处理视频' % info['_review_count']
             if guessed:
                 line += '  →  [COLOR=FFFF8800]可能: %s[/COLOR]' % guessed
             labels.append(line)
@@ -1220,20 +1234,24 @@ def review_pending():
         ret = dialog.select(heading, labels)
         if ret < 0:
             return
-        dirpath, filepath, _ = items[ret]
-        manual_match(filepath, dirpath)
-        xbmc.executebuiltin('Container.Refresh')
+        dirpath, filepath, info = items[ret]
+        if info.get('_review_show_root'):
+            from path_display import path_token
+            manual_match_show(dirpath,path_token(info['_review_show_root']))
+        else:
+            manual_match(filepath, dirpath)
+        refresh_menu()
 
 
 # ==========================================
 # View Directory (files inside)
 # ==========================================
-def view_directory(dirpath, group='', page=0):
+def view_directory(dirpath, group='', page=0, history=None):
     if not dirpath:
         return
     from directory_listing import listing_page, is_tv, group_label
     from path_display import path_token
-    history = load_history()
+    history = load_history() if history is None else history
     data = history.get('directories',{}).get(dirpath,{})
     files = data.get('files',{})
     model = listing_page(files,data.get('content_type','auto'),group,page)
@@ -1254,7 +1272,7 @@ def view_directory(dirpath, group='', page=0):
             li = xbmcgui.ListItem(group_label(path,entries), offscreen=True)
             li.setLabel2('%d 文件 · 已匹配 %d · 未知集 %d' % (len(entries),success,unknown))
             li.setArt({'icon':'DefaultFolder.png'})
-            li.addContextMenuItems([(L(32029),run_plugin_url({'action':'manual_match_show','dirpath':dirpath,'group':path_token(path)}))])
+            context_menu(li, [(L(32029),run_plugin_url({'action':'manual_match_show','dirpath':dirpath,'group':path_token(path)}))])
             listing.append((build_url({'action':'view_directory','dirpath':dirpath,'group':path_token(path)}),li,True))
             continue
         status = info.get('status','pending')
@@ -1285,19 +1303,17 @@ def view_directory(dirpath, group='', page=0):
         li.setProperty('IsPlayable','false')
         li.setProperty('CanQueue','false')
         if not tv:
-            li.addContextMenuItems([(L(32029),run_plugin_url({'action':'manual_match','filepath':path,'dirpath':dirpath}))])
+            context_menu(li, [(L(32029),run_plugin_url({'action':'manual_match','filepath':path,'dirpath':dirpath}))])
         listing.append((build_url({'action':'play_file','dirpath':dirpath,'filepath':path}),li,False))
     if model['page']+1<model['pages']:
         li = xbmcgui.ListItem('%s (%d/%d)' % (L(32412) or '下一页',model['page']+2,model['pages']), offscreen=True)
         listing.append((build_url({'action':'view_directory','dirpath':dirpath,'group':group,'page':model['page']+1}),li,True))
     if not listing:
         listing.append((build_url({}),xbmcgui.ListItem(L(32054), offscreen=True),False))
-    xbmcplugin.addDirectoryItems(addon_handle,listing,len(listing))
     category = model['label'] or directory_label(dirpath)
     if model['pages']>1:
         category += ' · %d/%d' % (model['page']+1,model['pages'])
-    xbmcplugin.setPluginCategory(addon_handle,category)
-    xbmcplugin.endOfDirectory(addon_handle,cacheToDisc=False)
+    emit_listing(listing, category)
 
 
 def play_media_file(dirpath, filepath):
@@ -1366,103 +1382,28 @@ def remove_directory(dirpath):
         del history['directories'][dirpath]
         save_history(history)
 
-    xbmc.executebuiltin('Container.Refresh')
+    refresh_menu()
     dialog.notification(ADDON_NAME, L(32040))
 
 
 def _delete_single_file_from_db(filepath):
-    """Delete a single file's movie/episode from Kodi DB. Returns number of deleted records."""
-    from kodi_db import KodiDatabase
-    db = KodiDatabase()
+    from kodi_db import KodiDatabase,DB_WRITE_LOCK
+    from library_cleanup import file_ids_for_path,remove_files
+    database=KodiDatabase()
     try:
-        db.connect()
-        cur = db.conn.cursor()
-        dir_name = os.path.dirname(filepath) + '/'
-        file_name = os.path.basename(filepath)
-
-        cur.execute("SELECT idPath FROM path WHERE strPath = ?", (dir_name,))
-        row = cur.fetchone()
-        if not row:
-            return 0
-        id_path = row[0]
-
-        cur.execute("SELECT idFile FROM files WHERE strFilename = ? AND idPath = ?",
-                    (file_name, id_path))
-        row = cur.fetchone()
-        if not row:
-            return 0
-        id_file = row[0]
-
-        deleted = 0
-        # Check and delete movie
-        cur.execute("SELECT idMovie FROM movie WHERE idFile = ?", (id_file,))
-        movie_row = cur.fetchone()
-        if movie_row:
-            id_movie = movie_row[0]
-            cur.execute("DELETE FROM actor_link WHERE media_id=? AND media_type='movie'", (id_movie,))
-            cur.execute("DELETE FROM rating WHERE media_id=? AND media_type='movie'", (id_movie,))
-            cur.execute("DELETE FROM uniqueid WHERE media_id=? AND media_type='movie'", (id_movie,))
-            cur.execute("DELETE FROM art WHERE media_id=? AND media_type='movie'", (id_movie,))
-            cur.execute("DELETE FROM videoversion WHERE idFile=?", (id_file,))
-            cur.execute("DELETE FROM movie WHERE idMovie=?", (id_movie,))
-            deleted += 1
-
-        # Check and delete episode
-        cur.execute("SELECT idEpisode, idShow FROM episode WHERE idFile = ?", (id_file,))
-        ep_row = cur.fetchone()
-        if ep_row:
-            id_episode, id_show = ep_row[0], ep_row[1]
-            cur.execute("DELETE FROM actor_link WHERE media_id=? AND media_type='episode'", (id_episode,))
-            cur.execute("DELETE FROM director_link WHERE media_id=? AND media_type='episode'", (id_episode,))
-            cur.execute("DELETE FROM writer_link WHERE media_id=? AND media_type='episode'", (id_episode,))
-            cur.execute("DELETE FROM uniqueid WHERE media_id=? AND media_type='episode'", (id_episode,))
-            cur.execute("DELETE FROM art WHERE media_id=? AND media_type='episode'", (id_episode,))
-            cur.execute("DELETE FROM episode WHERE idEpisode=?", (id_episode,))
-            # Clean up show if no episodes remain
-            cur.execute("SELECT COUNT(*) FROM episode WHERE idShow = ?", (id_show,))
-            if cur.fetchone()[0] == 0:
-                cur.execute("DELETE FROM actor_link WHERE media_type='tvshow' AND media_id=?", (id_show,))
-                cur.execute("DELETE FROM director_link WHERE media_type='tvshow' AND media_id=?", (id_show,))
-                cur.execute("DELETE FROM writer_link WHERE media_type='tvshow' AND media_id=?", (id_show,))
-                cur.execute("DELETE FROM genre_link WHERE media_type='tvshow' AND media_id=?", (id_show,))
-                cur.execute("DELETE FROM studio_link WHERE media_type='tvshow' AND media_id=?", (id_show,))
-                cur.execute("DELETE FROM country_link WHERE media_type='tvshow' AND media_id=?", (id_show,))
-                cur.execute("DELETE FROM uniqueid WHERE media_type='tvshow' AND media_id=?", (id_show,))
-                cur.execute("DELETE FROM rating WHERE media_type='tvshow' AND media_id=?", (id_show,))
-                cur.execute("DELETE FROM art WHERE media_type='tvshow' AND media_id=?", (id_show,))
-                cur.execute("DELETE FROM tvshowlinkpath WHERE idShow=?", (id_show,))
-                cur.execute("DELETE FROM seasons WHERE idShow=?", (id_show,))
-                cur.execute("DELETE FROM tvshow WHERE idShow=?", (id_show,))
-            deleted += 1
-
-        # Delete file entry
-        cur.execute("DELETE FROM files WHERE idFile=?", (id_file,))
-        cur.execute("DELETE FROM bookmark WHERE idFile=?", (id_file,))
-        cur.execute("DELETE FROM settings WHERE idFile=?", (id_file,))
-        cur.execute("DELETE FROM streamdetails WHERE idFile=?", (id_file,))
-
-        # Delete path if empty
-        cur.execute("SELECT COUNT(*) FROM files WHERE idPath = ?", (id_path,))
-        if cur.fetchone()[0] == 0:
-            cur.execute("DELETE FROM path WHERE idPath = ?", (id_path,))
-
-        db.conn.commit()
-        if deleted:
-            log('DB cleanup: %s -> %d records removed' % (file_name, deleted))
-        return deleted
-    except Exception as e:
-        log('_delete_single_file_from_db error: %s' % e, xbmc.LOGERROR)
-        db.conn.rollback()
-        return 0
+        database.connect()
+        with DB_WRITE_LOCK:
+            result=remove_files(database.conn,file_ids_for_path(database.conn,filepath))
+        return result['movies']+result['episodes']
     finally:
-        db.close()
+        database.close()
 
 
 @guarded_task
 def refresh_directory_files(dirpath):
     """Compare disk vs history: add new files as pending, remove deleted files from DB+history.
     Returns (new_count, deleted_count)."""
-    from file_scanner import find_video_files
+    from file_scanner import find_video_files,ScanIncomplete
 
     history = load_history()
     if dirpath not in history.get('directories', {}):
@@ -1472,12 +1413,21 @@ def refresh_directory_files(dirpath):
     old_files = dict(dir_data.get('files', {}))
 
     # Get current files on disk
-    if xbmcvfs.exists(dirpath):
-        current_set = set(find_video_files(dirpath))
-    else:
-        current_set = set()
+    if not xbmcvfs.exists(dirpath):
+        log('Source unavailable; existing inventory retained: '+directory_label(dirpath),xbmc.LOGWARNING)
+        return 0,0
+    try:
+        current_set = set(find_video_files(dirpath,cancelled=_is_stop_requested))
+    except ScanIncomplete:
+        log('Source traversal incomplete; existing inventory retained: '+directory_label(dirpath),xbmc.LOGWARNING)
+        return 0,0
 
     old_set = set(old_files.keys())
+    if old_set and not current_set:
+        # Kodi VFS can return an empty listing without reporting a network
+        # error. Clearing an entire source requires explicit source removal.
+        log('Empty source listing; existing inventory retained: '+directory_label(dirpath),xbmc.LOGWARNING)
+        return 0,0
 
     # ---- New files: add as pending ----
     new_files = current_set - old_set
@@ -1503,111 +1453,17 @@ def refresh_directory_files(dirpath):
 
 @guarded_task
 def cascade_delete_directory(dirpath):
-    """Remove all movie/TV data from Kodi DB for files under dirpath."""
-    from kodi_db import KodiDatabase
-
-    db = KodiDatabase()
+    from kodi_db import KodiDatabase,DB_WRITE_LOCK
+    from library_cleanup import file_ids_for_source,remove_files
+    database=KodiDatabase()
     try:
-        db.connect()
-        cur = db.conn.cursor()
-        if not dirpath.endswith('/'):
-            dirpath_search = dirpath + '/'
-        else:
-            dirpath_search = dirpath
-
-        # Find all path IDs under this directory (including subdirectories like Season 1/)
-        cur.execute("SELECT idPath, strPath FROM path WHERE strPath LIKE ?",
-                     (dirpath_search + '%',))
-        path_rows = cur.fetchall()
-
-        if not path_rows:
-            xbmc.log('[%s] No path entries under: %s' % (ADDON_NAME, dirpath), xbmc.LOGINFO)
-            return
-
-        deleted_movies = 0
-        deleted_episodes = 0
-        affected_shows = set()
-
-        for path_row in path_rows:
-            id_path = path_row[0]
-            cur.execute("SELECT idFile, strFilename FROM files WHERE idPath = ?", (id_path,))
-            file_rows = cur.fetchall()
-
-            for file_row in file_rows:
-                id_file = file_row[0]
-
-                # Check movie table
-                cur.execute("SELECT idMovie FROM movie WHERE idFile = ?", (id_file,))
-                movie_row = cur.fetchone()
-                if movie_row:
-                    id_movie = movie_row[0]
-                    cur.execute("DELETE FROM actor_link WHERE media_id=? AND media_type='movie'",
-                                (id_movie,))
-                    cur.execute("DELETE FROM rating WHERE media_id=? AND media_type='movie'",
-                                (id_movie,))
-                    cur.execute("DELETE FROM uniqueid WHERE media_id=? AND media_type='movie'",
-                                (id_movie,))
-                    cur.execute("DELETE FROM videoversion WHERE idFile=?", (id_file,))
-                    cur.execute("DELETE FROM movie WHERE idMovie=?", (id_movie,))
-                    deleted_movies += 1
-
-                # Check episode table
-                cur.execute("SELECT idEpisode, idShow FROM episode WHERE idFile = ?", (id_file,))
-                ep_row = cur.fetchone()
-                if ep_row:
-                    id_episode, id_show = ep_row[0], ep_row[1]
-                    affected_shows.add(id_show)
-                    cur.execute("DELETE FROM actor_link WHERE media_id=? AND media_type='episode'",
-                                (id_episode,))
-                    cur.execute("DELETE FROM director_link WHERE media_id=? AND media_type='episode'",
-                                (id_episode,))
-                    cur.execute("DELETE FROM writer_link WHERE media_id=? AND media_type='episode'",
-                                (id_episode,))
-                    cur.execute("DELETE FROM uniqueid WHERE media_id=? AND media_type='episode'",
-                                (id_episode,))
-                    cur.execute("DELETE FROM art WHERE media_id=? AND media_type='episode'",
-                                (id_episode,))
-                    cur.execute("DELETE FROM episode WHERE idEpisode=?", (id_episode,))
-                    deleted_episodes += 1
-
-                cur.execute("DELETE FROM files WHERE idFile=?", (id_file,))
-                cur.execute("DELETE FROM bookmark WHERE idFile=?", (id_file,))
-                cur.execute("DELETE FROM settings WHERE idFile=?", (id_file,))
-                cur.execute("DELETE FROM streamdetails WHERE idFile=?", (id_file,))
-
-            # Delete path if no files remain
-            cur.execute("SELECT COUNT(*) FROM files WHERE idPath = ?", (id_path,))
-            if cur.fetchone()[0] == 0:
-                cur.execute("DELETE FROM path WHERE idPath = ?", (id_path,))
-
-        # Clean up TV shows that have no remaining episodes
-        for show_id in affected_shows:
-            cur.execute("SELECT COUNT(*) FROM episode WHERE idShow = ?", (show_id,))
-            if cur.fetchone()[0] == 0:
-                # Delete all show link data
-                cur.execute("DELETE FROM actor_link WHERE media_type='tvshow' AND media_id=?", (show_id,))
-                cur.execute("DELETE FROM director_link WHERE media_type='tvshow' AND media_id=?", (show_id,))
-                cur.execute("DELETE FROM writer_link WHERE media_type='tvshow' AND media_id=?", (show_id,))
-                cur.execute("DELETE FROM genre_link WHERE media_type='tvshow' AND media_id=?", (show_id,))
-                cur.execute("DELETE FROM studio_link WHERE media_type='tvshow' AND media_id=?", (show_id,))
-                cur.execute("DELETE FROM country_link WHERE media_type='tvshow' AND media_id=?", (show_id,))
-                cur.execute("DELETE FROM uniqueid WHERE media_type='tvshow' AND media_id=?", (show_id,))
-                cur.execute("DELETE FROM rating WHERE media_type='tvshow' AND media_id=?", (show_id,))
-                cur.execute("DELETE FROM art WHERE media_type='tvshow' AND media_id=?", (show_id,))
-                cur.execute("DELETE FROM tvshowlinkpath WHERE idShow=?", (show_id,))
-                cur.execute("DELETE FROM tvshow WHERE idShow=?", (show_id,))
-                # Delete seasons
-                cur.execute("DELETE FROM seasons WHERE idShow=?", (show_id,))
-
-        db.conn.commit()
-        xbmc.log('[%s] Cascade deleted %d movies, %d episodes from: %s' %
-                 (ADDON_NAME, deleted_movies, deleted_episodes, dirpath))
-
-    except Exception as e:
-        xbmc.log('[%s] Cascade delete error: %s' % (ADDON_NAME, e), xbmc.LOGERROR)
-        db.conn.rollback()
+        database.connect()
+        with DB_WRITE_LOCK:
+            result=remove_files(database.conn,file_ids_for_source(database.conn,dirpath))
+        log('Source removed: %d movies, %d episodes' % (result['movies'],result['episodes']))
+        return result
     finally:
-        db.close()
+        database.close()
 
 
 # ==========================================
@@ -1648,7 +1504,7 @@ def scan_directory(dirpath):
 
     if not work_items:
         save_history(history)
-        xbmc.executebuiltin('Container.Refresh')
+        refresh_menu()
         xbmcgui.Dialog().ok(ADDON_NAME, L(32044))
         return
 
@@ -1705,7 +1561,7 @@ def scan_all():
 
     if not work_items:
         save_history(history)
-        xbmc.executebuiltin('Container.Refresh')
+        refresh_menu()
         xbmcgui.Dialog().ok(ADDON_NAME, L(32044))
         return
 
@@ -1755,7 +1611,7 @@ def _store_scan_result(history, affected_dirs, result):
 def _run_scan(work_items, affected_dirs, tv_session_override=None):
     if _is_scanning():
         xbmcgui.Dialog().notification(ADDON_NAME, L(32042), xbmcgui.NOTIFICATION_WARNING, 3000)
-        return
+        return 0,0,0
 
     # Create scanning marker (cross-process)
     _set_scanning()
@@ -1781,7 +1637,8 @@ def _run_scan(work_items, affected_dirs, tv_session_override=None):
         api_model = ADDON.getSetting('ai_model') or 'deepseek-flash'
         tmdb_key = ADDON.getSetting('tmdb_api_key') or ''
         language = ADDON.getSetting('tmdb_language')
-        scan_delay = max(0, int(ADDON.getSetting('scan_delay') or '1'))
+        try:scan_delay = max(0,min(10,int(ADDON.getSetting('scan_delay') or '1')))
+        except (ValueError,TypeError):scan_delay=1
 
         # TMDB key is mandatory - validate before scanning
         import dns_override
@@ -1834,7 +1691,7 @@ def _run_scan(work_items, affected_dirs, tv_session_override=None):
             t = threading.Thread(
                 target=scan_worker,
                 args=(work_queue, result_queue, ai_enabled, api_key, api_base,
-                      api_model, tmdb_key, language, scan_delay, abort_event, tv_session),
+                      api_model, tmdb_key, language, scan_delay, abort_event, tv_session,_is_stop_requested),
                 name='AI-Scanner-%d' % (i + 1))
             t.daemon = True
             t.start()
@@ -1851,6 +1708,9 @@ def _run_scan(work_items, affected_dirs, tv_session_override=None):
         HISTORY_SAVE_EVERY = 10
 
         while processed < scanned_count:
+            if pDialog.isFinished() or _is_stop_requested() or xbmc.Monitor().abortRequested():
+                abort_event.set()
+                break
             try:
                 result = result_queue.get(timeout=0.5)
             except queue.Empty:
@@ -1900,21 +1760,29 @@ def _run_scan(work_items, affected_dirs, tv_session_override=None):
                 except queue.Empty:
                     break
                 _store_scan_result(history,affected_dirs,late_result)
+                processed += 1
+                if late_result[0] in ('success','merged'):
+                    success += 1
+                    merged += late_result[0]=='merged'
+                elif late_result[0]=='skipped':skipped += 1
+                else:failed += 1
                 if late_result[0] in ('success','merged') and late_result[5]:
                     art_entries.append(late_result[5])
-        # Clean up marker files only after every pending transaction finished.
-        _clear_scanning()
-        _clear_stop()
-        if pDialog is not None:
-            pDialog.close()
-        if history is not None:
-            save_history(history)
-        if art_entries:
+        stopped = _is_stop_requested() or xbmc.Monitor().abortRequested()
+        try:
+            if history is not None:
+                save_history(history)
+        finally:
+            # Cleanup still runs if persistence failed (disk full/corruption).
+            _clear_scanning()
+            _clear_stop()
+            if pDialog is not None:pDialog.close()
+        if art_entries and not stopped:
             try:
                 ImageCacher().prefetch_art(art_entries)
             except Exception as e:
                 log('Image prefetch trigger error: %s' % e, xbmc.LOGERROR)
-        xbmc.executebuiltin('Container.Refresh')
+        refresh_menu()
 
     xbmcgui.Dialog().notification(ADDON_NAME,
                         L(32065) % (
@@ -1941,7 +1809,7 @@ def _art_with_cast(details):
 
 
 def scan_worker(work_queue, result_queue, ai_enabled, api_key, api_base,
-                api_model, tmdb_key, language, delay, abort_event, tv_session=None):
+                api_model, tmdb_key, language, delay, abort_event, tv_session=None,stopped=None):
     from ai_parser import parse_filename
     from tmdb_api import (search_movie_best, get_movie_details,
                           search_tv_best, get_tv_details, get_tv_episode_details)
@@ -1950,7 +1818,8 @@ def scan_worker(work_queue, result_queue, ai_enabled, api_key, api_base,
     from media_identity import build_evidence
     from movie_matcher import resolve_movie
 
-    while not abort_event.is_set():
+    should_stop=lambda:abort_event.is_set() or bool(stopped and stopped())
+    while not should_stop():
         try:
             filepath, dirpath = work_queue.get(timeout=0.5)
         except queue.Empty:
@@ -1962,6 +1831,9 @@ def scan_worker(work_queue, result_queue, ai_enabled, api_key, api_base,
             from tv_matcher import TvMatchSession
             session = tv_session or TvMatchSession([filepath],tmdb_key,language)
             if session.context(filepath) is not None:
+                if should_stop():
+                    work_queue.task_done();continue
+                session.cancelled=should_stop
                 result_queue.put(session.process_file(filepath))
                 work_queue.task_done()
                 continue
@@ -2036,7 +1908,7 @@ def scan_worker(work_queue, result_queue, ai_enabled, api_key, api_base,
                     'failed', filepath, fname, None, None, None, 0, 0,
                     L(32110), ''))
                 work_queue.task_done()
-                time.sleep(delay)
+                abort_event.wait(delay)
                 continue
 
             if expected_type=='movie':
@@ -2077,7 +1949,7 @@ def scan_worker(work_queue, result_queue, ai_enabled, api_key, api_base,
                     result_queue.put(('pending', filepath, fname, None, None, None,
                                       0, 0, message, str(source_evidence.get('year') or '')))
                     work_queue.task_done()
-                    time.sleep(delay)
+                    abort_event.wait(delay)
                     continue
                 best = decision['candidate']
                 log('[Worker %s] Verified identity: "%s" -> TMDb %s (%s)' %
@@ -2091,9 +1963,11 @@ def scan_worker(work_queue, result_queue, ai_enabled, api_key, api_base,
                         'failed', filepath, fname, None, None, None, 0, 0,
                         L(32112) % movie_title, ''))
                     work_queue.task_done()
-                    time.sleep(delay)
+                    abort_event.wait(delay)
                     continue
 
+                if should_stop():
+                    work_queue.task_done();continue
                 db = KodiDatabase()
                 try:
                     db.connect()
@@ -2106,7 +1980,7 @@ def scan_worker(work_queue, result_queue, ai_enabled, api_key, api_base,
                         movie_id = db.save_movie(details, filepath)
                         status_flag = 'success' if movie_id else 'failed'
                 except Exception as e:
-                    xbmc.log('[%s] Worker DB error: %s' % (ADDON_NAME, e), xbmc.LOGERROR)
+                    log('Worker DB error: '+str(e),xbmc.LOGERROR)
                     movie_id = None
                     status_flag = 'error'
                 finally:
@@ -2136,9 +2010,9 @@ def scan_worker(work_queue, result_queue, ai_enabled, api_key, api_base,
                               {'type':'tvshow','reason':'episode_context_unverified','source_title':title}))
 
         except Exception as e:
-            xbmc.log('[%s] Worker exception: %s' % (ADDON_NAME, e), xbmc.LOGERROR)
+            log('Worker exception: '+str(e),xbmc.LOGERROR)
             result_queue.put((
-                'error', filepath, fname, None, None, None, 0, 0, str(e), ''))
+                'error', filepath, fname, None, None, None, 0, 0, redact_text(e), ''))
 
         # No success-path sleep: the token-bucket rate limiter inside
         # tmdb_api already keeps us under TMDB's request quota, so waiting
@@ -2210,4 +2084,9 @@ def _xml_escape(text):
 
 
 if __name__ == '__main__':
-    router()
+    try:
+        router()
+    except (OSError,ValueError) as error:
+        log('Scanner operation stopped: '+type(error).__name__,xbmc.LOGERROR)
+        xbmcgui.Dialog().ok(ADDON_NAME,L(32416))
+        if addon_handle>=0:xbmcplugin.endOfDirectory(addon_handle,succeeded=False)

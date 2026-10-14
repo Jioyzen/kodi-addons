@@ -1,0 +1,52 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: weather.jioyzen\n"
+"Language: en_GB\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgctxt "#32000"
+msgid "Location"
+msgstr "Location"
+
+msgctxt "#32001"
+msgid "Get location automatically"
+msgstr "Get location automatically"
+
+msgctxt "#32002"
+msgid "Search and choose a location"
+msgstr "Search and choose a location"
+
+msgctxt "#32004"
+msgid "Locate the city using the domestic IP, or disable to search and choose a place."
+msgstr "Locate the city using the domestic IP, or disable to search and choose a place."
+
+msgctxt "#32005"
+msgid "Search by Chinese name, pinyin initials or full pinyin, then verify the region and choose a city or district."
+msgstr "Search by Chinese name, pinyin initials or full pinyin, then verify the region and choose a city or district."
+
+msgctxt "#32007"
+msgid "Search location (pinyin initials and full pinyin supported)"
+msgstr "Search location (pinyin initials and full pinyin supported)"
+
+msgctxt "#32008"
+msgid "Searching for locations…"
+msgstr "Searching for locations…"
+
+msgctxt "#32009"
+msgid "Selected location"
+msgstr "Selected location"
+
+msgctxt "#32010"
+msgid "No matching location. Try removing an administrative suffix or searching for its city. District coverage may be incomplete."
+msgstr "No matching location. Try removing an administrative suffix or searching for its city. District coverage may be incomplete."
+
+msgctxt "#32011"
+msgid "Location search failed. Check the network and try again."
+msgstr "Location search failed. Check the network and try again."
+
+msgctxt "#32012"
+msgid "Choose a location and verify its region"
+msgstr "Choose a location and verify its region"

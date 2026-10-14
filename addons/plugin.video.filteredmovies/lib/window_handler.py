@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from .common import notification, log, DB_PATH
+from .common import notification, log, DB_PATH, ADDON_DATA_PATH
 from . import t9_helper
 import xbmc
 import xbmcgui
@@ -125,6 +125,8 @@ _REGION_CODES_IN_ORDER = [
 
 def _get_filter_label(identifier):
     """从语言文件读取筛选按钮显示名，回退到标识符本身"""
+    if identifier in GENRE_LABELS:
+        return genre_label(identifier)
     try:
         addon = xbmcaddon.Addon('plugin.video.filteredmovies')
     except Exception:
@@ -184,7 +186,7 @@ def _update_filter_availability(force=False):
     _AVAIL_CACHE_REVISION = current_revision
     home = xbmcgui.Window(10000)
 
-    available_genres = _get_available_genres()
+    available_genres = {name for value in _get_available_genres() for name in genre_values(value)}
     log(f"[AVAIL] genres in DB: {sorted(available_genres)}")
     known_genre_vals = set(FILTER_MAP.get("filter.genre", {}).get("mapping", {}).keys())
     known_genre_vals.discard("其他")
@@ -194,7 +196,7 @@ def _update_filter_availability(force=False):
             visible = "true" if unmapped else "false"
             log(f"[AVAIL] genre other: unmapped={sorted(unmapped)}, visible={visible}")
         else:
-            visible = "true" if val in available_genres else "false"
+            visible = "true"
         home.setProperty(f"MFG.HasGenre.{btn_id}", visible)
 
     available_regions = _get_available_regions()
@@ -350,6 +352,8 @@ class CharSelectorDialog(xbmcgui.WindowXMLDialog):
 
 # 定义 Skin String 值到按钮 ID 的映射
 # 格式: { 'SkinStringName': { 'Value': ButtonID, 'Default': ButtonID } }
+from .genres import GENRE_BUTTONS, GENRE_LABELS, genre_name, genre_label, genre_values
+
 FILTER_MAP = {
     'filter.sort': {
         'mapping': {
@@ -372,23 +376,8 @@ FILTER_MAP = {
         'default': 6001
     },
     'filter.genre': {
-        'mapping': {
-            '动作': 2002,
-            '喜剧': 2003,
-            '爱情': 2004,
-            '科幻': 2005,
-            '犯罪': 2006,
-            '冒险': 2007,
-            '剧情': 2014,
-            '恐怖': 2008,
-            '动画': 2009,
-            '战争': 2010,
-            '悬疑': 2011,
-            '历史': 2012,
-            '音乐': 2013,
-            '其他': 2015
-        },
-        'default': 2001
+        'mapping': dict(GENRE_BUTTONS, **{'其他':2015}),
+        'default':2001
     },
     'filter.region': {
         'mapping': {
@@ -458,6 +447,7 @@ class FilterWindow(xbmcgui.WindowXML):
         self._background_policy = None
         self._grid_page = self.xml_name in ('Custom_5112_AllMovie.xml', 'Custom_5114_Movie.xml')
         self._grid_bind_queue = queue.Queue()
+        self._home_bind_queue = queue.Queue()
         self._grid_initial_focus = self._grid_page
         self._grid_pending_right = None
         self._grid_panel_animations = None
@@ -466,13 +456,25 @@ class FilterWindow(xbmcgui.WindowXML):
         self._has_filter_toolbar = self.xml_name == 'Custom_5112_AllMovie.xml'
         self._filters_expanded = False
         self._sort_open = False
-        self._sort_method = 'dateadded'
-        self._sort_order = 'descending'
+        self._sort_method,self._sort_order = 'dateadded','descending'
         self._facet_queue = queue.Queue()
         self._active_filter_rows = []
         self._facet_row_buttons = {}
         self._filter_layout_signature = None
         self.is_search = self.xml_name == 'Custom_5113_SearchMovie.xml'
+
+    def _sort_scope(self):
+        # Navigation assigns initial_mediatype after construction. Keep the
+        # entry category stable when temporary media-type filters change.
+        if hasattr(self,'collection_id'):
+            return 'set'
+        return getattr(self,'initial_mediatype',
+                       'all' if self.xml_name=='Custom_5112_AllMovie.xml' else 'movie')
+
+    def _restore_sort_preferences(self):
+        if self._grid_page:
+            from .sort_preferences import load
+            self._sort_method,self._sort_order = load(ADDON_DATA_PATH,self._sort_scope())
 
     def _input_window(self):
         # Search must not overwrite the parent wall's input or filter state.
@@ -657,14 +659,19 @@ class FilterWindow(xbmcgui.WindowXML):
                 and not self.poster_loader.closed.is_set()):
             # Kodi invokes onInit again after returning from a child window.
             # Reuse workers and Python state; only rebind rebuilt GUI controls.
-            returning_child = self.getProperty('MFG.ChildWindow') == 'true'
             if self._grid_page:
-                self._filter_layout_signature = None
+                if not self.getControl(9999).size():
+                    self._filter_layout_signature = None
                 self._update_toolbar()
-            if returning_child and (self.poster_loader.restore_home() or self._can_restore_grid()):
+            # Playback updates the DB/WAL, but does not invalidate this list's
+            # selection. The modal guard may already be cleared when onInit
+            # arrives; the saved query and surviving controls are authoritative.
+            if (self._can_restore_grid() or self.poster_loader.restore_home()):
                 self._restore_navigation_state()
                 log("WALL resumed from child with navigation state preserved")
             else:
+                if self._grid_page:
+                    self.setProperty('MFG.ReturnFocus','false')
                 self.poster_loader.refresh(self._query_filters())
                 log("WALL window resumed with existing workers")
             return
@@ -683,6 +690,7 @@ class FilterWindow(xbmcgui.WindowXML):
         self.setProperty('MFG.InputWindowId', str(self._window_id))
         self.setProperty('MFG.PageTitle', getattr(self, 'page_title', ''))
         if self._grid_page:
+            self.setProperty('MFG.ReturnFocus','false')
             self._has_filter_toolbar = getattr(self, 'initial_mediatype', 'all') != 'set'
             self.setProperty('MFG.FilterSupported', 'true' if self._has_filter_toolbar else 'false')
             self.setProperty('MFG.AllPage', 'true' if self.xml_name == 'Custom_5112_AllMovie.xml' else 'false')
@@ -702,6 +710,7 @@ class FilterWindow(xbmcgui.WindowXML):
         if hasattr(self,'initial_mediatype'):
             self.filter_state['filter.mediatype']={'id':{'all':6001,'movie':6002,'set':6003,'tvshow':6004,'concert':6005,'documentary':6006}.get(self.initial_mediatype,6001),'value':self.initial_mediatype}
         if self._grid_page:
+            self._restore_sort_preferences()
             self._update_toolbar()
         # 立即初始化筛选高亮
         if not self.xml_name.startswith("Custom_5111_"):
@@ -850,14 +859,16 @@ class FilterWindow(xbmcgui.WindowXML):
         if getattr(self, '_cleaned_up', False):
             return
         self._cleaned_up = True
-        while True:
-            try:
-                job = self._grid_bind_queue.get_nowait()
-            except queue.Empty:
-                break
-            job['cancelled'] = True
-            job['items'] = None
-            job['done'].set()
+        for pending_queue in (self._grid_bind_queue,self._home_bind_queue):
+            while True:
+                try:
+                    job = pending_queue.get_nowait()
+                except queue.Empty:
+                    break
+                job['cancelled'] = True
+                job['items'] = None
+                if 'rows' in job:job['rows']=None
+                job['done'].set()
         if getattr(self,'poster_loader',None) is not None:
             self.poster_loader.stop()
             self.poster_loader.worker.join(timeout=.6)
@@ -899,6 +910,63 @@ class FilterWindow(xbmcgui.WindowXML):
                 return False
         return job['ok']
 
+    def queue_playback_state(self, state, generation, position):
+        loader = self.poster_loader
+        if loader is None or not loader.valid(generation):
+            return
+        self._grid_bind_queue.put({'items':None, 'playback_state':state,
+            'position':position, 'generation':generation, 'loader':loader,
+            'done':threading.Event(), 'ok':False})
+        xbmc.executebuiltin('SendClick(%d,7193)' % self._window_id)
+
+    def bind_home_rows(self, cid, rows, items, generation):
+        loader = self.poster_loader
+        if loader is None or not loader.valid(generation) or not self._is_active():
+            return False
+        job={'cid':cid,'rows':rows,'items':items,'generation':generation,
+             'loader':loader,'done':threading.Event(),'ok':False}
+        self._home_bind_queue.put(job)
+        xbmc.executebuiltin('SendClick(%d,7197)' % self._window_id)
+        started=time.monotonic()
+        while not job['done'].wait(.05):
+            if not loader.valid(generation) or not self._is_active() or time.monotonic()-started>5:
+                job['cancelled']=True
+                return False
+        return job['ok']
+
+    def _apply_home_binds(self):
+        while True:
+            try:job=self._home_bind_queue.get_nowait()
+            except queue.Empty:return
+            try:
+                loader=job['loader']
+                with loader.lock:
+                    if (job.get('cancelled') or loader is not self.poster_loader
+                            or not loader.valid(job['generation']) or not self._is_active()):
+                        continue
+                    job['ok']=self._apply_home_row(job['cid'],job['rows'],job['items'],job['generation'])
+            except (RuntimeError,AttributeError) as exc:
+                log('WALL home bind failed: %s' % type(exc).__name__,xbmc.LOGWARNING)
+            finally:
+                job['items']=None;job['rows']=None;job['done'].set()
+
+    def _apply_home_row(self, cid, rows, items, generation):
+        """Only the active GUI callback owns native recommendation controls."""
+        from .home_updates import sync_row
+        loader = self.poster_loader
+        if loader is None:
+            return False
+        with loader.lock:
+            if not loader.valid(generation) or not self._is_active():
+                return False
+            panel = self.getControl(cid)
+            sync_row(panel, loader.home_rows.get(cid,[]), rows, items)
+            loader.home_rows[cid] = list(rows)
+            loader.message(cid, 'ready' if rows else 'empty', '' if rows else '暂无推荐内容。')
+            if not rows and self.getFocusId() == cid:
+                self.setFocusId(1003)
+            return True
+
     def _apply_grid_binds(self):
         while True:
             try:
@@ -912,6 +980,12 @@ class FilterWindow(xbmcgui.WindowXML):
                             or not loader.valid(job['generation']) or not self._is_active()):
                         continue
                     panel = self.getControl(9999)
+                    if 'playback_state' in job:
+                        position = job['position']
+                        if 0 <= position < panel.size():
+                            from .playback_state import apply_state
+                            job['ok'] = apply_state(panel.getListItem(position), job['playback_state'])
+                        continue
                     selected = (max(0, panel.getSelectedPosition())
                                 if job['append'] and not self._grid_force_first_selection else 0)
                     if not job['append']:
@@ -927,7 +1001,8 @@ class FilterWindow(xbmcgui.WindowXML):
                     if target:
                         panel.selectItem(target)
                     if self._grid_initial_focus and panel.size():
-                        self.setFocusId(9999)
+                        if self.getFocusId() != 9999:
+                            self.setFocusId(9999)
                         self._grid_initial_focus = False
                     job['ok'] = True
             except (RuntimeError, AttributeError) as exc:
@@ -941,6 +1016,13 @@ class FilterWindow(xbmcgui.WindowXML):
             return
         panel = self.getControl(9999)
         selected = panel.getSelectedPosition()
+        # SendClick is delivered after Kodi has already handled the key.
+        # A delayed row-edge callback must not move a newer selection again.
+        columns = 6
+        if (direction < 0 and selected % columns != 0 or
+                direction > 0 and selected % columns != columns - 1
+                and selected != panel.size() - 1):
+            return
         target = selected + direction
         if 0 <= target < panel.size():
             self._grid_pending_right = None
@@ -963,8 +1045,13 @@ class FilterWindow(xbmcgui.WindowXML):
         self.setProperty('MFG.FilterLabel', '筛选 ▴' if self._filters_expanded else '筛选 ▾')
         panel = self.getControl(9999)
         top = 125 + len(self._active_filter_rows) * 45 if self._has_filter_toolbar and self._filters_expanded else 90
-        panel.setPosition(30, top)
-        panel.setHeight(1080 - top)
+        if panel.getX() != 30 or panel.getY() != top:
+            panel.setPosition(30, top)
+        if panel.getHeight() != 1080 - top:
+            panel.setHeight(1080 - top)
+        # The message shares the panel's remaining content area. Recenter
+        # after expanding/collapsing facets so it cannot cover filter text.
+        self.getControl(7290).setPosition(30, top + (1080 - top - 90) // 2)
         if self._has_filter_toolbar:
             signature = tuple(self._active_filter_rows)
             if signature != self._filter_layout_signature:
@@ -996,10 +1083,8 @@ class FilterWindow(xbmcgui.WindowXML):
                 return
             if not self._is_active() or not self.poster_loader.valid(generation):
                 continue
-            aliases = {'科幻': ('科幻','Sci-Fi & Fantasy'), '战争': ('战争','War & Politics'),
-                       '音乐': ('音乐','Music','音樂')}
-            known_genres = set(FILTER_MAP['filter.genre']['mapping']) - {'其他'}
-            known_genres.update(value for values in aliases.values() for value in values)
+            available_genres = {name for value in facets['genre'] for name in genre_values(value)}
+            known_genres = set(GENRE_BUTTONS)
             known_regions = set(FILTER_MAP['filter.region']['mapping']) - {'__other__'}
             rows = [1006] if self.xml_name == 'Custom_5112_AllMovie.xml' else []
             row_buttons = {1006:list(range(6001,6007))} if rows else {}
@@ -1010,7 +1095,7 @@ class FilterWindow(xbmcgui.WindowXML):
                 available = []
                 for value, button_id in data['mapping'].items():
                     if field == 'genre':
-                        visible = bool(facets[field]-known_genres) if value == '其他' else bool(facets[field].intersection(aliases.get(value,(value,))))
+                        visible = bool(available_genres-known_genres) if value == '其他' else True
                     elif field == 'region':
                         visible = bool(facets[field]-known_regions) if value == '__other__' else value in facets[field]
                     elif field == 'year':
@@ -1034,6 +1119,10 @@ class FilterWindow(xbmcgui.WindowXML):
                 # Keep a reset button accessible if a category change leaves
                 # an active constraint with no matching/alternative options.
                 meaningful = (len(available) > 1 and len(facets[field]) > 1) or has_selection
+                if field == 'genre':
+                    # Keep common genres usable even in an empty library.
+                    # Collections have no genre filtering in Kodi.
+                    meaningful = self.filter_state.get('filter.mediatype',{}).get('value')!='set'
                 self.setProperty('MFG.FacetRow.%d' % cid, 'true' if meaningful else 'false')
                 if meaningful:
                     rows.append(cid)
@@ -1059,6 +1148,9 @@ class FilterWindow(xbmcgui.WindowXML):
             self._sort_order = 'ascending' if self._sort_order == 'descending' else 'descending'
         else:
             self._sort_method, self._sort_order = method, default_order
+        from .sort_preferences import save
+        if not save(ADDON_DATA_PATH,self._sort_method,self._sort_order,self._sort_scope()):
+            log('Unable to save the last selected sort preference',xbmc.LOGWARNING)
         self._sort_open = False
         self._grid_pending_right = None
         self._grid_force_first_selection = True
@@ -1111,7 +1203,10 @@ class FilterWindow(xbmcgui.WindowXML):
             self.getControl(9999).setAnimations(self._grid_panel_animations[0])
             self._grid_restore_animations = False
         if action_id in (1, 2, 3, 4):
+            self._commit_navigation_input()
             self._grid_force_first_selection = False
+            if self._grid_page:
+                self.setProperty('MFG.ReturnFocus','false')
         if action_id in (1, 3, 4):
             self._grid_pending_right = None
         if action_id in (10, 92) and self._grid_back():
@@ -1305,13 +1400,34 @@ class FilterWindow(xbmcgui.WindowXML):
                         self._open_home_entry(entry)
                 return
             media_type=li.getVideoInfoTag().getMediaType()
-            if info_only or media_type == 'movie' and control_id != 1002:
+            if media_type == 'episode':
+                from .tv_catalog import rpc
+                if info_only:
+                    from .tv_details import open_tvshow
+                    open_tvshow(int(li.getProperty('MFG.TvshowId')),parent=self,
+                        seed={'title':li.getProperty('MFG.ShowTitle'),
+                              'art':{key:li.getArt(key) for key in ('poster','fanart','clearlogo')}},
+                        initial_season=int(li.getProperty('MFG.Season')))
+                else:
+                    self._capture_navigation_state()
+                    rpc('Player.Open',{'item':{'episodeid':li.getVideoInfoTag().getDbId()},
+                                       'options':{'resume':True}})
+            elif media_type == 'tvshow':
+                from .tv_details import open_tvshow
+                tag = li.getVideoInfoTag()
+                open_tvshow(tag.getDbId(), parent=self, seed={
+                    'title': li.getLabel(), 'plot': tag.getPlot(),
+                    'art': {key: li.getArt(key) for key in ('poster', 'fanart', 'clearlogo')}})
+            elif media_type=='movie' and (info_only or control_id!=1002):
+                from .movie_details import open_movie
+                tag=li.getVideoInfoTag()
+                open_movie(tag.getDbId(),parent=self,seed={'title':li.getLabel(),'plot':tag.getPlot(),
+                    'art':{key:li.getArt(key) for key in ('poster','fanart','clearlogo')}})
+            elif info_only:
                 xbmcgui.Dialog().info(li)
             elif media_type == 'set':
                 self._open_home_entry(7102, collection_id=li.getVideoInfoTag().getDbId(),
                                       page_title=li.getLabel())
-            elif media_type == 'tvshow':
-                xbmc.executebuiltin('ActivateWindow(Videos,"%s",return)' % li.getPath().replace('"','\\"'))
             elif media_type=='movie':
                 xbmc.executebuiltin('PlayMedia("%s",resume)' % li.getPath().replace('"','\\"'))
         except (RuntimeError,AttributeError) as exc:
@@ -1334,31 +1450,73 @@ class FilterWindow(xbmcgui.WindowXML):
                 pass
         from .catalog_cache import revision
         self._navigation_return_state = (focus, positions, revision())
+        self._navigation_return_applied = False
+        if self._grid_page:
+            self._navigation_return_query = self._query_filters()
+            self._navigation_return_applied = False
+            self.setProperty('MFG.ReturnFocus','true')
+            self._navigation_return_identity = None
+            try:
+                tag = self.getControl(9999).getSelectedItem().getVideoInfoTag()
+                self._navigation_return_identity = (tag.getMediaType(), tag.getDbId())
+            except (RuntimeError, AttributeError):
+                pass
 
     def _restore_navigation_state(self):
         """Focus the saved row so Kodi scrolls its group back into view."""
         state = getattr(self, '_navigation_return_state', None)
         if not state or not self._is_active():
             return
+        if getattr(self,'_navigation_return_applied',False):
+            return
         focus, positions, _revision = state
+        if self._grid_page and not self._can_restore_grid():
+            return
+        if self._grid_page and self.getFocusId() == 9999:
+            current = self.getControl(9999).getSelectedPosition()
+            saved = positions.get(9999, 0)
+            # A rebuilt panel starts at zero. A different nonzero selection
+            # means native input has already moved it before Python onInit.
+            if current != saved and current > 0:
+                self._commit_navigation_input()
+                return
         for cid, position in positions.items():
             try:
                 panel = self.getControl(cid)
                 if panel.size():
-                    panel.selectItem(max(0, min(position, panel.size() - 1)))
+                    target = max(0, min(position, panel.size() - 1))
+                    if panel.getSelectedPosition() != target:
+                        panel.selectItem(target)
             except (RuntimeError, AttributeError):
                 pass
         try:
-            self.setFocusId(focus)
+            if self.getFocusId() != focus:
+                self.setFocusId(focus)
         except RuntimeError:
-            pass
+            return
+        self._navigation_return_applied = True
+        if self._grid_page:
+            identity = getattr(self,'_navigation_return_identity',None)
+            if identity:
+                self.poster_loader.refresh_playback_state(identity, positions.get(9999,0))
+
+    def _commit_navigation_input(self):
+        """New input owns focus; a delayed return callback cannot rewind it."""
+        if (not self._is_active() or not getattr(self,'_navigation_return_state',None)
+                or getattr(self,'_navigation_return_applied',False)):
+            return
+        self._navigation_return_applied = True
+        if self._grid_page:
+            identity = getattr(self,'_navigation_return_identity',None)
+            if identity and self._can_restore_grid():
+                self.poster_loader.refresh_playback_state(identity,
+                    self._navigation_return_state[1].get(9999,0))
 
     def _can_restore_grid(self):
         state = getattr(self, '_navigation_return_state', None)
         if not self._grid_page or not state:
             return False
-        from .catalog_cache import revision
-        if state[2] != revision():
+        if getattr(self,'_navigation_return_query',None) != self._query_filters():
             return False
         try:
             return self.getControl(9999).size() > 0
@@ -1402,6 +1560,9 @@ class FilterWindow(xbmcgui.WindowXML):
             self._opening_child = False
 
     def onClick(self, controlId):
+        if controlId == 7197:
+            self._apply_home_binds()
+            return
         if self._grid_page:
             if controlId == 7195:
                 self._apply_filter_facets()
@@ -1455,4 +1616,6 @@ class FilterWindow(xbmcgui.WindowXML):
     def refresh_container(self):
         # Coalesce changes in the same worker; do not clear/reinvoke the plugin.
         if hasattr(self, 'poster_loader'):
+            if self._grid_page:
+                self.setProperty('MFG.ReturnFocus','false')
             self.poster_loader.refresh(self._query_filters())

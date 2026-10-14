@@ -548,8 +548,8 @@ msgid "Pending matches (%d)"
 msgstr "待确认匹配 (%d)"
 
 msgctxt "#32162"
-msgid "Pending files (%d) - pick one to match manually"
-msgstr "待确认文件 (%d) — 选择要手动匹配的项"
+msgid "Pending movies / show directories (%d) - pick one to match manually"
+msgstr "待确认电影／剧目录 (%d) — 选择要手动匹配的项"
 
 msgctxt "#32163"
 msgid "No matches need manual confirmation"
@@ -726,3 +726,7 @@ msgstr "文件已不在插件媒体库中，请重新扫描目录。"
 msgctxt "#32415"
 msgid "This directory contains different shows. Organize them into separate show directories before matching."
 msgstr "该目录包含多部不同的剧，请按独立剧目录管理后再匹配。"
+
+msgctxt "#32416"
+msgid "The operation could not finish. Check local storage and scan history. Existing records will not be cleared automatically."
+msgstr "操作未完成，请检查本地存储和扫描记录。已有记录不会被自动清空。"

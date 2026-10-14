@@ -3,6 +3,7 @@
 import sqlite3, time, json, math
 from .common import log, DB_PATH
 from .regions import region_match
+from .genres import genre_match, genre_values
 
 # Kodi 22 VideoDatabaseColumns.h. c07 is unused, c05 is a rating ID,
 # c22 is the base path, and bookmark totalTime is not the scraped runtime.
@@ -19,7 +20,8 @@ _MOVIE_FIELDS = [
 _TVSHOW_FIELDS = [
     ('tvshowid', 'idShow'), ('title', 'c00'), ('plot', 'c01'),
     ('rating', 'rating'), ('genre', 'c08'), ('originaltitle', 'c09'),
-    ('mpaa', 'c13'), ('studio', 'c14'), ('premiered', 'c05'), ('sorttitle', 'c15'),
+    ('mpaa', 'c13'), ('studio', 'c14'), ('country', 'c18'),
+    ('premiered', 'c05'), ('sorttitle', 'c15'),
     ('trailer', 'c16'), ('runtime', 'duration'), ('imdbnumber', 'uniqueid_value'),
     ('userrating', 'userrating'), ('votes', 'votes'),
     ('playcount', 'playCount'), ('lastplayed', 'lastPlayed'), ('dateadded', 'dateAdded'),
@@ -33,6 +35,7 @@ def _conn():
     from urllib.parse import quote
     conn = sqlite3.connect("file:"+quote(DB_PATH,safe="/")+"?mode=ro", uri=True, timeout=.3)
     conn.create_function('region_match', 2, region_match)
+    conn.create_function('genre_match', 2, genre_match)
     return conn
 def _get_val(f, k, d=None): return f[k] if f and k in f else d
 
@@ -162,10 +165,10 @@ def _build_props(media_type):
     cols_cache = getattr(_build_props, '_cache', {})
     if media_type not in cols_cache:
         table = 'movie_view' if media_type in ('movie','concert','documentary') else 'tvshow_view'
-        conn = _conn()
-        cur = conn.execute(f'SELECT * FROM {table} LIMIT 0')
-        all_cols = [d[0] for d in cur.description]
-        conn.close()
+        from contextlib import closing
+        with closing(_conn()) as conn:
+            cur = conn.execute(f'SELECT * FROM {table} LIMIT 0')
+            all_cols = [d[0] for d in cur.description]
         fields = _MOVIE_FIELDS if media_type in ('movie','concert','documentary') else _TVSHOW_FIELDS
         props = {}
         for py_name, db_name in fields:
@@ -207,28 +210,11 @@ def _where(media_type, filters, props):
         else:
             clauses.append('0')
     genre = filters.get('filter.genre')
-    if genre == '其他':
-        known = ('动作', '喜剧', '爱情', '科幻', '犯罪', '冒险', '剧情',
-                 '恐怖', '动画', '战争', '悬疑', '历史', '音乐',
-                 'Sci-Fi & Fantasy', 'War & Politics', 'Music', '音樂')
-        identity = props.get('movieid') or props.get('tvshowid')
-        kind = 'movie' if props.get('movieid') else 'tvshow'
-        if identity:
-            clauses.append("EXISTS (SELECT 1 FROM genre_link gl JOIN genre g ON g.genre_id=gl.genre_id "
-                           "WHERE gl.media_id="+identity+" AND gl.media_type=? AND g.name NOT IN ("+
-                           ','.join('?' for _ in known)+"))")
-            args.extend((kind,) + known)
-        else:
-            clauses.append('0')
-    if genre and genre not in ('类型', '其他'):
-        values = {'科幻': ['科幻', 'Sci-Fi & Fantasy'], '战争': ['战争', 'War & Politics'],
-                  '音乐': ['音乐', 'Music', '音樂']}.get(genre, [genre])
+    if genre and genre!='类型':
         column = props.get('genre')
+        clauses.append('genre_match('+column+', ?) = 1' if column else '0')
         if column:
-            clauses.append('('+' OR '.join(column+' LIKE ?' for _ in values)+')')
-            args.extend('%'+v+'%' for v in values)
-        else:
-            clauses.append('0')
+            args.append(str(genre))
     if media_type == 'concert':
         clauses.append("trim(%s, ' /') IN (?,?,?)" % props['genre'])
         args.extend(('音乐', 'Music', '音樂'))
@@ -343,7 +329,8 @@ def sqlite_get_items(filters=None, limit=500, offset=0):
             batch=[]
             for start in range(0,len(ids),200):
                 part=ids[start:start+200]
-                batch.extend(_rows(conn,sql+' WHERE '+identity+' IN ('+','.join('?' for _ in part)+')',part,media_type))
+                default_only = ' AND '+props['_default_version']+'=1' if props.get('_default_version') else ''
+                batch.extend(_rows(conn,sql+' WHERE '+identity+' IN ('+','.join('?' for _ in part)+')'+default_only,part,media_type))
             _hydrate(conn,batch,media_type)
             indexed.update({(item[id_key],media_type):item for item in batch})
         return [indexed[(identity,media_type)] for identity,media_type in selected if (identity,media_type) in indexed]
@@ -479,7 +466,7 @@ def get_filter_facets(filters=None):
                 where, args = _where(media, scope, props)
                 columns = [props.get(field, 'NULL') for field in ('genre', 'country', 'year', 'rating')]
                 for genre, country, year, rating in conn.execute('SELECT DISTINCT '+','.join(columns)+' FROM '+table+where, args):
-                    facets['genre'].update(_parse_list(genre))
+                    facets['genre'].update(name for value in _parse_list(genre) for name in genre_values(value))
                     facets['region'].update(region_code(value) for value in _parse_list(country))
                     try:
                         if year and 1000 <= int(year) <= 9999:

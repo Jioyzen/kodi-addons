@@ -1,0 +1,52 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: weather.jioyzen\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgctxt "#32000"
+msgid "Location"
+msgstr "地区设置"
+
+msgctxt "#32001"
+msgid "Get location automatically"
+msgstr "自动获取位置"
+
+msgctxt "#32002"
+msgid "Search and choose a location"
+msgstr "搜索并选择位置"
+
+msgctxt "#32004"
+msgid "Locate the city using the domestic IP, or disable to search and choose a place."
+msgstr "开启时通过国内出口 IP 获取城市位置；关闭后可搜索并手动选择地点。"
+
+msgctxt "#32005"
+msgid "Search by Chinese name, pinyin initials or full pinyin, then verify the region and choose a city or district."
+msgstr "支持中文名称、拼音首字母和全拼搜索，核对地区后选择城市或区县。选择结果将保存并显示在“已选位置”。"
+
+msgctxt "#32007"
+msgid "Search location (pinyin initials and full pinyin supported)"
+msgstr "搜索位置（支持拼音首字母和全拼搜索）"
+
+msgctxt "#32008"
+msgid "Searching for locations…"
+msgstr "正在搜索位置…"
+
+msgctxt "#32009"
+msgid "Selected location"
+msgstr "已选位置"
+
+msgctxt "#32010"
+msgid "No matching location. Try removing an administrative suffix or searching for its city. District coverage may be incomplete."
+msgstr "未找到该地点。请尝试去掉“市／区／县”等后缀，或输入所在城市名称。区县收录可能不完整。"
+
+msgctxt "#32011"
+msgid "Location search failed. Check the network and try again."
+msgstr "位置搜索失败，请检查网络后重试。"
+
+msgctxt "#32012"
+msgid "Choose a location and verify its region"
+msgstr "请选择位置（请核对所属省市）"

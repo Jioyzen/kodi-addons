@@ -16,6 +16,7 @@ from test_scanner_playback import namespace
 
 
 def functions(names,namespace):
+    namespace.setdefault('refresh_menu', lambda: None)
     tree=ast.parse((SOURCE/'main.py').read_text())
     nodes=[node for node in tree.body if isinstance(node,ast.FunctionDef) and node.name in names]
     for node in nodes:node.decorator_list=[]
@@ -85,8 +86,9 @@ class RememberedIdentityTests(unittest.TestCase):
         files={'/media/Alias.2020/01.mkv':{'status':'success'},'/media/Alias.2020/02.mkv':{'status':'pending'}}
         s=TvMatchSession([],'test')
         s.register_source(files,'auto',{path_token('/media/Alias.2020/'):{'tmdb_id':91,'title':'Confirmed'}})
-        import tmdb_api
-        with patch.object(tmdb_api,'get_tv_details',return_value={'info':{'title':'Confirmed'}}),patch.object(tmdb_api,'search_tv_best',side_effect=AssertionError('Already confirmed')):
+        tmdb_api = types.SimpleNamespace(get_tv_details=lambda *a, **kw: {'info':{'title':'Confirmed'}},
+                                        search_tv_best=lambda *a, **kw: self.fail('Already confirmed'))
+        with patch.dict(sys.modules, {'tmdb_api': tmdb_api}):
             for path in files:self.assertEqual(s.resolve_show(s.context(path))['id'],91)
 
     def test_unknown_names_still_follow_confirmed_directory(self):

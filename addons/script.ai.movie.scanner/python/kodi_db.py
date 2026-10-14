@@ -7,6 +7,7 @@ import sqlite3
 import threading
 import xbmc
 import xbmcvfs
+from path_display import redact_text
 
 ADDONID = 'script.ai.movie.scanner'
 
@@ -18,8 +19,16 @@ DEFAULT_DB_PATH = current_database('MyVideos')
 # concurrent commits never hit "database is locked" timeouts.
 DB_WRITE_LOCK = threading.RLock()
 
+def runtime_seconds(minutes):
+    """TMDb runtime is minutes; Kodi c11 and JSON-RPC runtime are seconds."""
+    try:
+        return max(0,int(float(minutes or 0)*60))
+    except (TypeError,ValueError,OverflowError):
+        return 0
+
+
 def _log(level, msg):
-    xbmc.log(msg='%s: %s' % (ADDONID, msg), level=level)
+    xbmc.log(msg='%s: %s' % (ADDONID, redact_text(msg)), level=level)
 
 
 def _art_url(url, size):
@@ -52,9 +61,11 @@ class KodiDatabase:
 
     def close(self):
         if self.conn:
-            self.conn.commit()
-            self.conn.close()
-            self.conn = None
+            try:
+                if self.conn.in_transaction:self.conn.rollback()
+            finally:
+                self.conn.close()
+                self.conn = None
 
     def commit(self):
         if self.conn:
@@ -221,7 +232,7 @@ class KodiDatabase:
             c07 = info.get('year', '') or (info.get('premiered', '')[:4] if info.get('premiered') else '')
             c09 = 0   # ident_id (set after uniqueid insert)
             c10 = ''  # sorttitle
-            c11 = info.get('duration', 0)
+            c11 = runtime_seconds(info.get('duration',0))
             c12 = info.get('mpaa', '')
             c13 = info.get('top250', 0)
             c14 = ' / '.join(info.get('genre', []))

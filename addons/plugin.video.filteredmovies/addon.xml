@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<addon id="plugin.video.filteredmovies" name="海报墙" version="2.3.31" provider-name="Jioyzen">
+<addon id="plugin.video.filteredmovies" name="海报墙" version="2.5.11" provider-name="Jioyzen">
 
     <requires>
         <import addon="xbmc.python" version="3.0.0" />
@@ -50,6 +50,6 @@ Key features include:
         <assets>
             <icon>icon.png</icon>
         </assets>
-    <news>Jioyzen 维护版：适配 Kodi 22 / CoreELEC Amlogic-no，包含本分支已验证的修复；独立运行，不依赖外部系统定制模块。</news></extension>
+    <news>独立电影、电视剧、季和演员详情页；演员作品仅读取本地媒体库；分类独立排序、动态类型及地区筛选；播放与返回保持焦点和滚动位置；继续观看仅使用电影和单集书签；分页、缓存、异步任务和窗口关闭稳定性优化；首页推荐与应用入口样式优化。</news></extension>
 
 </addon>

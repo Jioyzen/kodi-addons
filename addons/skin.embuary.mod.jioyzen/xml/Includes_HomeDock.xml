@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<includes>
+  <include name="JioyzenHomeGlassDock">
+    <control type="image">
+      <left>200</left>
+      <top>802</top>
+      <width>1520</width>
+      <height>240</height>
+      <texture>home/glass-dock/shadow.png</texture>
+    </control>
+    <control type="image">
+      <left>0</left>
+      <top>0</top>
+      <width>8.333334%</width>
+      <height>8.333334%</height>
+      <texture background="true" diffuse="special://skin/media/home/glass-dock/wallpaper-mask.png" colordiffuse="90FFFFFF">$VAR[BuiltinWallpaperVar]</texture>
+      <aspectratio scalediffuse="false">scale</aspectratio>
+      <animation effect="zoom" start="1200,1200" end="1200,1200" center="0,0" time="0" condition="true">Conditional</animation>
+      <visible>Integer.IsGreater(Skin.String(background_overlay),7)</visible>
+    </control>
+    <control type="image">
+      <left>240</left>
+      <top>842</top>
+      <width>1440</width>
+      <height>160</height>
+      <texture>home/glass-dock/material.png</texture>
+    </control>
+  </include>
+</includes>

@@ -1,0 +1,875 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window id="5115">
+  <defaultcontrol>201</defaultcontrol>
+  <allowoverlay>yes</allowoverlay>
+  <coordinates>
+    <system>1</system>
+  </coordinates>
+  <controls>
+    <control type="image">
+      <left>0</left>
+      <top>0</top>
+      <width>1920</width>
+      <height>1080</height>
+      <texture background="false" colordiffuse="FF101014">special://home/addons/plugin.video.filteredmovies/resources/skins/Default/media/colors/fm_white.png</texture>
+      <aspectratio scalediffuse="false">stretch</aspectratio>
+    </control>
+    <control type="group">
+      <visible>Integer.IsGreater(Skin.String(background_overlay),7)</visible>
+      <include>ColoredBackgroundImages</include>
+    </control>
+    <control type="image">
+      <left>0</left>
+      <top>0</top>
+      <width>1920</width>
+      <height>1080</height>
+      <texture background="true">$INFO[Window.Property(MFG.Tv.Fanart)]</texture>
+      <aspectratio scalediffuse="false">scale</aspectratio>
+    </control>
+    <control type="image">
+      <left>0</left>
+      <top>0</top>
+      <width>1920</width>
+      <height>1080</height>
+      <texture background="false" colordiffuse="66000000">special://home/addons/plugin.video.filteredmovies/resources/skins/Default/media/colors/fm_white.png</texture>
+      <aspectratio scalediffuse="false">stretch</aspectratio>
+      <visible>!String.IsEqual(Window.Property(MFG.Tv.SeasonPage),true)</visible>
+    </control>
+    <control type="image">
+      <left>0</left>
+      <top>0</top>
+      <width>1920</width>
+      <height>1080</height>
+      <texture background="false" colordiffuse="E8000000">special://home/addons/plugin.video.filteredmovies/resources/skins/Default/media/colors/fm_white.png</texture>
+      <aspectratio scalediffuse="false">stretch</aspectratio>
+      <visible>String.IsEqual(Window.Property(MFG.Tv.SeasonPage),true)</visible>
+    </control>
+    <control type="image">
+      <left>0</left>
+      <top>0</top>
+      <width>1580</width>
+      <height>1080</height>
+      <texture background="false">special://home/addons/plugin.video.filteredmovies/resources/skins/Default/media/tv-details/side-shade.png</texture>
+      <aspectratio scalediffuse="false">stretch</aspectratio>
+      <visible>!String.IsEqual(Window.Property(MFG.Tv.SeasonPage),true)</visible>
+    </control>
+    <control type="image">
+      <left>0</left>
+      <top>720</top>
+      <width>1920</width>
+      <height>360</height>
+      <texture background="false">special://home/addons/plugin.video.filteredmovies/resources/skins/Default/media/tv-details/bottom-shade.png</texture>
+      <aspectratio scalediffuse="false">stretch</aspectratio>
+    </control>
+    <control type="group" id="410">
+      <control type="group">
+        <visible>!String.IsEqual(Window.Property(MFG.Tv.SeasonPage),true)</visible>
+        <control type="image">
+          <left>96</left>
+          <top>44</top>
+          <width>620</width>
+          <height>150</height>
+          <texture background="true">$INFO[Window.Property(MFG.Tv.Logo)]</texture>
+          <aspectratio scalediffuse="false">keep</aspectratio>
+          <visible>!String.IsEmpty(Window.Property(MFG.Tv.Logo))</visible>
+        </control>
+        <control type="label">
+          <left>96</left>
+          <top>55</top>
+          <width>1220</width>
+          <height>115</height>
+          <font>font60</font>
+          <label>$INFO[Window.Property(MFG.Tv.Title)]</label>
+          <textcolor>FFFFFFFF</textcolor>
+          <align>left</align>
+          <aligny>center</aligny>
+          <visible>String.IsEmpty(Window.Property(MFG.Tv.Logo))</visible>
+        </control>
+        <control type="label">
+          <left>96</left>
+          <top>224</top>
+          <width>1200</width>
+          <height>44</height>
+          <font>font27</font>
+          <label>$INFO[Window.Property(MFG.Tv.Meta)]</label>
+          <textcolor>FFFFFFFF</textcolor>
+          <align>left</align>
+          <aligny>center</aligny>
+        </control>
+        <control type="label">
+          <left>96</left>
+          <top>276</top>
+          <width>1100</width>
+          <height>38</height>
+          <font>font13</font>
+          <label>电视剧  /  $INFO[Window.Property(MFG.Tv.SeasonCount)]</label>
+          <textcolor>FFD0D0D0</textcolor>
+          <align>left</align>
+          <aligny>center</aligny>
+        </control>
+        <control type="textbox">
+          <left>96</left>
+          <top>340</top>
+          <width>1040</width>
+          <height>130</height>
+          <font>font13</font>
+          <label>$INFO[Window.Property(MFG.Tv.Plot)]</label>
+          <textcolor>FFE5E5E5</textcolor>
+        </control>
+        <control type="label">
+          <left>96</left>
+          <top>620</top>
+          <width>1000</width>
+          <height>45</height>
+          <font>font32</font>
+          <label>$INFO[Window.Property(MFG.Tv.SeasonCount)]</label>
+          <textcolor>FFFFFFFF</textcolor>
+          <align>left</align>
+          <aligny>center</aligny>
+        </control>
+      </control>
+      <control type="group">
+        <visible>String.IsEqual(Window.Property(MFG.Tv.SeasonPage),true)</visible>
+        <control type="image">
+          <left>80</left>
+          <top>40</top>
+          <width>300</width>
+          <height>450</height>
+          <texture background="true" diffuse="special://home/addons/plugin.video.filteredmovies/resources/skins/Default/media/rounded/mask-250x375-r16.png" fallback="DefaultVideoCover.png">$INFO[Window.Property(MFG.Tv.SeasonPoster)]</texture>
+          <aspectratio scalediffuse="false">scale</aspectratio>
+        </control>
+        <control type="label">
+          <left>440</left>
+          <top>46</top>
+          <width>1350</width>
+          <height>85</height>
+          <font>font60</font>
+          <label>$INFO[Window.Property(MFG.Tv.Title)]</label>
+          <textcolor>FFFFFFFF</textcolor>
+          <align>left</align>
+          <aligny>center</aligny>
+        </control>
+        <control type="label">
+          <left>440</left>
+          <top>142</top>
+          <width>280</width>
+          <height>42</height>
+          <font>font27</font>
+          <label>$INFO[Window.Property(MFG.Tv.Rating)]</label>
+          <textcolor>FFFFD15C</textcolor>
+          <align>left</align>
+          <aligny>center</aligny>
+        </control>
+        <control type="label">
+          <left>735</left>
+          <top>142</top>
+          <width>900</width>
+          <height>42</height>
+          <font>font27</font>
+          <label>$INFO[Window.Property(MFG.Tv.Year)]  /  $INFO[Window.Property(MFG.Tv.SeasonTitle)]</label>
+          <textcolor>FFFFFFFF</textcolor>
+          <align>left</align>
+          <aligny>center</aligny>
+        </control>
+        <control type="textbox">
+          <left>440</left>
+          <top>212</top>
+          <width>1380</width>
+          <height>160</height>
+          <font>font13</font>
+          <label>$INFO[Window.Property(MFG.Tv.Plot)]</label>
+          <textcolor>FFE5E5E5</textcolor>
+        </control>
+        <control type="label">
+          <left>80</left>
+          <top>548</top>
+          <width>900</width>
+          <height>48</height>
+          <font>font32</font>
+          <label>选集  /  $INFO[Window.Property(MFG.Tv.SeasonTitle)]  ·  $INFO[Window.Property(MFG.Tv.EpisodeCount)]</label>
+          <textcolor>FFFFFFFF</textcolor>
+          <align>left</align>
+          <aligny>center</aligny>
+        </control>
+      </control>
+      <control type="group">
+        <left>96</left>
+        <top>504</top>
+        <animation type="Conditional" condition="String.IsEqual(Window.Property(MFG.Tv.SeasonPage),true)">
+          <effect type="slide" start="0,0" end="344,-96" time="0" />
+        </animation>
+        <control type="button" id="201">
+          <left>0</left>
+          <top>0</top>
+          <width>285</width>
+          <height>80</height>
+          <font>font32</font>
+          <label />
+          <align>right</align>
+          <aligny>center</aligny>
+          <textcolor>00FFFFFF</textcolor>
+          <focusedcolor>00FFFFFF</focusedcolor>
+          <disabledcolor>00FFFFFF</disabledcolor>
+          <texturefocus colordiffuse="button_focus">special://home/addons/plugin.video.filteredmovies/resources/skins/Default/media/tv-details/pill.png</texturefocus>
+          <texturenofocus colordiffuse="DA404448">special://home/addons/plugin.video.filteredmovies/resources/skins/Default/media/tv-details/pill.png</texturenofocus>
+          <onup>200</onup>
+          <onleft>201</onleft>
+          <textoffsetx>22</textoffsetx>
+          <ondown condition="!String.IsEqual(Window.Property(MFG.Tv.SeasonPage),true)">300</ondown>
+          <ondown condition="String.IsEqual(Window.Property(MFG.Tv.SeasonPage),true) + !String.IsEqual(Window.Property(MFG.Tv.Grid),true)">301</ondown>
+          <ondown condition="String.IsEqual(Window.Property(MFG.Tv.SeasonPage),true) + String.IsEqual(Window.Property(MFG.Tv.Grid),true)">302</ondown>
+          <onright condition="!String.IsEqual(Window.Property(MFG.Tv.SeasonPage),true)">202</onright>
+          <onright condition="String.IsEqual(Window.Property(MFG.Tv.SeasonPage),true)">203</onright>
+        </control>
+        <control type="button" id="202">
+          <left>313</left>
+          <top>0</top>
+          <width>80</width>
+          <height>80</height>
+          <font>font32</font>
+          <label />
+          <align>center</align>
+          <aligny>center</aligny>
+          <textcolor>FFFFFFFF</textcolor>
+          <focusedcolor>FFFFFFFF</focusedcolor>
+          <texturefocus colordiffuse="button_focus">special://home/addons/plugin.video.filteredmovies/resources/skins/Default/media/tv-details/circle-button.png</texturefocus>
+          <texturenofocus colordiffuse="DA404448">special://home/addons/plugin.video.filteredmovies/resources/skins/Default/media/tv-details/circle-button.png</texturenofocus>
+          <onup>200</onup>
+          <ondown>300</ondown>
+          <onleft>201</onleft>
+          <onright>203</onright>
+          <visible>!String.IsEqual(Window.Property(MFG.Tv.SeasonPage),true)</visible>
+        </control>
+        <control type="image">
+          <left>333</left>
+          <top>20</top>
+          <width>40</width>
+          <height>40</height>
+          <texture background="false">special://home/addons/plugin.video.filteredmovies/resources/skins/Default/media/tv-details/heart.png</texture>
+          <aspectratio scalediffuse="false">stretch</aspectratio>
+          <visible>!String.IsEqual(Window.Property(MFG.Tv.SeasonPage),true) + !String.IsEqual(Window.Property(MFG.Tv.Favourite),true)</visible>
+        </control>
+        <control type="image">
+          <left>333</left>
+          <top>20</top>
+          <width>40</width>
+          <height>40</height>
+          <texture background="false">special://home/addons/plugin.video.filteredmovies/resources/skins/Default/media/tv-details/heart-filled.png</texture>
+          <aspectratio scalediffuse="false">stretch</aspectratio>
+          <visible>!String.IsEqual(Window.Property(MFG.Tv.SeasonPage),true) + String.IsEqual(Window.Property(MFG.Tv.Favourite),true)</visible>
+        </control>
+        <control type="button" id="203">
+          <left>421</left>
+          <top>0</top>
+          <width>80</width>
+          <height>80</height>
+          <font>font32</font>
+          <label />
+          <align>center</align>
+          <aligny>center</aligny>
+          <textcolor>FFFFFFFF</textcolor>
+          <focusedcolor>FFFFFFFF</focusedcolor>
+          <texturefocus colordiffuse="button_focus">special://home/addons/plugin.video.filteredmovies/resources/skins/Default/media/tv-details/circle-button.png</texturefocus>
+          <texturenofocus colordiffuse="DA404448">special://home/addons/plugin.video.filteredmovies/resources/skins/Default/media/tv-details/circle-button.png</texturenofocus>
+          <onup>200</onup>
+          <onleft>201</onleft>
+          <onright>203</onright>
+          <animation type="Conditional" condition="String.IsEqual(Window.Property(MFG.Tv.SeasonPage),true)">
+            <effect type="slide" start="0,0" end="-108,0" time="0" />
+          </animation>
+          <ondown condition="!String.IsEqual(Window.Property(MFG.Tv.SeasonPage),true)">300</ondown>
+          <ondown condition="String.IsEqual(Window.Property(MFG.Tv.SeasonPage),true) + !String.IsEqual(Window.Property(MFG.Tv.Grid),true)">301</ondown>
+          <ondown condition="String.IsEqual(Window.Property(MFG.Tv.SeasonPage),true) + String.IsEqual(Window.Property(MFG.Tv.Grid),true)">302</ondown>
+        </control>
+        <control type="image">
+          <left>441</left>
+          <top>20</top>
+          <width>40</width>
+          <height>40</height>
+          <texture background="false">special://home/addons/plugin.video.filteredmovies/resources/skins/Default/media/tv-details/watched.png</texture>
+          <aspectratio scalediffuse="false">stretch</aspectratio>
+          <animation type="Conditional" condition="String.IsEqual(Window.Property(MFG.Tv.SeasonPage),true)">
+            <effect type="slide" start="0,0" end="-108,0" time="0" />
+          </animation>
+        </control>
+        <control type="image" id="211">
+          <left>52</left>
+          <top>20</top>
+          <width>40</width>
+          <height>40</height>
+          <texture background="false">special://home/addons/plugin.video.filteredmovies/resources/skins/Default/media/tv-details/play.png</texture>
+          <aspectratio scalediffuse="false">scale</aspectratio>
+        </control>
+        <control type="label" id="212">
+          <left>106</left>
+          <top>0</top>
+          <width>170</width>
+          <height>80</height>
+          <label>$INFO[Window.Property(MFG.Tv.PlayLabel)]</label>
+          <font>font32</font>
+          <textcolor>FFFFFFFF</textcolor>
+          <align>left</align>
+          <aligny>center</aligny>
+        </control>
+      </control>
+      <control type="button" id="204">
+        <left>1715</left>
+        <top>546</top>
+        <width>64</width>
+        <height>60</height>
+        <font>font32</font>
+        <label />
+        <align>center</align>
+        <aligny>center</aligny>
+        <textcolor>FFFFFFFF</textcolor>
+        <focusedcolor>FFFFFFFF</focusedcolor>
+        <texturefocus border="14" colordiffuse="button_focus">special://home/addons/plugin.video.filteredmovies/resources/skins/Default/media/rounded/mask-244x56-r14.png</texturefocus>
+        <texturenofocus border="14" colordiffuse="DA404448">special://home/addons/plugin.video.filteredmovies/resources/skins/Default/media/rounded/mask-244x56-r14.png</texturenofocus>
+        <onup>201</onup>
+        <onleft>204</onleft>
+        <onright>205</onright>
+        <visible>String.IsEqual(Window.Property(MFG.Tv.SeasonPage),true)</visible>
+        <ondown condition="!String.IsEqual(Window.Property(MFG.Tv.Grid),true)">301</ondown>
+        <ondown condition="String.IsEqual(Window.Property(MFG.Tv.Grid),true)">302</ondown>
+      </control>
+      <control type="button" id="205">
+        <left>1791</left>
+        <top>546</top>
+        <width>64</width>
+        <height>60</height>
+        <font>font32</font>
+        <label />
+        <align>center</align>
+        <aligny>center</aligny>
+        <textcolor>FFFFFFFF</textcolor>
+        <focusedcolor>FFFFFFFF</focusedcolor>
+        <texturefocus border="14" colordiffuse="button_focus">special://home/addons/plugin.video.filteredmovies/resources/skins/Default/media/rounded/mask-244x56-r14.png</texturefocus>
+        <texturenofocus border="14" colordiffuse="DA404448">special://home/addons/plugin.video.filteredmovies/resources/skins/Default/media/rounded/mask-244x56-r14.png</texturenofocus>
+        <onup>201</onup>
+        <onleft>204</onleft>
+        <onright>205</onright>
+        <visible>String.IsEqual(Window.Property(MFG.Tv.SeasonPage),true)</visible>
+        <ondown condition="!String.IsEqual(Window.Property(MFG.Tv.Grid),true)">301</ondown>
+        <ondown condition="String.IsEqual(Window.Property(MFG.Tv.Grid),true)">302</ondown>
+      </control>
+      <control type="image">
+        <left>1731</left>
+        <top>560</top>
+        <width>32</width>
+        <height>32</height>
+        <texture background="false">special://home/addons/plugin.video.filteredmovies/resources/skins/Default/media/tv-details/cards.png</texture>
+        <aspectratio scalediffuse="false">stretch</aspectratio>
+        <visible>String.IsEqual(Window.Property(MFG.Tv.SeasonPage),true)</visible>
+      </control>
+      <control type="image">
+        <left>1807</left>
+        <top>560</top>
+        <width>32</width>
+        <height>32</height>
+        <texture background="false">special://home/addons/plugin.video.filteredmovies/resources/skins/Default/media/tv-details/grid.png</texture>
+        <aspectratio scalediffuse="false">stretch</aspectratio>
+        <visible>String.IsEqual(Window.Property(MFG.Tv.SeasonPage),true)</visible>
+      </control>
+      <control type="list" id="300">
+        <left>90</left>
+        <top>680</top>
+        <width>1750</width>
+        <height>390</height>
+        <orientation>horizontal</orientation>
+        <scrolltime>180</scrolltime>
+        <visible>!String.IsEqual(Window.Property(MFG.Tv.SeasonPage),true)</visible>
+        <onup>201</onup>
+        <ondown>300</ondown>
+        <onleft>300</onleft>
+        <onright>300</onright>
+        <itemlayout width="254" height="390">
+          <control type="image">
+            <left>5</left>
+            <top>5</top>
+            <width>220</width>
+            <height>330</height>
+            <texture background="true" diffuse="special://home/addons/plugin.video.filteredmovies/resources/skins/Default/media/rounded/mask-250x375-r16.png" fallback="DefaultVideoCover.png">$INFO[ListItem.Art(poster)]</texture>
+            <aspectratio scalediffuse="false">scale</aspectratio>
+          </control>
+          <control type="label">
+            <left>10</left>
+            <top>9</top>
+            <width>58</width>
+            <height>36</height>
+            <font>font13</font>
+            <label>$INFO[ListItem.Property(MFG.Tv.Rating)]</label>
+            <textcolor>FFFFD15C</textcolor>
+            <align>left</align>
+            <aligny>center</aligny>
+          </control>
+          <control type="label">
+            <left>1</left>
+            <top>341</top>
+            <width>228</width>
+            <height>36</height>
+            <font>font27</font>
+            <label>$INFO[ListItem.Label]</label>
+            <textcolor>FFFFFFFF</textcolor>
+            <align>center</align>
+            <aligny>center</aligny>
+          </control>
+          <control type="label">
+            <left>115</left>
+            <top>294</top>
+            <width>100</width>
+            <height>32</height>
+            <font>font12</font>
+            <label>$INFO[ListItem.Property(MFG.Tv.Count)]</label>
+            <textcolor>FFFFFFFF</textcolor>
+            <align>right</align>
+            <aligny>center</aligny>
+          </control>
+        </itemlayout>
+        <focusedlayout width="254" height="390">
+          <control type="image">
+            <left>1</left>
+            <top>1</top>
+            <width>228</width>
+            <height>338</height>
+            <texture background="false" colordiffuse="button_focus">special://home/addons/plugin.video.filteredmovies/resources/skins/Default/media/rounded/mask-250x375-r16.png</texture>
+            <aspectratio scalediffuse="false">stretch</aspectratio>
+            <visible>Control.HasFocus(300)</visible>
+          </control>
+          <control type="image">
+            <left>5</left>
+            <top>5</top>
+            <width>220</width>
+            <height>330</height>
+            <texture background="true" diffuse="special://home/addons/plugin.video.filteredmovies/resources/skins/Default/media/rounded/mask-250x375-r16.png" fallback="DefaultVideoCover.png">$INFO[ListItem.Art(poster)]</texture>
+            <aspectratio scalediffuse="false">scale</aspectratio>
+          </control>
+          <control type="label">
+            <left>10</left>
+            <top>9</top>
+            <width>58</width>
+            <height>36</height>
+            <font>font13</font>
+            <label>$INFO[ListItem.Property(MFG.Tv.Rating)]</label>
+            <textcolor>FFFFD15C</textcolor>
+            <align>left</align>
+            <aligny>center</aligny>
+          </control>
+          <control type="label">
+            <left>1</left>
+            <top>341</top>
+            <width>228</width>
+            <height>36</height>
+            <font>font27</font>
+            <label>$INFO[ListItem.Label]</label>
+            <textcolor>FFFFFFFF</textcolor>
+            <align>center</align>
+            <aligny>center</aligny>
+          </control>
+          <control type="label">
+            <left>115</left>
+            <top>294</top>
+            <width>100</width>
+            <height>32</height>
+            <font>font12</font>
+            <label>$INFO[ListItem.Property(MFG.Tv.Count)]</label>
+            <textcolor>FFFFFFFF</textcolor>
+            <align>right</align>
+            <aligny>center</aligny>
+          </control>
+        </focusedlayout>
+      </control>
+      <control type="list" id="301">
+        <left>80</left>
+        <top>618</top>
+        <width>1840</width>
+        <height>430</height>
+        <orientation>horizontal</orientation>
+        <scrolltime>180</scrolltime>
+        <visible>String.IsEqual(Window.Property(MFG.Tv.SeasonPage),true) + !String.IsEqual(Window.Property(MFG.Tv.Grid),true)</visible>
+        <onup>204</onup>
+        <ondown>303</ondown>
+        <onleft>301</onleft>
+        <onright>301</onright>
+        <itemlayout width="580" height="430">
+          <control type="image">
+            <left>4</left>
+            <top>4</top>
+            <width>540</width>
+            <height>304</height>
+            <texture background="true" diffuse="special://home/addons/plugin.video.filteredmovies/resources/skins/Default/media/rounded/mask-420x236-r16.png" fallback="DefaultVideoCover.png">$INFO[ListItem.Art(thumb)]</texture>
+            <aspectratio scalediffuse="false">scale</aspectratio>
+          </control>
+          <control type="label">
+            <left>435</left>
+            <top>269</top>
+            <width>100</width>
+            <height>30</height>
+            <font>font12</font>
+            <label>$INFO[ListItem.Property(MFG.Tv.Resolution)]</label>
+            <textcolor>FFFFFFFF</textcolor>
+            <align>right</align>
+            <aligny>center</aligny>
+          </control>
+          <control type="label">
+            <left>15</left>
+            <top>10</top>
+            <width>90</width>
+            <height>32</height>
+            <font>font12</font>
+            <label>已观看</label>
+            <textcolor>FFFFFFFF</textcolor>
+            <align>left</align>
+            <aligny>center</aligny>
+            <visible>String.IsEqual(ListItem.Property(MFG.Tv.Watched),true)</visible>
+          </control>
+          <control type="progress">
+            <left>14</left>
+            <top>296</top>
+            <width>520</width>
+            <height>4</height>
+            <info>ListItem.Property(MFG.Tv.Progress)</info>
+            <visible>!String.IsEqual(ListItem.Property(MFG.Tv.Progress),0)</visible>
+            <texturebg colordiffuse="66000000">special://home/addons/plugin.video.filteredmovies/resources/skins/Default/media/colors/fm_white.png</texturebg>
+            <midtexture colordiffuse="button_focus">special://home/addons/plugin.video.filteredmovies/resources/skins/Default/media/colors/fm_white.png</midtexture>
+          </control>
+          <control type="textbox">
+            <left>14</left>
+            <top>328</top>
+            <width>520</width>
+            <height>96</height>
+            <label>$INFO[ListItem.Property(MFG.Tv.Summary)]</label>
+            <font>font13</font>
+            <textcolor>FFE5E5E5</textcolor>
+          </control>
+        </itemlayout>
+        <focusedlayout width="580" height="430">
+          <control type="image">
+            <left>0</left>
+            <top>0</top>
+            <width>548</width>
+            <height>312</height>
+            <texture background="false" colordiffuse="button_focus">special://home/addons/plugin.video.filteredmovies/resources/skins/Default/media/rounded/mask-420x236-r16.png</texture>
+            <aspectratio scalediffuse="false">stretch</aspectratio>
+            <visible>Control.HasFocus(301)</visible>
+          </control>
+          <control type="image">
+            <left>4</left>
+            <top>4</top>
+            <width>540</width>
+            <height>304</height>
+            <texture background="true" diffuse="special://home/addons/plugin.video.filteredmovies/resources/skins/Default/media/rounded/mask-420x236-r16.png" fallback="DefaultVideoCover.png">$INFO[ListItem.Art(thumb)]</texture>
+            <aspectratio scalediffuse="false">scale</aspectratio>
+          </control>
+          <control type="label">
+            <left>435</left>
+            <top>269</top>
+            <width>100</width>
+            <height>30</height>
+            <font>font12</font>
+            <label>$INFO[ListItem.Property(MFG.Tv.Resolution)]</label>
+            <textcolor>FFFFFFFF</textcolor>
+            <align>right</align>
+            <aligny>center</aligny>
+          </control>
+          <control type="label">
+            <left>15</left>
+            <top>10</top>
+            <width>90</width>
+            <height>32</height>
+            <font>font12</font>
+            <label>已观看</label>
+            <textcolor>FFFFFFFF</textcolor>
+            <align>left</align>
+            <aligny>center</aligny>
+            <visible>String.IsEqual(ListItem.Property(MFG.Tv.Watched),true)</visible>
+          </control>
+          <control type="progress">
+            <left>14</left>
+            <top>296</top>
+            <width>520</width>
+            <height>4</height>
+            <info>ListItem.Property(MFG.Tv.Progress)</info>
+            <visible>!String.IsEqual(ListItem.Property(MFG.Tv.Progress),0)</visible>
+            <texturebg colordiffuse="66000000">special://home/addons/plugin.video.filteredmovies/resources/skins/Default/media/colors/fm_white.png</texturebg>
+            <midtexture colordiffuse="button_focus">special://home/addons/plugin.video.filteredmovies/resources/skins/Default/media/colors/fm_white.png</midtexture>
+          </control>
+          <control type="textbox">
+            <left>14</left>
+            <top>328</top>
+            <width>520</width>
+            <height>96</height>
+            <label>$INFO[ListItem.Property(MFG.Tv.Summary)]</label>
+            <font>font13</font>
+            <textcolor>FFE5E5E5</textcolor>
+          </control>
+        </focusedlayout>
+      </control>
+      <control type="panel" id="302">
+        <left>80</left>
+        <top>618</top>
+        <width>1840</width>
+        <height>192</height>
+        <orientation>vertical</orientation>
+        <scrolltime>180</scrolltime>
+        <visible>String.IsEqual(Window.Property(MFG.Tv.SeasonPage),true) + String.IsEqual(Window.Property(MFG.Tv.Grid),true)</visible>
+        <onup>204</onup>
+        <ondown>303</ondown>
+        <onleft>302</onleft>
+        <onright>302</onright>
+        <itemlayout width="122" height="86">
+          <control type="image">
+            <left>6</left>
+            <top>6</top>
+            <width>92</width>
+            <height>64</height>
+            <texture background="false" colordiffuse="E8323336">special://home/addons/plugin.video.filteredmovies/resources/skins/Default/media/tv-details/number-button.png</texture>
+            <aspectratio scalediffuse="false">scale</aspectratio>
+          </control>
+          <control type="label">
+            <left>6</left>
+            <top>6</top>
+            <width>92</width>
+            <height>64</height>
+            <label>$INFO[ListItem.Property(MFG.Tv.Number)]</label>
+            <font>font32</font>
+            <textcolor>FFFFFFFF</textcolor>
+            <align>center</align>
+            <aligny>center</aligny>
+          </control>
+        </itemlayout>
+        <focusedlayout width="122" height="86">
+          <control type="image">
+            <left>6</left>
+            <top>6</top>
+            <width>92</width>
+            <height>64</height>
+            <texture background="false" colordiffuse="E8323336">special://home/addons/plugin.video.filteredmovies/resources/skins/Default/media/tv-details/number-button.png</texture>
+            <aspectratio scalediffuse="false">scale</aspectratio>
+          </control>
+          <control type="image">
+            <left>6</left>
+            <top>6</top>
+            <width>92</width>
+            <height>64</height>
+            <texture background="false" colordiffuse="button_focus">special://home/addons/plugin.video.filteredmovies/resources/skins/Default/media/tv-details/number-button.png</texture>
+            <aspectratio scalediffuse="false">scale</aspectratio>
+            <visible>Control.HasFocus(302)</visible>
+          </control>
+          <control type="label">
+            <left>6</left>
+            <top>6</top>
+            <width>92</width>
+            <height>64</height>
+            <label>$INFO[ListItem.Property(MFG.Tv.Number)]</label>
+            <font>font32</font>
+            <textcolor>FFFFFFFF</textcolor>
+            <align>center</align>
+            <aligny>center</aligny>
+          </control>
+        </focusedlayout>
+      </control>
+      <control type="button" id="206">
+        <left>1400</left>
+        <top>550</top>
+        <width>280</width>
+        <height>52</height>
+        <font>font32</font>
+        <label>加载更多单集</label>
+        <align>center</align>
+        <aligny>center</aligny>
+        <textcolor>FFFFFFFF</textcolor>
+        <focusedcolor>FFFFFFFF</focusedcolor>
+        <texturefocus border="14" colordiffuse="button_focus">special://home/addons/plugin.video.filteredmovies/resources/skins/Default/media/rounded/mask-244x56-r14.png</texturefocus>
+        <texturenofocus border="14" colordiffuse="DA404448">special://home/addons/plugin.video.filteredmovies/resources/skins/Default/media/rounded/mask-244x56-r14.png</texturenofocus>
+        <onup>201</onup>
+        <ondown>301</ondown>
+        <onleft>206</onleft>
+        <onright>206</onright>
+        <visible>String.IsEqual(Window.Property(MFG.Tv.SeasonPage),true) + String.IsEqual(Window.Property(MFG.Tv.HasMore),true) + String.IsEqual(Window.Property(MFG.Tv.State),ready)</visible>
+      </control>
+      <control type="label">
+        <left>96</left>
+        <top>620</top>
+        <width>1540</width>
+        <height>55</height>
+        <font>font27</font>
+        <label>$INFO[Window.Property(MFG.Tv.Message)]</label>
+        <textcolor>FFCCCCCC</textcolor>
+        <align>left</align>
+        <aligny>center</aligny>
+        <visible>!String.IsEqual(Window.Property(MFG.Tv.SeasonPage),true) + [String.IsEqual(Window.Property(MFG.Tv.State),loading) | String.IsEqual(Window.Property(MFG.Tv.State),error) | String.IsEqual(Window.Property(MFG.Tv.State),empty)]</visible>
+      </control>
+      <control type="label">
+        <left>1000</left>
+        <top>548</top>
+        <width>650</width>
+        <height>48</height>
+        <font>font13</font>
+        <label>$INFO[Window.Property(MFG.Tv.Message)]</label>
+        <textcolor>FFCCCCCC</textcolor>
+        <align>left</align>
+        <aligny>center</aligny>
+        <visible>String.IsEqual(Window.Property(MFG.Tv.SeasonPage),true) + [String.IsEqual(Window.Property(MFG.Tv.State),loading) | String.IsEqual(Window.Property(MFG.Tv.State),error) | String.IsEqual(Window.Property(MFG.Tv.State),empty)]</visible>
+      </control>
+      <control type="group" id="420">
+        <left>0</left>
+        <top>1120</top>
+        <visible>String.IsEqual(Window.Property(MFG.Tv.SeasonPage),true)</visible>
+        <animation type="Conditional" condition="String.IsEqual(Window.Property(MFG.Tv.Grid),true)">
+          <effect type="slide" start="0,0" end="0,-220" time="0" />
+        </animation>
+        <control type="label">
+          <left>80</left>
+          <top>0</top>
+          <width>1100</width>
+          <height>50</height>
+          <label>演职人员</label>
+          <font>font32</font>
+          <textcolor>FFFFFFFF</textcolor>
+          <align>left</align>
+          <aligny>center</aligny>
+        </control>
+        <control type="list" id="303">
+          <left>80</left>
+          <top>68</top>
+          <width>1840</width>
+          <height>310</height>
+          <orientation>horizontal</orientation>
+          <scrolltime>180</scrolltime>
+          <onleft>303</onleft>
+          <onright>303</onright>
+          <ondown>303</ondown>
+          <onup condition="!String.IsEqual(Window.Property(MFG.Tv.Grid),true)">301</onup>
+          <onup condition="String.IsEqual(Window.Property(MFG.Tv.Grid),true)">302</onup>
+          <visible>String.IsEqual(Window.Property(MFG.Tv.HasCast),true)</visible>
+          <itemlayout width="250" height="310">
+            <control type="image">
+              <left>4</left>
+              <top>4</top>
+              <width>180</width>
+              <height>180</height>
+              <texture background="true" diffuse="special://home/addons/plugin.video.filteredmovies/resources/skins/Default/media/tv-details/circle.png" fallback="special://home/addons/plugin.video.filteredmovies/resources/skins/Default/media/tv-details/avatar-placeholder.png">$INFO[ListItem.Art(portrait)]</texture>
+              <aspectratio scalediffuse="false">scale</aspectratio>
+            </control>
+            <control type="label">
+              <left>0</left>
+              <top>196</top>
+              <width>188</width>
+              <height>40</height>
+              <label>$INFO[ListItem.Label]</label>
+              <font>font27</font>
+              <textcolor>FFFFFFFF</textcolor>
+              <align>center</align>
+              <aligny>center</aligny>
+            </control>
+            <control type="label">
+              <left>0</left>
+              <top>238</top>
+              <width>188</width>
+              <height>40</height>
+              <label>$INFO[ListItem.Property(MFG.Tv.Role)]</label>
+              <font>font13</font>
+              <textcolor>FFB7B7B7</textcolor>
+              <align>center</align>
+              <aligny>center</aligny>
+            </control>
+          </itemlayout>
+          <focusedlayout width="250" height="310">
+            <control type="image">
+              <left>0</left>
+              <top>0</top>
+              <width>188</width>
+              <height>188</height>
+              <texture background="false" colordiffuse="button_focus">special://home/addons/plugin.video.filteredmovies/resources/skins/Default/media/tv-details/circle.png</texture>
+              <aspectratio scalediffuse="false">scale</aspectratio>
+              <visible>Control.HasFocus(303)</visible>
+            </control>
+            <control type="image">
+              <left>4</left>
+              <top>4</top>
+              <width>180</width>
+              <height>180</height>
+              <texture background="true" diffuse="special://home/addons/plugin.video.filteredmovies/resources/skins/Default/media/tv-details/circle.png" fallback="special://home/addons/plugin.video.filteredmovies/resources/skins/Default/media/tv-details/avatar-placeholder.png">$INFO[ListItem.Art(portrait)]</texture>
+              <aspectratio scalediffuse="false">scale</aspectratio>
+            </control>
+            <control type="label">
+              <left>0</left>
+              <top>196</top>
+              <width>188</width>
+              <height>40</height>
+              <label>$INFO[ListItem.Label]</label>
+              <font>font27</font>
+              <textcolor>FFFFFFFF</textcolor>
+              <align>center</align>
+              <aligny>center</aligny>
+            </control>
+            <control type="label">
+              <left>0</left>
+              <top>238</top>
+              <width>188</width>
+              <height>40</height>
+              <label>$INFO[ListItem.Property(MFG.Tv.Role)]</label>
+              <font>font13</font>
+              <textcolor>FFB7B7B7</textcolor>
+              <align>center</align>
+              <aligny>center</aligny>
+            </control>
+          </focusedlayout>
+        </control>
+        <control type="label">
+          <left>80</left>
+          <top>70</top>
+          <width>1540</width>
+          <height>45</height>
+          <label>暂无演职人员资料</label>
+          <font>font27</font>
+          <textcolor>FFFFFFFF</textcolor>
+          <align>left</align>
+          <aligny>center</aligny>
+          <visible>!String.IsEqual(Window.Property(MFG.Tv.HasCast),true)</visible>
+        </control>
+      </control>
+      <animation type="Conditional" condition="String.IsEqual(Window.Property(MFG.Tv.CastFocus),true) + !String.IsEqual(Window.Property(MFG.Tv.Grid),true)" reversible="true">
+        <effect type="slide" start="0,0" end="0,-600" time="180" tween="cubic" easing="out" />
+      </animation>
+      <animation type="Conditional" condition="String.IsEqual(Window.Property(MFG.Tv.CastFocus),true) + String.IsEqual(Window.Property(MFG.Tv.Grid),true)" reversible="true">
+        <effect type="slide" start="0,0" end="0,-380" time="180" tween="cubic" easing="out" />
+      </animation>
+    </control>
+    <control type="button" id="200">
+      <left>1834</left>
+      <top>30</top>
+      <width>60</width>
+      <height>60</height>
+      <font>font32</font>
+      <label />
+      <align>center</align>
+      <aligny>center</aligny>
+      <textcolor>FFFFFFFF</textcolor>
+      <focusedcolor>FFFFFFFF</focusedcolor>
+      <texturefocus border="14" colordiffuse="button_focus">special://home/addons/plugin.video.filteredmovies/resources/skins/Default/media/rounded/mask-244x56-r14.png</texturefocus>
+      <texturenofocus border="14" colordiffuse="DA404448">special://home/addons/plugin.video.filteredmovies/resources/skins/Default/media/rounded/mask-244x56-r14.png</texturenofocus>
+      <onup>200</onup>
+      <ondown>201</ondown>
+      <onleft>200</onleft>
+      <onright>200</onright>
+    </control>
+    <control type="image">
+      <left>1847</left>
+      <top>43</top>
+      <width>34</width>
+      <height>34</height>
+      <texture background="false">special://home/addons/plugin.video.filteredmovies/resources/skins/Default/media/tv-details/back.png</texture>
+      <aspectratio scalediffuse="false">stretch</aspectratio>
+    </control>
+    <control type="button" id="900">
+      <left>-100</left>
+      <top>-100</top>
+      <width>1</width>
+      <height>1</height>
+      <label />
+      <texturefocus />
+      <texturenofocus />
+    </control>
+  </controls>
+</window>

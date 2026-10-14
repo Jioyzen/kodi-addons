@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings version="1">
+  <section id="weather.jioyzen">
+    <category id="location" label="32000">
+      <group id="1">
+        <setting id="automatic_location" type="boolean" label="32001" help="32004">
+          <level>0</level><default>true</default><control type="toggle"/>
+        </setting>
+        <setting id="choose_location" type="action" label="32002" help="32005">
+          <level>0</level>
+          <dependencies><dependency type="enable"><condition operator="is" setting="automatic_location">false</condition></dependency></dependencies>
+          <control type="button" format="action"><close>true</close><data>RunScript(weather.jioyzen,select_location)</data></control>
+        </setting>
+        <setting id="location_label" type="string" label="32009">
+          <dependencies><dependency type="visible"><condition operator="is" setting="automatic_location">false</condition></dependency></dependencies>
+          <level>0</level><default/><enabled>false</enabled>
+          <constraints><allowempty>true</allowempty></constraints>
+          <control type="edit" format="string"/>
+        </setting>
+        <setting id="selected_location" type="string">
+          <level>0</level><default/><visible>false</visible>
+          <constraints><allowempty>true</allowempty></constraints><control type="edit" format="string"/>
+        </setting>
+        <!-- Compatibility with manual settings from 0.3.x, not shown as menus. -->
+        <setting id="province" type="string">
+          <level>0</level><default/><visible>false</visible>
+          <constraints><allowempty>true</allowempty></constraints><control type="edit" format="string"/>
+        </setting>
+        <setting id="city" type="string">
+          <level>0</level><default/><visible>false</visible>
+          <constraints><allowempty>true</allowempty></constraints><control type="edit" format="string"/>
+        </setting>
+      </group>
+    </category>
+  </section>
+</settings>

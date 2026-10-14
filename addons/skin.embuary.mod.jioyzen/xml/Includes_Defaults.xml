@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<includes>
+  <!-- Native Kodi skin settings: initialize new profiles and reset settings.
+       False booleans and empty optional paths are already Kodi's defaults.
+       Never reapply values after the user has customized this skin. -->
+  <include name="JioyzenSkinDefaults">
+    <onload condition="!Skin.HasSetting(jioyzen_weather_initialized) | !System.AddonIsEnabled(weather.jioyzen) | !String.IsEqual(Weather.Plugin,weather.jioyzen)">RunScript(special://skin/scripts/initialize_weather.py)</onload>
+    <onload condition="String.IsEmpty(Skin.String(background_overlay))">Skin.SetString(background_overlay,15)</onload>
+    <onload condition="!Skin.HasSetting(jioyzen_defaults_initialized) + !Skin.HasSetting(circle_rating) + !Skin.HasSetting(circle_userrating) + !Skin.HasSetting(circle_none)">Skin.SetBool(circle_rating)</onload>
+    <onload condition="!Skin.HasSetting(jioyzen_defaults_initialized)">Skin.SetBool(jioyzen_defaults_initialized)</onload>
+  </include>
+</includes>

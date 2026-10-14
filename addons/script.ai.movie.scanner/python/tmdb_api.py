@@ -16,9 +16,10 @@ import time
 import requests
 from urllib.parse import quote
 from requests.adapters import HTTPAdapter
-from matching import merge_candidates, match_score, norm_title as _norm_title
+from matching import merge_candidates, match_score, candidate_titles, norm_title as _norm_title
 
 import xbmc
+from path_display import redact_text
 
 ADDONID = 'script.ai.movie.scanner'
 
@@ -35,7 +36,7 @@ TMDB_KEYCHECK_URL = 'https://api.tmdb.org/3/movie/550'
 
 
 def _log(level, msg):
-    xbmc.log(msg='%s: %s' % (ADDONID, msg), level=level)
+    xbmc.log(msg='%s: %s' % (ADDONID, redact_text(msg)), level=level)
 
 
 # ============================================================
@@ -62,21 +63,20 @@ class _RateLimiter(object):
         self.rate = float(rate)
         self.burst = float(burst)
         self.tokens = burst
-        self.ts = time.time()
+        self.ts = time.monotonic()
         self.lock = threading.Lock()
 
     def wait(self):
-        with self.lock:
-            now = time.time()
-            self.tokens = min(self.burst,
-                              self.tokens + (now - self.ts) * self.rate)
-            self.ts = now
-            if self.tokens >= 1.0:
-                self.tokens -= 1.0
-                return
-            deficit = 1.0 - self.tokens
-            self.tokens = 0.0
-        time.sleep(deficit / self.rate)
+        while True:
+            with self.lock:
+                now = time.monotonic()
+                self.tokens = min(self.burst,self.tokens+(now-self.ts)*self.rate)
+                self.ts = now
+                if self.tokens >= 1.0:
+                    self.tokens -= 1.0
+                    return
+                delay=(1.0-self.tokens)/self.rate
+            time.sleep(delay)
 
 
 _LIMITER = _RateLimiter(rate=6.0, burst=12)
@@ -134,6 +134,7 @@ def _tmdb_get(url, params, timeout=(4, 12)):
                     delay = 1.0
             _log(xbmc.LOGWARNING,
                  'TMDB rate limited (429), backing off %.1fs' % delay)
+            resp.close()
             time.sleep(delay)
             _LIMITER.wait()
             continue
@@ -472,6 +473,13 @@ def search_tv_best(name, year, english_title, api_key, language='zh-CN'):
         _add(search_tv(name, year, api_key, 'en-US'))
         if english_title and english_title != name:
             _add_variants(english_title)
+    # TMDb may rename a Chinese title while retaining a Korean/Japanese
+    # original name. A query in zh-CN cannot prove an English release title;
+    # preserve the official English localized name in _match_titles by ID.
+    latin = english_title or (name if re.search(r'[A-Za-z]',name) else '')
+    known = {_norm_title(t) for c in candidates for t in candidate_titles(c) if t}
+    if latin and _norm_title(latin) not in known:
+        _add(search_tv(latin,year,api_key,'en-US'))
     return candidates
 
 
