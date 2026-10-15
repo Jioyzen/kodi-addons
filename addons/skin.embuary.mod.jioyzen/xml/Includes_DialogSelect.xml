@@ -17,7 +17,7 @@
 				<top>80</top>
 				<width>930</width>
 				<bottom>2</bottom>
-				<texture border="40">buttons/dialogbutton-nofo.png</texture>
+				<texture border="12" colordiffuse="08FFFFFF">dialogs/jioyzen/focus.png</texture>
 			</control>
 			<control type="list" id="3">
 				<left>20</left>

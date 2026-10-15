@@ -68,7 +68,8 @@
 				<aligny>center</aligny>
 				<wrapmultiline>true</wrapmultiline>
 				<font>font25_title</font>
-				<texturenofocus border="40">buttons/dialogbutton-nofo.png</texturenofocus>
+				<texturefocus border="24" colordiffuse="button_focus">dialogs/jioyzen/button.png</texturefocus>
+				<texturenofocus border="24" colordiffuse="14FFFFFF">dialogs/jioyzen/button.png</texturenofocus>
 			</control>
 			<control type="image">
 				<left>410</left>
@@ -132,16 +133,25 @@
 			</control>
 			<control type="button" id="7">
 				<description>Default Button</description>
-				<include>DefaultSettingButton</include>
+				<include content="DefaultSettingButton">
+					<param name="focus_texture" value="dialogs/jioyzen/button.png" />
+					<param name="focus_border" value="24" />
+				</include>
 			</control>
 			<control type="radiobutton" id="8">
 				<description>Default RadioButton</description>
-				<include>DefaultSettingButton</include>
+				<include content="DefaultSettingButton">
+					<param name="focus_texture" value="dialogs/jioyzen/button.png" />
+					<param name="focus_border" value="24" />
+				</include>
 				<textwidth>880</textwidth>
 			</control>
 			<control type="spincontrolex" id="9">
 				<description>Default SpinControlex</description>
-				<include>DefaultSettingButton</include>
+				<include content="DefaultSettingButton">
+					<param name="focus_texture" value="dialogs/jioyzen/button.png" />
+					<param name="focus_border" value="24" />
+				</include>
 			</control>
 			<control type="image" id="11">
 				<description>separator image</description>
@@ -149,11 +159,17 @@
 				<texture colordiffuse="AAAAAAAA" border="3">dialogs/separator-grey.png</texture>
 			</control>
 			<control type="edit" id="12">
-				<include>DefaultSettingButton</include>
+				<include content="DefaultSettingButton">
+					<param name="focus_texture" value="dialogs/jioyzen/button.png" />
+					<param name="focus_border" value="24" />
+				</include>
 			</control>
 			<control type="sliderex" id="13">
 				<description>Default Slider</description>
-				<include>DefaultSettingButton</include>
+				<include content="DefaultSettingButton">
+					<param name="focus_texture" value="dialogs/jioyzen/button.png" />
+					<param name="focus_border" value="24" />
+				</include>
 				<textwidth>700</textwidth>
 			</control>
 			<control type="label" id="14">
@@ -162,7 +178,10 @@
 			</control>
 			<control type="colorbutton" id="15">
 				<description>Default ColorButton</description>
-				<include>DefaultSettingButton</include>
+				<include content="DefaultSettingButton">
+					<param name="focus_texture" value="dialogs/jioyzen/button.png" />
+					<param name="focus_border" value="24" />
+				</include>
 			</control>
 			<control type="grouplist" id="9000">
 				<left>1510</left>
@@ -232,6 +251,7 @@
 				<height>120</height>
 				<font>font25_title</font>
 				<aligny>center</aligny>
+				<texturefocus border="24" colordiffuse="button_focus">dialogs/jioyzen/button.png</texturefocus>
 				<onclick>SettingsLevelChange</onclick>
 				<textoffsetx>100</textoffsetx>
 				<textoffsety>0</textoffsety>

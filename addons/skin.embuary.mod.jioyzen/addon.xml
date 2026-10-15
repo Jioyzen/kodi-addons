@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<addon id="skin.embuary.mod.jioyzen" version="1.0.30" name="Embuary Mod（Jioyzen）" provider-name="Jioyzen; Estuary: phil65, Ichabod Fletchman">
+<addon id="skin.embuary.mod.jioyzen" version="1.0.31" name="Embuary Mod（Jioyzen）" provider-name="Jioyzen; Estuary: phil65, Ichabod Fletchman">
 	<requires>
 		<import addon="xbmc.gui" version="5.18.0"/>
 		<import addon="xbmc.python" version="3.0.0"/>
@@ -20,5 +20,5 @@
 	<extension point="xbmc.addon.metadata">
 		<platform>all</platform>
 		<license>CC BY-SA 4.0, GNU GENERAL PUBLIC LICENSE Version 2.0</license>
-		<summary lang="zh_CN">玻璃程序坞桌面、天气卡片与独立应用页，适配 Kodi 22。</summary><summary lang="en_GB">Glass dock home, weather card and independent apps page for Kodi 22.</summary><description lang="zh_CN">基于 Kodi 22 Estuary 的独立皮肤。玻璃程序坞桌面、五列应用卡片、九张内置壁纸、统一柔化背景和天气卡片。安装时依赖海报墙、AI 刮削入库及天气卡片，首次启用自动设置天气提供者和自动定位。</description><description lang="en_GB">An independent Kodi 22 Estuary-based skin with a glass dock, five-column apps page, nine wallpapers, softened backgrounds and weather card. Requires the poster wall, AI media scanner and weather card; configures weather on first use.</description><news>首个仓库发布：当前外观为默认配置；内置壁纸及天气图标；自动安装所需媒体插件和天气卡片，启用皮肤时自动配置天气。</news><assets><icon>resources/icon.png</icon><fanart>resources/fanart.jpg</fanart></assets></extension>
+		<summary lang="zh_CN">玻璃程序坞桌面、天气卡片与独立应用页，适配 Kodi 22。</summary><summary lang="en_GB">Glass dock home, weather card and independent apps page for Kodi 22.</summary><description lang="zh_CN">基于 Kodi 22 Estuary 的独立皮肤。玻璃程序坞桌面、五列应用卡片、九张内置壁纸、统一柔化背景和天气卡片。安装时依赖海报墙、AI 刮削入库及天气卡片，首次启用自动设置天气提供者和自动定位。</description><description lang="en_GB">An independent Kodi 22 Estuary-based skin with a glass dock, five-column apps page, nine wallpapers, softened backgrounds and weather card. Requires the poster wall, AI media scanner and weather card; configures weather on first use.</description><news>统一弹窗圆角与深灰半透明底板，提高背景不透明度；优化电源、选择、右键及插件设置菜单的主题色高亮、圆角和边缘留白。</news><assets><icon>resources/icon.png</icon><fanart>resources/fanart.jpg</fanart></assets></extension>
 </addon>

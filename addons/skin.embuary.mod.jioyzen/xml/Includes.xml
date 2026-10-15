@@ -257,7 +257,7 @@
 					<top>0</top>
 					<right>0</right>
 					<bottom>0</bottom>
-					<texture colordiffuse="button_focus">lists/focus.png</texture>
+					<texture border="12" colordiffuse="button_focus">dialogs/jioyzen/focus.png</texture>
 					<animation effect="fade" start="100" end="50" time="0">UnFocus</animation>
 				</control>
 				<control type="group">
@@ -933,18 +933,25 @@
 			<width>$PARAM[width]</width>
 			<height>$PARAM[height]</height>
 			<control type="image">
-				<left>0</left>
-				<top>0</top>
-				<right>0</right>
-				<height>70</height>
-				<texture colordiffuse="dialog_header_tint">colors/white.png</texture>
+				<left>-24</left>
+				<top>-20</top>
+				<right>-24</right>
+				<bottom>-28</bottom>
+				<texture border="48">dialogs/jioyzen/shadow.png</texture>
 			</control>
 			<control type="image">
 				<left>0</left>
-				<top>70</top>
+				<top>0</top>
 				<right>0</right>
 				<bottom>0</bottom>
-				<texture colordiffuse="dialog_tint">colors/white.png</texture>
+				<texture border="24" colordiffuse="E6242728">dialogs/jioyzen/panel.png</texture>
+			</control>
+			<control type="image">
+				<left>24</left>
+				<top>69</top>
+				<right>24</right>
+				<height>1</height>
+				<texture colordiffuse="20FFFFFF">colors/white.png</texture>
 			</control>
 			<control type="label" id="$PARAM[header_id]">
 				<left>40</left>

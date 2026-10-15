@@ -14,7 +14,7 @@
 			<height>3240</height>
 			<animation effect="fade" start="0" end="100" time="300">WindowOpen</animation>
 			<animation effect="fade" start="100" end="0" time="200">WindowClose</animation>
-			<texture colordiffuse="B0FFFFFF">colors/black.png</texture>
+			<texture colordiffuse="80FFFFFF">colors/black.png</texture>
 		</control>
 		<control type="button">
 			<left>-1920</left>
@@ -32,14 +32,14 @@
 				<left>0</left>
 				<top>0</top>
 				<width>450</width>
-				<height>780</height>
-				<texture colordiffuse="dialog_tint">colors/white.png</texture>
+				<height>804</height>
+				<texture border="24" colordiffuse="E6242728">dialogs/jioyzen/panel.png</texture>
 			</control>
 			<control type="grouplist" id="996">
 				<description>grouplist for context buttons</description>
-				<left>0</left>
-				<top>0</top>
-				<width>450</width>
+				<left>12</left>
+				<top>12</top>
+				<width>426</width>
 				<height max="780">auto</height>
 				<usecontrolcoords>true</usecontrolcoords>
 			</control>
@@ -54,10 +54,10 @@
 			<description>button template</description>
 			<left>0</left>
 			<top></top>
-			<width>450</width>
+			<width>426</width>
 			<height>65</height>
 			<align>center</align>
-			<texturefocus colordiffuse="button_focus">lists/focus.png</texturefocus>
+			<texturefocus border="12" colordiffuse="button_focus">dialogs/jioyzen/focus.png</texturefocus>
 			<texturenofocus />
 		</control>
 	</controls>
