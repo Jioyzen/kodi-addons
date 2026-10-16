@@ -119,6 +119,7 @@ class ScannerWindow(xbmcgui.WindowXML):
             if self.navigation.closed:
                 return
             self.setProperty('AIS.ScanBusy', 'true' if self._backend._is_busy() else 'false')
+            self.setProperty('AIS.StopLabel', self._backend.L(32426))
             now = time.monotonic()
             if now - self._checked >= 1:
                 self._checked = now
@@ -200,7 +201,13 @@ class ScannerWindow(xbmcgui.WindowXML):
                 self._action(query)
 
     def _action(self, query):
-        if self._backend is None or self._action_busy or self.navigation.closed:
+        if self._backend is None or self.navigation.closed:
+            return
+        if query.get('action') == 'stop_scan':
+            self._backend.stop_scan()
+            return
+        if self._action_busy:
+            self._backend.notify_task_busy()
             return
         self._action_busy = True
         self.navigation.current.selected = self.getControl(LIST_ID).getSelectedPosition()

@@ -7,6 +7,7 @@ import threading
 import time
 from task_state import task_lock, TaskBusy
 from history_store import load_history_file
+from localization import get_string
 from path_display import redact_text,directory_label
 
 import dns_override  # DoH bypass GFW DNS pollution for TMDB (incl. image CDN)
@@ -118,7 +119,7 @@ def _do_scan_unlocked():
     if not work_items:
         if total_new or total_del:
             xbmcgui.Dialog().notification(ADDON_NAME,
-                ADDON.getLocalizedString(32155) % (0, 0),
+                get_string(ADDON, 32427),
                 xbmcgui.NOTIFICATION_INFO, 3000)
         else:
             log('No work items, no changes.')
@@ -138,9 +139,6 @@ def _do_scan_unlocked():
     # Run scan (sets .scanning flag internally)
     success, merged, failed = _run_scan(work_items, affected_dirs)
 
-    msg = ADDON.getLocalizedString(32155) % (success, failed)
-    xbmcgui.Dialog().notification(ADDON_NAME, msg,
-                                  xbmcgui.NOTIFICATION_INFO, 5000)
     log('Scan done: %d success, %d merged, %d failed' %
         (success, merged, failed))
     return success, merged, failed, total_new
@@ -151,7 +149,7 @@ def _run_once():
     # Clear residual markers from previous session
     try:
         with task_lock(DATA_PATH):
-            for f in (SCANNING_FILE, REFRESHING_FILE):
+            for f in (SCANNING_FILE, REFRESHING_FILE, os.path.join(DATA_PATH, '.caching')):
                 if xbmcvfs.exists(f):
                     try:
                         os.remove(f)

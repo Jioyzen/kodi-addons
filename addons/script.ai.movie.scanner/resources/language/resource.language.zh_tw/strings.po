@@ -730,3 +730,47 @@ msgstr "該目錄包含多部不同的劇，請依獨立劇目錄管理後再匹
 msgctxt "#32416"
 msgid "The operation could not finish. Check local storage and scan history. Existing records will not be cleared automatically."
 msgstr "操作未完成，請檢查本機儲存和掃描記錄。已有記錄不會被自動清空。"
+
+msgctxt "#32417"
+msgid "A scan or image cache task is already running. Wait for it to finish or stop it first."
+msgstr "已有掃描或圖片快取工作正在執行，請等待完成或先停止目前工作。"
+
+msgctxt "#32418"
+msgid "Scan complete. Caching %d images."
+msgstr "掃描完成，開始快取 %d 張圖片"
+
+msgctxt "#32419"
+msgid "Images: %d/%d; downloaded %d, already cached %d, failed %d"
+msgstr "圖片快取：%d/%d；新增 %d，已快取 %d，失敗 %d"
+
+msgctxt "#32420"
+msgid "Image cache complete: downloaded %d, already cached %d, failed %d"
+msgstr "圖片快取完成：新增 %d，已快取 %d，失敗 %d"
+
+msgctxt "#32421"
+msgid "Image cache stopped: downloaded %d, already cached %d, failed %d"
+msgstr "圖片快取已停止：新增 %d，已快取 %d，失敗 %d"
+
+msgctxt "#32422"
+msgid "No new artwork in this scan. Automatic caching is not needed."
+msgstr "本次沒有新增圖片，無需自動快取"
+
+msgctxt "#32423"
+msgid "Image caching did not finish. Check the log and try again."
+msgstr "圖片快取未完成，請查看記錄後重試。"
+
+msgctxt "#32424"
+msgid "Stopping the current task. Waiting for workers to exit..."
+msgstr "正在停止目前工作，請等待工作執行緒結束…"
+
+msgctxt "#32425"
+msgid "No scan or image cache task is running."
+msgstr "目前沒有掃描或圖片快取工作"
+
+msgctxt "#32426"
+msgid "Stop task"
+msgstr "停止工作"
+
+msgctxt "#32427"
+msgid "Scan complete. No files need matching; automatic image caching was not started."
+msgstr "掃描完成，沒有需要重新匹配的檔案；未啟動自動圖片快取。"

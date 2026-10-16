@@ -731,3 +731,47 @@ msgstr "This directory contains different shows. Organize them into separate sho
 msgctxt "#32416"
 msgid "The operation could not finish. Check local storage and scan history. Existing records will not be cleared automatically."
 msgstr "The operation could not finish. Check local storage and scan history. Existing records will not be cleared automatically."
+
+msgctxt "#32417"
+msgid "A scan or image cache task is already running. Wait for it to finish or stop it first."
+msgstr "A scan or image cache task is already running. Wait for it to finish or stop it first."
+
+msgctxt "#32418"
+msgid "Scan complete. Caching %d images."
+msgstr "Scan complete. Caching %d images."
+
+msgctxt "#32419"
+msgid "Images: %d/%d; downloaded %d, already cached %d, failed %d"
+msgstr "Images: %d/%d; downloaded %d, already cached %d, failed %d"
+
+msgctxt "#32420"
+msgid "Image cache complete: downloaded %d, already cached %d, failed %d"
+msgstr "Image cache complete: downloaded %d, already cached %d, failed %d"
+
+msgctxt "#32421"
+msgid "Image cache stopped: downloaded %d, already cached %d, failed %d"
+msgstr "Image cache stopped: downloaded %d, already cached %d, failed %d"
+
+msgctxt "#32422"
+msgid "No new artwork in this scan. Automatic caching is not needed."
+msgstr "No new artwork in this scan. Automatic caching is not needed."
+
+msgctxt "#32423"
+msgid "Image caching did not finish. Check the log and try again."
+msgstr "Image caching did not finish. Check the log and try again."
+
+msgctxt "#32424"
+msgid "Stopping the current task. Waiting for workers to exit..."
+msgstr "Stopping the current task. Waiting for workers to exit..."
+
+msgctxt "#32425"
+msgid "No scan or image cache task is running."
+msgstr "No scan or image cache task is running."
+
+msgctxt "#32426"
+msgid "Stop task"
+msgstr "Stop task"
+
+msgctxt "#32427"
+msgid "Scan complete. No files need matching; automatic image caching was not started."
+msgstr "Scan complete. No files need matching; automatic image caching was not started."

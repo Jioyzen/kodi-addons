@@ -19,7 +19,7 @@
     </control>
     <control type="button" id="61">
       <left>1570</left><top>74</top><width>230</width><height>56</height>
-      <font>font27</font><label>停止扫描</label><textcolor>FFFFFFFF</textcolor>
+      <font>font27</font><label>$INFO[Window.Property(AIS.StopLabel)]</label><textcolor>FFFFFFFF</textcolor>
       <texturefocus colordiffuse="button_focus" border="16">special://home/addons/script.ai.movie.scanner/resources/skins/Default/media/row.png</texturefocus>
       <texturenofocus colordiffuse="40333333" border="16">special://home/addons/script.ai.movie.scanner/resources/skins/Default/media/row.png</texturenofocus>
       <visible>String.IsEqual(Window.Property(AIS.ScanBusy),true)</visible>

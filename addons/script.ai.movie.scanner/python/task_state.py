@@ -33,3 +33,20 @@ def task_lock(profile):
         finally:
             _state.depth = 0
             fcntl.flock(lock, fcntl.LOCK_UN)
+
+
+@contextmanager
+def cache_task(profile):
+    """Keep cache state and the shared lock until all workers have drained."""
+    with task_lock(profile):
+        marker = os.path.join(profile, '.caching')
+        with open(marker, 'w') as state:
+            state.write('1')
+        try:
+            yield
+        finally:
+            for name in ('.caching', '.stop_requested'):
+                try:
+                    os.remove(os.path.join(profile, name))
+                except FileNotFoundError:
+                    pass

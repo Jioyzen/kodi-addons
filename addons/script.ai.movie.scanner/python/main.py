@@ -11,7 +11,7 @@ import urllib.parse
 import re
 import difflib
 import functools
-from task_state import task_lock, TaskBusy
+from task_state import task_lock, cache_task, TaskBusy
 from history_store import load_history_file,save_history_file
 
 import xbmc
@@ -61,6 +61,9 @@ ADDON = xbmcaddon.Addon()
 
 def L(string_id):
     """Shortcut for getting localized string."""
+    if 32417 <= string_id <= 32427:
+        from localization import get_string
+        return get_string(ADDON, string_id)
     text = ADDON.getLocalizedString(string_id)
     if not text and 32200 <= string_id <= 32211:
         from actor_cache import L as actor_cache_string
@@ -132,13 +135,21 @@ def guarded_task(function):
                 return function(*args, **kwargs)
         except TaskBusy as exc:
             log(str(exc), xbmc.LOGWARNING)
-            xbmcgui.Dialog().notification(ADDON_NAME, L(32301),
-                                         xbmcgui.NOTIFICATION_WARNING, 5000)
+            if os.path.exists(os.path.join(DATA_PATH, 'reset-pending.json')):
+                xbmcgui.Dialog().notification(ADDON_NAME, L(32301),
+                                             xbmcgui.NOTIFICATION_WARNING, 5000)
+            else:
+                notify_task_busy()
             if function.__name__ == '_run_scan':
                 return 0, 0, 0
             if function.__name__ == 'refresh_directory_files':
                 return 0, 0
     return guarded
+
+
+def notify_task_busy():
+    xbmcgui.Dialog().notification(ADDON_NAME, L(32417),
+                                 xbmcgui.NOTIFICATION_WARNING, 5000)
 
 
 # ==========================================
@@ -174,8 +185,9 @@ def _is_refreshing():
 
 
 def _is_busy():
-    """Check if any background task is running (refresh or scan)."""
-    return _is_scanning() or _is_refreshing()
+    """Visible discovery, matching or image-cache work."""
+    return (_is_scanning() or _is_refreshing() or
+            os.path.exists(os.path.join(DATA_PATH, '.caching')))
 
 
 def _request_stop():
@@ -227,11 +239,11 @@ def _clear_scanning():
 
 
 def stop_scan():
-    if _is_scanning() or _is_refreshing():
+    if _is_busy():
         _request_stop()
-        xbmcgui.Dialog().notification(ADDON_NAME, L(32030), xbmcgui.NOTIFICATION_INFO, 2000)
+        xbmcgui.Dialog().notification(ADDON_NAME, L(32424), xbmcgui.NOTIFICATION_INFO, 3000)
     else:
-        xbmcgui.Dialog().notification(ADDON_NAME, L(32031), xbmcgui.NOTIFICATION_INFO, 2000)
+        xbmcgui.Dialog().notification(ADDON_NAME, L(32425), xbmcgui.NOTIFICATION_INFO, 2000)
 
 
 # ==========================================
@@ -323,7 +335,7 @@ def show_main_menu(history=None):
 
     # --- [Stop Scan] ---
     if _is_busy():
-        li = xbmcgui.ListItem(L(32022), offscreen=True)
+        li = xbmcgui.ListItem(L(32426), offscreen=True)
         li.setArt({'icon': 'DefaultAddonInfoProvider.png'})
         url = build_url({'action': 'stop_scan'})
         listing.append((url, li, False))
@@ -596,14 +608,18 @@ def add_directory():
 # ==========================================
 @guarded_task
 def cache_images():
-    ImageCacher().start()
+    _clear_stop()
+    with cache_task(DATA_PATH):
+        ImageCacher().start()
     refresh_menu()
 
 
 @guarded_task
 def cache_actor_images():
     from actor_cache import ActorImageCacher
-    ActorImageCacher().start_actors()
+    _clear_stop()
+    with cache_task(DATA_PATH):
+        ActorImageCacher().start_actors()
     refresh_menu()
 
 
@@ -1053,12 +1069,6 @@ def manual_match(filepath=None, dirpath=None, show_root=None):
         if movie_id:
             title = movie_details.get('info', {}).get('title', '')
             set_movie_art(movie_id, movie_details.get('available_art', {}))
-            # Prefetch posters/fanart AND cast thumbnails through the
-            # proxy chain (manual matches bypass the scan-end prefetch).
-            try:
-                ImageCacher().prefetch_art([_art_with_cast(movie_details)])
-            except Exception as e:
-                log('Manual match prefetch error: %s' % e, xbmc.LOGERROR)
             history = load_history()
             dir_files = history.get('directories', {}).get(dirpath, {}).get('files', {})
             if filepath in dir_files:
@@ -1074,6 +1084,12 @@ def manual_match(filepath=None, dirpath=None, show_root=None):
                 }
             save_history(history)
             dialog.notification(ADDON_NAME, L(32094) % title)
+            # Prefetch posters/fanart AND cast thumbnails through the
+            # proxy chain (manual matches bypass the scan-end prefetch).
+            try:
+                ImageCacher().prefetch_art([_art_with_cast(movie_details)])
+            except Exception as e:
+                log('Manual match prefetch error: %s' % e, xbmc.LOGERROR)
         else:
             dialog.ok(ADDON_NAME, L(32095))
 
@@ -1505,7 +1521,7 @@ def scan_directory(dirpath):
     if not work_items:
         save_history(history)
         refresh_menu()
-        xbmcgui.Dialog().ok(ADDON_NAME, L(32044))
+        xbmcgui.Dialog().ok(ADDON_NAME, L(32427))
         return
 
     _run_scan(work_items, [dirpath])
@@ -1562,7 +1578,7 @@ def scan_all():
     if not work_items:
         save_history(history)
         refresh_menu()
-        xbmcgui.Dialog().ok(ADDON_NAME, L(32044))
+        xbmcgui.Dialog().ok(ADDON_NAME, L(32427))
         return
 
     _run_scan(work_items, all_dirs)
@@ -1627,6 +1643,7 @@ def _run_scan(work_items, affected_dirs, tv_session_override=None):
     history = None
     art_entries = []
     abort_event = threading.Event()
+    scan_completed = False
     try:
         ai_enabled = ADDON.getSetting('ai_enabled') == 'true'
         api_key = ADDON.getSetting('ai_api_key') or ''
@@ -1747,6 +1764,7 @@ def _run_scan(work_items, affected_dirs, tv_session_override=None):
             msg = L(32063) % (success, merged, failed)
             pDialog.update(percent, heading, msg)
 
+        scan_completed = True
     finally:
         # Signal workers to stop immediately so join() doesn't hang for
         # timeout=5s per thread (12 workers = 60s delay).
@@ -1777,17 +1795,21 @@ def _run_scan(work_items, affected_dirs, tv_session_override=None):
             _clear_scanning()
             _clear_stop()
             if pDialog is not None:pDialog.close()
-        if art_entries and not stopped:
-            try:
-                ImageCacher().prefetch_art(art_entries)
-            except Exception as e:
-                log('Image prefetch trigger error: %s' % e, xbmc.LOGERROR)
+        if history is not None and scan_completed:
+            xbmcgui.Dialog().notification(ADDON_NAME,
+                L(32065) % (success, merged, failed) +
+                ('；略过 %d 个附加内容' % skipped if skipped else ''),
+                xbmcgui.NOTIFICATION_INFO, 5000)
+        if not stopped and history is not None and scan_completed:
+            if art_entries:
+                try:
+                    ImageCacher().prefetch_art(art_entries)
+                except Exception as e:
+                    log('Image prefetch error: %s' % e, xbmc.LOGERROR)
+            else:
+                xbmcgui.Dialog().notification(ADDON_NAME, L(32422),
+                                             xbmcgui.NOTIFICATION_INFO, 5000)
         refresh_menu()
-
-    xbmcgui.Dialog().notification(ADDON_NAME,
-                        L(32065) % (
-                            success, merged, failed) + ('；略过 %d 个附加内容' % skipped if skipped else ''),
-                        xbmcgui.NOTIFICATION_INFO, 5000)
 
     return success, merged, failed
 

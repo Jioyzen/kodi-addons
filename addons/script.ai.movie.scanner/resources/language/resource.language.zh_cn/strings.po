@@ -730,3 +730,47 @@ msgstr "该目录包含多部不同的剧，请按独立剧目录管理后再匹
 msgctxt "#32416"
 msgid "The operation could not finish. Check local storage and scan history. Existing records will not be cleared automatically."
 msgstr "操作未完成，请检查本地存储和扫描记录。已有记录不会被自动清空。"
+
+msgctxt "#32417"
+msgid "A scan or image cache task is already running. Wait for it to finish or stop it first."
+msgstr "已有扫描或图片缓存任务正在运行，请等待完成或先停止当前任务。"
+
+msgctxt "#32418"
+msgid "Scan complete. Caching %d images."
+msgstr "扫描完成，开始缓存 %d 张图片"
+
+msgctxt "#32419"
+msgid "Images: %d/%d; downloaded %d, already cached %d, failed %d"
+msgstr "图片缓存：%d/%d；新增 %d，已缓存 %d，失败 %d"
+
+msgctxt "#32420"
+msgid "Image cache complete: downloaded %d, already cached %d, failed %d"
+msgstr "图片缓存完成：新增 %d，已缓存 %d，失败 %d"
+
+msgctxt "#32421"
+msgid "Image cache stopped: downloaded %d, already cached %d, failed %d"
+msgstr "图片缓存已停止：新增 %d，已缓存 %d，失败 %d"
+
+msgctxt "#32422"
+msgid "No new artwork in this scan. Automatic caching is not needed."
+msgstr "本次没有新增图片，无需自动缓存"
+
+msgctxt "#32423"
+msgid "Image caching did not finish. Check the log and try again."
+msgstr "图片缓存未完成，请查看日志后重试。"
+
+msgctxt "#32424"
+msgid "Stopping the current task. Waiting for workers to exit..."
+msgstr "正在停止当前任务，请等待工作线程退出…"
+
+msgctxt "#32425"
+msgid "No scan or image cache task is running."
+msgstr "当前没有扫描或图片缓存任务"
+
+msgctxt "#32426"
+msgid "Stop task"
+msgstr "停止任务"
+
+msgctxt "#32427"
+msgid "Scan complete. No files need matching; automatic image caching was not started."
+msgstr "扫描完成，没有需要重新匹配的文件；未启动自动图片缓存。"

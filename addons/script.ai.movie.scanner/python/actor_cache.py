@@ -222,7 +222,7 @@ class ActorImageCacher(ImageCacher):
         iterator = iter(urls)
         monitor = xbmc.Monitor()
         total = len(urls)
-        if progress.iscanceled() or monitor.abortRequested():
+        if progress.iscanceled() or self._stop_requested() or monitor.abortRequested():
             self.cancel.set()
             results['canceled'] = True
             return results
@@ -232,7 +232,7 @@ class ActorImageCacher(ImageCacher):
 
             def replenish():
                 while not self.cancel.is_set() and len(pending) < self.thread_count:
-                    if progress.iscanceled() or monitor.abortRequested():
+                    if progress.iscanceled() or self._stop_requested() or monitor.abortRequested():
                         self.cancel.set()
                         results['canceled'] = True
                         return
@@ -243,7 +243,7 @@ class ActorImageCacher(ImageCacher):
 
             replenish()
             while pending:
-                if progress.iscanceled() or monitor.abortRequested():
+                if progress.iscanceled() or self._stop_requested() or monitor.abortRequested():
                     self.cancel.set()
                     results['canceled'] = True
                     for future in pending:
@@ -282,7 +282,7 @@ class ActorImageCacher(ImageCacher):
             try:
                 urls, actors, unavailable = self._get_actor_urls()
                 cached = self._cached_urls(urls) if urls else set()
-                if progress.iscanceled() or xbmc.Monitor().abortRequested():
+                if progress.iscanceled() or self._stop_requested() or xbmc.Monitor().abortRequested():
                     return
                 progress.close()
                 _log('Actor cache: actors=%d, unique URLs=%d, cached=%d, unavailable=%d' %

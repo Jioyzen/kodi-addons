@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<addon id="script.ai.movie.scanner" name="AI 刮削入库" version="1.10.2" provider-name="Jioyzen">
+<addon id="script.ai.movie.scanner" name="AI 刮削入库" version="1.10.3" provider-name="Jioyzen">
   <requires>
     <import addon="xbmc.python" version="3.0.0" />
     <import addon="script.module.requests" version="2.25.0" />
@@ -19,6 +19,6 @@
     <assets>
       <icon>resources/icon-library.png</icon>
     </assets>
-    <news>电视剧以目录、季目录优先匹配，失败时回退单集英文剧名；花絮及未知集归入所在季并排在末尾；手动确认按剧目录分组；独立页面与目录加载优化；列表直接播放，移除连续播放入口；扫描状态、菜单、API 设置、清库、图片缓存和并发稳定性优化；新增媒体库图标。</news>
+    <news>扫描后自动缓存显示开始、进度和结果；扫描与海报及演员缓存统一互斥，支持停止当前任务，杜绝缓存交接时并发启动；电视剧以目录、季目录优先匹配，失败时回退单集英文剧名；花絮及未知集归入所在季并排在末尾；手动确认按剧目录分组；独立页面与目录加载优化；列表直接播放，移除连续播放入口；扫描状态、菜单、API 设置、清库、图片缓存和并发稳定性优化；新增媒体库图标。</news>
   </extension>
 </addon>

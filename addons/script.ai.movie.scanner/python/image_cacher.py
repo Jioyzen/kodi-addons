@@ -26,7 +26,8 @@ ADDONID = ADDON.getAddonInfo('id')
 
 
 def L(string_id):
-    return ADDON.getLocalizedString(string_id)
+    from localization import get_string
+    return get_string(ADDON, string_id)
 
 
 def _log(msg, level=xbmc.LOGINFO):
@@ -124,6 +125,7 @@ class ImageCacher:
         self.db_path = current_database('Textures')
         self.db_lock = threading.Lock()
         self.cancel = threading.Event()
+        self.profile = xbmcvfs.translatePath(ADDON.getAddonInfo('profile'))
 
     def _get_video_items(self):
         movies = []
@@ -494,14 +496,10 @@ class ImageCacher:
         return "failed"
 
     def prefetch_art(self, art_entries):
-        """Non-blocking background pre-fetch of art URLs into Kodi's texture
-        cache. `art_entries` is a list of `available_art` dicts as returned
-        by tmdb_api (poster/fanart/clearlogo keys). Resized to the same
-        variants kodi_db writes to the art table (w500/w1280/w500), so the
-        poster wall opens instantly after a scan. Posters are queued first
-        (wall visibility) before fanart (the heavy files). Reuses the
-        existing download routine (texture DB insert included), skipping
-        already cached images.
+        """Cache newly matched artwork on the caller's existing worker.
+
+        The scan/cache lock stays held across both phases. This must not
+        detach a thread: that left an unlocked gap and hid cache progress.
         """
         # Global priority ordering (NOT per-movie interleaved): ALL posters
         # first so the wall fills in within seconds, then clearlogos, then
@@ -538,47 +536,53 @@ class ImageCacher:
                 if u not in seen:
                     seen.add(u)
                     urls.append(u)
-        if not urls:
-            _log('prefetch_art: no HTTP URLs to cache')
+        from task_state import cache_task
+        progress = None
+        ok = skip = fail = 0
+        try:
+            with cache_task(self.profile):
+                if not urls:
+                    xbmcgui.Dialog().notification(ADDON.getAddonInfo('name'), L(32422),
+                                                 xbmcgui.NOTIFICATION_INFO, 5000)
+                    return {'success': 0, 'skipped': 0, 'failed': 0, 'canceled': False}
+                _log('Automatic cache of %d art URLs (threads=%d)' %
+                     (len(urls), self.thread_count))
+                progress = xbmcgui.DialogProgressBG()
+                progress.create(ADDON.getAddonInfo('name'), L(32418) % len(urls))
+                xbmcgui.Dialog().notification(ADDON.getAddonInfo('name'), L(32418) % len(urls),
+                                             xbmcgui.NOTIFICATION_INFO, 5000)
+                for count, res in enumerate(self._bounded_results(urls), 1):
+                    if res == 'success':ok += 1
+                    elif res == 'skipped':skip += 1
+                    elif res != 'canceled':fail += 1
+                    progress.update(int(count * 100 / len(urls)),
+                                    ADDON.getAddonInfo('name'),
+                                    L(32419) % (count, len(urls), ok, skip, fail))
+                canceled = self.cancel.is_set()
+                _log('Automatic cache %s: %d OK, %d skipped, %d failed' %
+                     ('stopped' if canceled else 'finished', ok, skip, fail))
+                # Close progress before reporting completion; workers have all exited.
+                progress.close()
+                progress = None
+                if not xbmc.Monitor().abortRequested():
+                    xbmcgui.Dialog().notification(
+                        ADDON.getAddonInfo('name'),
+                        L(32421 if canceled else 32420) % (ok, skip, fail),
+                        xbmcgui.NOTIFICATION_WARNING if fail else xbmcgui.NOTIFICATION_INFO, 7000)
+                return {'success': ok, 'skipped': skip, 'failed': fail, 'canceled': canceled}
+        except Exception:
+            if not xbmc.Monitor().abortRequested():
+                xbmcgui.Dialog().notification(ADDON.getAddonInfo('name'), L(32423),
+                                             xbmcgui.NOTIFICATION_WARNING, 7000)
+            raise
+        finally:
+            self.cancel.set()
+            if progress is not None:
+                progress.close()
             self.session.close()
-            return
-        _log('Background prefetch of %d art URLs (threads=%d)'
-             % (len(urls), self.thread_count), xbmc.LOGINFO)
 
-        def _run():
-            ok = skip = fail = 0
-            for res in self._bounded_results(urls):
-                if res == "success":ok += 1
-                elif res == "skipped":skip += 1
-                elif res != 'canceled':fail += 1
-            with self._STATE_LOCK:
-                stats = dict(self._SOURCE_STATS)
-            _log('Prefetch done: %d OK, %d skipped, %d failed (total %d, '
-                 'by source: %s)'
-                 % (ok, skip, fail, len(urls),
-                    ', '.join('%s=%d' % kv for kv in sorted(stats.items()))
-                    or 'none'),
-                 xbmc.LOGINFO if fail == 0 else xbmc.LOGWARNING)
-
-        def _guarded_run():
-            from task_state import task_lock,TaskBusy
-            profile=xbmcvfs.translatePath(ADDON.getAddonInfo('profile'))
-            # The parent scan still holds this lock when starting the thread.
-            # Keep it for the complete cache job once the scan releases it.
-            try:
-                for _ in range(50):
-                    if self.cancel.is_set() or xbmc.Monitor().abortRequested():return
-                    try:
-                        with task_lock(profile):
-                            _run()
-                        return
-                    except TaskBusy:
-                        self.cancel.wait(.2)
-                _log('Prefetch deferred: another scanner/cache/reset task is active',xbmc.LOGWARNING)
-            finally:
-                self.session.close()
-        t = threading.Thread(target=_guarded_run, name='ImagePrefetch', daemon=True)
-        t.start()
+    def _stop_requested(self):
+        return os.path.exists(os.path.join(self.profile, '.stop_requested'))
 
     def _bounded_results(self,urls,cancelled=lambda:False):
         """Only one live future per worker; poll cancellation between jobs."""
@@ -587,7 +591,7 @@ class ImageCacher:
         with ThreadPoolExecutor(max_workers=self.thread_count) as pool:
             pending=set()
             while True:
-                if cancelled() or monitor.abortRequested():self.cancel.set()
+                if cancelled() or self._stop_requested() or monitor.abortRequested():self.cancel.set()
                 if self.cancel.is_set():
                     for future in pending:future.cancel()
                 else:

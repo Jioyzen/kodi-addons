@@ -32,7 +32,7 @@ class MenuActionsTests(unittest.TestCase):
     def test_stopping_file_scan_keeps_active_state_until_worker_finishes(self):
         requests=[]
         dialog=types.SimpleNamespace(notification=lambda *a:None)
-        n=functions(['stop_scan'],{'_is_scanning':lambda:False,'_is_refreshing':lambda:True,
+        n=functions(['stop_scan'],{'_is_busy':lambda:True,
             '_request_stop':lambda:requests.append('stop'),
             '_clear_refreshing':lambda:self.fail('Worker has not finished yet'),
             'xbmcgui':types.SimpleNamespace(Dialog=lambda:dialog,NOTIFICATION_INFO=1),'ADDON_NAME':'Test','L':str})
