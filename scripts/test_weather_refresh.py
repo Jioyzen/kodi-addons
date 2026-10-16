@@ -99,11 +99,72 @@ class WeatherRefreshTests(unittest.TestCase):
 
     def test_new_manual_city_bypasses_fresh_cache(self):
         self.settings.update(automatic_location='false', province='北京', city='北京')
-        fetch = self.invoke(lambda **kwargs: self.new, now=200)
+        self.new['location'].update(provider='manual', province='北京', city='北京')
+        def network(**kwargs):
+            p = self.windows[10000].properties
+            self.assertEqual(p['Jioyzen.Card.City'], '北京')
+            self.assertEqual(p['Jioyzen.Card.Temperature'], '--°')
+            self.assertEqual(p['Jioyzen.Card.Updated'], '更新中')
+            return self.new
+        fetch = self.invoke(network, now=200)
         self.assertEqual(fetch.call_count, 1)
         location = fetch.call_args.kwargs['manual_location']
         self.assertEqual(location['city'], '北京')
         self.assertEqual(location['provider'], 'manual')
+        self.assertEqual(self.windows[10000].properties['Jioyzen.Card.City'], '北京市')
+
+    def test_failed_new_city_never_falls_back_to_previous_city(self):
+        self.provider.publish(self.cached)
+        self.settings.update(automatic_location='false', province='北京', city='北京')
+        self.invoke(lambda **kw: (_ for _ in ()).throw(OSError('offline')), now=200)
+        p = self.windows[10000].properties
+        self.assertEqual(p['Jioyzen.Card.City'], '北京')
+        self.assertEqual(p['Jioyzen.Card.Temperature'], '--°')
+        self.assertEqual(p['Jioyzen.Card.Updated'], '更新失败')
+        self.assertEqual(p['Jioyzen.Card.High'], '')
+        self.assertEqual(self.windows[12600].properties['Current.Location'], '北京')
+        self.assertEqual(self.windows[12600].properties['Current.Temperature'], '')
+
+    def test_saved_station_is_used_immediately_instead_of_ip_location(self):
+        import json
+        selection = dict(country_code='CN', province='北京', city='北京', station_id='101010100')
+        self.settings.update(automatic_location='false', selected_location=json.dumps(selection))
+        self.new['location'].update(selection, provider='manual', precision='station')
+        fetch = self.invoke(lambda **kw: self.new, now=200)
+        self.assertEqual(fetch.call_args.kwargs['manual_location']['station_id'], '101010100')
+        self.assertEqual(self.windows[10000].properties['Jioyzen.Card.City'], '北京市')
+
+    def test_old_success_cannot_overwrite_card_or_cache_after_location_change(self):
+        current = copy.deepcopy(self.new)
+        current['location'].update(city='北京', province='北京', provider='manual')
+        def network():
+            self.settings.update(automatic_location='false', province='北京', city='北京')
+            self.provider.publish(current)
+            return self.new  # An earlier automatic-IP request just finished.
+        save = Mock()
+        self.invoke(network, save=save)
+        self.assertEqual(self.windows[10000].properties['Jioyzen.Card.City'], '北京市')
+        self.assertEqual(self.windows[10000].properties['Jioyzen.Card.Temperature'], '20°')
+        save.assert_not_called()
+
+    def test_old_failure_cannot_restore_old_city_after_new_selection(self):
+        current = copy.deepcopy(self.new)
+        current['location'].update(city='北京', province='北京', provider='manual')
+        def network():
+            self.settings.update(automatic_location='false', province='北京', city='北京')
+            self.provider.publish(current)
+            raise OSError('old request failed')
+        self.invoke(network)
+        self.assertEqual(self.windows[10000].properties['Jioyzen.Card.City'], '北京市')
+        self.assertEqual(self.windows[10000].properties['Jioyzen.Card.Temperature'], '20°')
+
+    def test_response_for_wrong_city_is_not_published_or_saved(self):
+        self.settings.update(automatic_location='false', province='北京', city='北京')
+        save = Mock()
+        self.invoke(lambda **kw: self.new, save=save, now=200)
+        self.assertEqual(self.windows[10000].properties['Jioyzen.Card.City'], '北京')
+        self.assertEqual(self.windows[10000].properties['Jioyzen.Card.Updated'], '更新失败')
+        save.assert_not_called()
 
     def test_matching_manual_city_reuses_fresh_cache(self):
         self.settings.update(automatic_location='false', province='新疆', city='乌鲁木齐市')

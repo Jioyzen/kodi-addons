@@ -10,7 +10,7 @@ import xbmcgui
 import xbmcvfs
 
 from lib.pipeline import atomic_save, run_pipeline, WEATHER_PROVIDER
-from lib.card import properties as card_properties, rounded, finite
+from lib.card import properties as card_properties, rounded, finite, FIELDS, PREFIX
 from lib.preferences import manual_location, cache_matches, clear_manual_if_automatic
 
 ADDON = xbmcaddon.Addon('weather.jioyzen')
@@ -109,21 +109,69 @@ def publish(data, stale=False):
         home.setProperty(key, value)
 
 
+def publish_status(location, failed=False):
+    """Keep the card visible without showing another city's observations."""
+    location = location or {}
+    label = location.get('display_name') or location.get('city') or '天气'
+    card = {PREFIX + field: '' for field in FIELDS}
+    card.update({PREFIX + 'City': label, PREFIX + 'Temperature': '--°',
+                 PREFIX + 'Condition': '暂时无法获取天气' if failed else '正在更新天气',
+                 PREFIX + 'Updated': '更新失败' if failed else '更新中',
+                 PREFIX + 'Ready': 'true'})
+    for wid in (10000, 12600):
+        window = xbmcgui.Window(wid)
+        for key, value in card.items():
+            window.setProperty(key, value)
+    window = xbmcgui.Window(12600)
+    # Do not leave the native weather page pointing at the previous city.
+    for key in ('Location', 'Current.Location', 'Location1'):
+        window.setProperty(key, label)
+    for key in ('Current.Temperature', 'Current.Condition', 'Current.FeelsLike',
+                'Current.Humidity', 'Current.Wind', 'Current.WindDirection',
+                'Current.OutlookIcon', 'Current.FanartCode'):
+        window.setProperty(key, '')
+    for key in ('Current.IsFetched', 'Weather.IsFetched', 'Daily.IsFetched', 'Hourly.IsFetched'):
+        window.setProperty(key, 'false')
+
+
+def selection_is_current(location):
+    # A request for the old city can finish after the user changes settings.
+    # Get a fresh settings handle before allowing it to publish or persist.
+    try:
+        current = xbmcaddon.Addon('weather.jioyzen')
+        return manual_location(current.getSetting) == location
+    except (TypeError, ValueError):
+        return False
+
+
 def main():
     probe = len(sys.argv) > 1 and sys.argv[1] == 'probe'
     cached = load_cache()
+    selected_location = None
+    usable_cache = False
     try:
         clear_manual_if_automatic(ADDON.getSetting, ADDON.setSetting)
         selected_location = manual_location(ADDON.getSetting)
-        if not probe and cached:
+        usable_cache = bool(cached and cache_matches(cached, selected_location))
+        if not probe and usable_cache:
             fresh = (cached['weather'].get('provider') == WEATHER_PROVIDER and
-                     cache_matches(cached, selected_location) and
                      0 <= time.time() - cached['fetched_at'] < 1800)
+            if not selection_is_current(selected_location):
+                return
             publish(cached, stale=not fresh)
             if fresh:
                 return
+        elif not probe:
+            if not selection_is_current(selected_location):
+                return
+            publish_status(selected_location)
         data = (run_pipeline(manual_location=selected_location)
                 if selected_location is not None else run_pipeline())
+        if not selection_is_current(selected_location):
+            xbmc.log('[weather.jioyzen] Location changed; discarded superseded refresh', xbmc.LOGINFO)
+            return
+        if not cache_matches(data, selected_location):
+            raise ValueError('Weather response does not match selected location')
         if probe:
             atomic_save(CACHE, data)
             atomic_save(os.path.join(PROFILE, 'probe_result.json'), data)
@@ -140,8 +188,11 @@ def main():
         if probe:
             atomic_save(os.path.join(PROFILE, 'probe_result.json'),
                         {'status': 'error', 'error_type': type(error).__name__})
-        elif cached:
-            publish(cached, stale=True)
+        elif selection_is_current(selected_location):
+            if usable_cache:
+                publish(cached, stale=True)
+            else:
+                publish_status(selected_location, failed=True)
 
 
 if __name__ == '__main__':

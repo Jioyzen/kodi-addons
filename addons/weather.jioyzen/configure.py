@@ -1,5 +1,6 @@
 """Weather configuration and user-confirmed location search."""
 import json
+import os
 import sys
 
 import xbmc
@@ -9,6 +10,14 @@ import xbmcgui
 from lib.pipeline import DataError
 from lib.preferences import manual_location, clear_manual_if_automatic
 from lib.places import search_places
+
+
+def refresh_weather(addon):
+    # Weather.Refresh invalidates Kodi's manager, but it may defer starting
+    # the provider until a weather label/window is queried. The desktop uses
+    # our persistent Home properties, so update those directly as well.
+    xbmc.executebuiltin('Weather.Refresh')
+    xbmc.executebuiltin('RunScript(' + os.path.join(addon.getAddonInfo('path'), 'default.py') + ')')
 
 
 def select_location(addon):
@@ -39,10 +48,10 @@ def select_location(addon):
     if selected < 0 or selected >= len(choices):
         return
     choice = choices[selected]
+    addon.setSetting('automatic_location', 'false')
     addon.setSetting('selected_location', json.dumps(choice['location'], ensure_ascii=False))
     addon.setSetting('location_label', choice['label'] + ' · ' + choice['region'])
-    addon.setSetting('automatic_location', 'false')
-    xbmc.executebuiltin('Weather.Refresh')
+    refresh_weather(addon)
 
 
 def restore_location_label(addon):
@@ -104,7 +113,7 @@ def main():
         # Closing the settings to start its search action can occur before a
         # location has been chosen. Leave the existing card until selection.
         return
-    xbmc.executebuiltin('Weather.Refresh')
+    refresh_weather(addon)
 
 
 if __name__ == '__main__':

@@ -301,8 +301,12 @@ def parse_forecast(data, now):
         anchor = datetime.datetime.strptime(str(data.get('f0')), '%Y%m%d%H%M%S').replace(tzinfo=CHINA_TIME)
     except ValueError as error:
         raise DataError('Forecast time missing') from error
-    if not -900 <= (now - anchor).total_seconds() <= 72 * 3600:
-        raise DataError('Forecast too old')
+    # f0 names a forecast cycle, not an observation timestamp. For example,
+    # the 18:00 product is already served before 17:30. Accept an upcoming
+    # cycle within 12 hours; actual forecast dates below still determine
+    # which values belong to today. Keep rejecting stale/far-future cycles.
+    if not -12 * 3600 <= (now - anchor).total_seconds() <= 72 * 3600:
+        raise DataError('Forecast cycle out of range')
     days = {}
     for row in data['f']:
         if not isinstance(row, dict):

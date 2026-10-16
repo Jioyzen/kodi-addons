@@ -128,6 +128,33 @@ class WeatherPipelineTests(unittest.TestCase):
         self.assertEqual(p.parse_forecast(forecast, now)['time'], ['2027-01-01'])
         self.assertEqual(p.month_day('12月31日', now).isoformat(), '2026-12-31')
 
+    def test_evening_forecast_cycle_can_arrive_before_its_labelled_time(self):
+        import datetime
+        now = datetime.datetime(2026, 10, 16, 17, 20, tzinfo=p.CHINA_TIME)
+        data = {'f0': '20261016180000', 'f': [
+            {'fi': '10/15', 'fc': '27', 'fd': '11', 'fa': '01'},
+            {'fi': '10/16', 'fc': '19', 'fd': '13', 'fa': '02'},
+            {'fi': '10/17', 'fc': '16', 'fd': '11', 'fa': '09'}]}
+        forecast = p.parse_forecast(data, now)
+        self.assertEqual(forecast['time'], ['2026-10-16', '2026-10-17'])
+        self.assertEqual(forecast['temperature_2m_max'][0], 19)
+        self.assertEqual(forecast['temperature_2m_min'][0], 13)
+
+    def test_forecast_still_rejects_stale_and_far_future_cycles(self):
+        import datetime
+        now = datetime.datetime(2026, 10, 16, 17, 20, tzinfo=p.CHINA_TIME)
+        for stamp in ('20261013170000', '20261017180000'):
+            data = {'f0': stamp, 'f': [{'fi': '10/16', 'fc': '19', 'fd': '13', 'fa': '02'}]}
+            with self.subTest(stamp=stamp), self.assertRaises(p.DataError):
+                p.parse_forecast(data, now)
+
+    def test_future_observation_does_not_use_forecast_cycle_tolerance(self):
+        import datetime
+        now = datetime.datetime(2026, 10, 16, 17, 20, tzinfo=p.CHINA_TIME)
+        observation = dict(OBSERVATION, city='101010100', date='10月16日', time='18:00')
+        with self.assertRaises(p.DataError):
+            p.parse_current(observation, '101010100', now)
+
     def test_javascript_is_never_evaluated_and_wrong_wrappers_fail(self):
         for raw in [b'var dataSK=alert(1)', b'<html>error</html>', b'var wrong={};',
                     b'var dataSK={}; alert(1)']:

@@ -108,7 +108,7 @@ class WeatherPickerTests(unittest.TestCase):
         self.assertEqual(json.loads(self.settings['selected_location']),self.location)
         self.assertEqual(self.settings['location_label'],'北京 · 北京市')
         self.assertEqual(self.settings['automatic_location'],'false')
-        self.assertEqual(self.actions,['Weather.Refresh'])
+        self.assertEqual(self.actions,['Weather.Refresh', 'RunScript(weather/default.py)'])
 
 
 if __name__=='__main__':unittest.main()
